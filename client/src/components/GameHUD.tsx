@@ -1,38 +1,47 @@
-import { BookOpen, Shield } from "lucide-react";
+import { BookOpen, MapPin } from "lucide-react";
 
 interface HUDProps {
   awareness: number;
   storiesFound: number;
   totalStories: number;
+  roomName: string;
 }
 
-export function GameHUD({ awareness, storiesFound, totalStories }: HUDProps) {
+export function GameHUD({ awareness, storiesFound, totalStories, roomName }: HUDProps) {
   return (
-    <div className="fixed top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-50" data-testid="game-hud">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3 bg-background/90 border-2 border-primary p-3 shadow-lg">
-          <Shield className="w-6 h-6 text-secondary animate-pulse" />
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground uppercase">Awareness</span>
-            <div className="w-32 h-4 bg-muted border border-muted-foreground relative">
+    <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="flex justify-between items-start p-2 gap-2">
+        <div className="nes-border-light border-white/50 bg-black/90 px-3 py-2 flex items-center gap-2">
+          <MapPin className="w-3 h-3 text-green-400" />
+          <span data-testid="text-room-name" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
+            {roomName}
+          </span>
+        </div>
+
+        <div className="flex gap-2">
+          <div className="nes-border-light border-white/50 bg-black/90 px-3 py-2 flex items-center gap-2">
+            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-white/60">
+              AWARENESS
+            </span>
+            <div className="w-20 h-2 bg-gray-800 border border-gray-600">
               <div
                 data-testid="awareness-bar"
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-secondary to-primary transition-all duration-500"
+                className="h-full bg-green-500 transition-all duration-500"
                 style={{ width: `${Math.min(awareness, 100)}%` }}
               />
             </div>
+            <span data-testid="text-awareness-pct" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
+              {awareness}%
+            </span>
+          </div>
+
+          <div className="nes-border-light border-white/50 bg-black/90 px-3 py-2 flex items-center gap-2">
+            <BookOpen className="w-3 h-3 text-yellow-400" />
+            <span data-testid="text-stories-count" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }} className="text-yellow-400">
+              {storiesFound}/{totalStories}
+            </span>
           </div>
         </div>
-      </div>
-
-      <div className="flex items-center gap-3 bg-background/90 border-2 border-accent p-3 shadow-lg">
-        <div className="flex flex-col items-end">
-          <span className="text-xs text-muted-foreground uppercase">Stories Found</span>
-          <span data-testid="text-stories-count" className="text-xl font-bold text-accent font-pixel">
-            {storiesFound}/{totalStories}
-          </span>
-        </div>
-        <BookOpen className="w-6 h-6 text-accent" />
       </div>
     </div>
   );

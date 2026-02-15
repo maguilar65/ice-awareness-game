@@ -1,132 +1,176 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GameWorld } from "@/components/GameWorld";
 import { GameHUD } from "@/components/GameHUD";
 import { DialogModal } from "@/components/DialogModal";
-import { useGameContent, useUpdateProgress } from "@/hooks/use-game-content";
+import { useGameContent } from "@/hooks/use-game-content";
 import { type GameContent } from "@shared/schema";
+import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Game() {
   const { data: contents, isLoading, error } = useGameContent();
-  const updateProgress = useUpdateProgress();
-  const { toast } = useToast();
 
   const [activeContent, setActiveContent] = useState<GameContent | null>(null);
+  const [activeSpeaker, setActiveSpeaker] = useState("");
   const [awareness, setAwareness] = useState(0);
   const [storiesFound, setStoriesFound] = useState<Set<number>>(new Set());
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [gameState, setGameState] = useState<'title' | 'intro' | 'playing'>('title');
+  const [currentRoom, setCurrentRoom] = useState("neighborhood");
+  const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
 
-  // Generate a random session ID for this playthrough
-  const [sessionId] = useState(() => Math.random().toString(36).substring(7));
-
-  const handleInteract = (contentId: number) => {
+  const handleInteract = (contentId: number, npcName: string) => {
     const content = contents?.find(c => c.id === contentId);
     if (content) {
       setActiveContent(content);
-      
-      // Update local state if this is a new discovery
+      setActiveSpeaker(npcName);
+
       if (!storiesFound.has(contentId)) {
         const newStories = new Set(storiesFound).add(contentId);
         setStoriesFound(newStories);
         setAwareness(prev => Math.min(prev + 10, 100));
-        
-        // Persist to backend
-        updateProgress.mutate({
-          sessionId,
-          contentId,
-          completed: true,
-        });
-
-        // Show toast for small feedback
-        toast({
-          title: "New Knowledge Gained!",
-          description: `You've learned about ${content.title}`,
-          variant: "default",
-          className: "bg-primary text-primary-foreground border-2 border-white font-pixel"
-        });
       }
     }
   };
 
   const handleCloseModal = () => {
     setActiveContent(null);
+    setActiveSpeaker("");
+  };
+
+  const handleRoomChange = (roomId: string, spawnX: number, spawnY: number) => {
+    setCurrentRoom(roomId);
+    setPlayerSpawn({ x: spawnX, y: spawnY });
   };
 
   if (isLoading) {
     return (
-      <div data-testid="loading-state" className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-primary">
-        <Loader2 className="w-12 h-12 animate-spin" />
-        <p className="font-pixel text-lg animate-pulse">LOADING WORLD...</p>
+      <div data-testid="loading-state" className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-green-400" />
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }} className="text-green-400 animate-pulse">LOADING...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div data-testid="error-state" className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-destructive">
-        <h1 className="font-pixel text-2xl">ERROR</h1>
-        <p className="font-retro text-xl">Failed to load game data. Please refresh.</p>
+      <div data-testid="error-state" className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-red-400">
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '12px' }}>SYSTEM ERROR</p>
+        <p style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }} className="text-white/60">Failed to load. Please refresh.</p>
       </div>
     );
   }
 
-  if (!isPlaying) {
+  if (gameState === 'title') {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-8">
-          <h1 className="font-pixel text-3xl md:text-5xl text-primary text-shadow-retro mb-4 leading-relaxed">
-            COMMUNITY DEFENDER
-          </h1>
-          <p className="font-retro text-xl text-muted-foreground leading-relaxed">
-            ICE has wrongfully detained and deported U.S. citizens. Used force against nonviolent people. Torn families apart in raids. Walk through this neighborhood, talk to people, and learn what is happening — and what you can do about it.
-          </p>
-          
-          <div className="p-6 border-2 border-dashed border-muted bg-card/50 rounded-lg">
-            <h3 className="font-pixel text-sm text-secondary mb-4">CONTROLS</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm font-retro text-left">
-              <div className="flex items-center gap-2">
-                <span className="bg-muted px-2 py-1 rounded">WASD</span>
-                <span>Move</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="bg-muted px-2 py-1 rounded">SPACE</span>
-                <span>Interact</span>
-              </div>
-            </div>
-          </div>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 scanlines">
+        <div className="max-w-lg w-full text-center space-y-8">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <h1
+              className="text-green-400 mb-2 leading-loose"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '28px', textShadow: '2px 2px 0 #064e3b, 0 0 20px rgba(74,222,128,0.3)' }}
+            >
+              COMMUNITY
+            </h1>
+            <h1
+              className="text-white leading-loose"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '28px', textShadow: '2px 2px 0 #1a1a1a' }}
+            >
+              DEFENDER
+            </h1>
+          </motion.div>
 
-          <button 
-            data-testid="button-start-game"
-            onClick={() => setIsPlaying(true)}
-            className="w-full py-4 bg-primary text-primary-foreground font-pixel text-xl tracking-widest shadow-[0_0_20px_rgba(124,58,237,0.4)] hover-elevate active-elevate-2"
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-white/70 leading-relaxed"
+            style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}
           >
-            START GAME
-          </button>
+            ICE has wrongfully detained and deported U.S. citizens. Used force against nonviolent people. Torn families apart in raids. Walk through the neighborhood of Esperanza, talk to your neighbors, and learn the truth.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="nes-border border-white/30 bg-white/5 p-4"
+          >
+            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }} className="text-white/50 mb-3">CONTROLS</p>
+            <div className="flex justify-center gap-8" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
+              <span className="text-white/70">WASD / Arrows - Move</span>
+              <span className="text-white/70">SPACE - Talk / Enter</span>
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
+            <button
+              data-testid="button-start-game"
+              onClick={() => setGameState('intro')}
+              className="w-full py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+            >
+              START
+            </button>
+          </motion.div>
         </div>
       </div>
     );
   }
 
+  if (gameState === 'intro') {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 scanlines">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-lg w-full text-center space-y-6"
+        >
+          <h2 className="text-green-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', textShadow: '1px 1px 0 #064e3b' }}>
+            {CHAPTER_INTRO.title}
+          </h2>
+          <p className="text-white/80 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}>
+            {CHAPTER_INTRO.text}
+          </p>
+          <button
+            data-testid="button-begin"
+            onClick={() => setGameState('playing')}
+            className="px-8 py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+          >
+            BEGIN
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const roomData = rooms[currentRoom];
+
   return (
-    <div className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
-      <GameHUD 
-        awareness={awareness} 
-        storiesFound={storiesFound.size} 
-        totalStories={contents?.length || 0} 
+    <div className="relative w-full h-screen bg-black flex flex-col items-center justify-center">
+      <GameHUD
+        awareness={awareness}
+        storiesFound={storiesFound.size}
+        totalStories={contents?.length || 0}
+        roomName={roomData?.name || "Unknown"}
       />
-      
-      <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
-        <GameWorld 
-          onInteract={handleInteract} 
-          contents={contents || []} 
+
+      <div className="flex-shrink-0">
+        <GameWorld
+          onInteract={handleInteract}
+          contents={contents || []}
+          currentRoom={currentRoom}
+          onRoomChange={handleRoomChange}
+          playerStart={playerSpawn}
         />
       </div>
 
-      <DialogModal 
-        isOpen={!!activeContent} 
-        content={activeContent} 
-        onClose={handleCloseModal} 
+      <DialogModal
+        isOpen={!!activeContent}
+        content={activeContent}
+        speakerName={activeSpeaker}
+        onClose={handleCloseModal}
       />
     </div>
   );

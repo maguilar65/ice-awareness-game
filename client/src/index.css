@@ -5,91 +5,183 @@
 @tailwind utilities;
 
 :root {
-  /* Retro Game Palette - "Hope in the Dark" */
-  --background: 240 20% 10%;    /* Dark Navy */
-  --foreground: 45 100% 90%;    /* Off-white/Cream */
-  
-  --primary: 260 100% 70%;      /* Retro Purple */
-  --primary-foreground: 240 20% 10%;
-  
-  --secondary: 180 80% 60%;     /* Cyan Accent */
-  --secondary-foreground: 240 20% 10%;
-  
-  --muted: 240 10% 25%;         /* Dark Gray */
-  --muted-foreground: 240 20% 70%;
-  
-  --accent: 330 90% 65%;        /* Pink/Magenta */
-  --accent-foreground: 240 20% 10%;
-  
-  --destructive: 0 80% 60%;     /* Alert Red */
+  --background: 228 20% 8%;
+  --foreground: 60 20% 90%;
+
+  --primary: 120 40% 45%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 200 60% 50%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 228 15% 18%;
+  --muted-foreground: 228 10% 60%;
+
+  --accent: 40 80% 55%;
+  --accent-foreground: 228 20% 8%;
+
+  --destructive: 0 70% 55%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 240 20% 30%;
-  --input: 240 20% 20%;
-  --ring: 260 100% 70%;
-  
-  --radius: 0px; /* Pixel art style = no rounded corners usually, or very specific ones */
+  --border: 228 15% 25%;
+  --input: 228 15% 20%;
+  --ring: 120 40% 45%;
 
-  /* Custom Game Variables */
+  --card: 228 18% 12%;
+  --card-foreground: 60 20% 90%;
+  --card-border: 228 15% 25%;
+
+  --popover: 228 18% 12%;
+  --popover-foreground: 60 20% 90%;
+  --popover-border: 228 15% 25%;
+
+  --sidebar: 228 18% 10%;
+  --sidebar-foreground: 60 20% 90%;
+  --sidebar-border: 228 15% 25%;
+  --sidebar-primary: 120 40% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 228 15% 18%;
+  --sidebar-accent-foreground: 60 20% 90%;
+  --sidebar-ring: 120 40% 45%;
+
+  --radius: 0px;
+
   --tile-size: 48px;
   --font-pixel: 'Press Start 2P', cursive;
   --font-retro: 'VT323', monospace;
+
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(255,255,255, .06);
+  --elevate-2: rgba(255,255,255, .12);
+
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  --chart-1: 120 40% 45%;
+  --chart-2: 200 60% 50%;
+  --chart-3: 40 80% 55%;
+  --chart-4: 0 70% 55%;
+  --chart-5: 280 50% 55%;
+
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
 }
 
 @layer base {
   * {
     @apply border-border;
-    image-rendering: pixelated; /* Critical for pixel art look */
+    image-rendering: pixelated;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-retro);
-    overflow: hidden; /* Prevent scrolling during game */
+    overflow: hidden;
   }
 
-  /* Pixelated headers */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-pixel);
-    @apply tracking-widest uppercase;
+    @apply tracking-wider uppercase;
   }
 }
 
 @layer utilities {
-  .pixel-borders {
-    box-shadow: 
-      -4px 0 0 0 currentcolor,
-      4px 0 0 0 currentcolor,
-      0 -4px 0 0 currentcolor,
-      0 4px 0 0 currentcolor;
-    margin: 4px;
+  .nes-border {
+    border: 4px solid;
+    box-shadow:
+      inset -4px -4px 0px 0px rgba(0,0,0,0.3),
+      inset 4px 4px 0px 0px rgba(255,255,255,0.15);
   }
-  
-  .pixel-corners {
-    clip-path: polygon(
-      0px 4px, 4px 4px, 4px 0px,
-      calc(100% - 4px) 0px, calc(100% - 4px) 4px, 100% 4px,
-      100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-      4px 100%, 4px calc(100% - 4px), 0px calc(100% - 4px)
-    );
+
+  .nes-border-light {
+    border: 3px solid;
+    box-shadow:
+      inset -3px -3px 0px 0px rgba(0,0,0,0.2),
+      inset 3px 3px 0px 0px rgba(255,255,255,0.1);
   }
 
   .text-shadow-retro {
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.9);
+  }
+
+  .scanlines {
+    position: relative;
+  }
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    z-index: 999;
+  }
+
+  .pixel-text {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    line-height: 1.8;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+  .hover-elevate:not(.no-default-hover-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 999;
+  }
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 999;
+  }
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
   }
 }
 
-/* Scrollbar styling for retro terminal look */
 ::-webkit-scrollbar {
-  width: 12px;
-  background: #1a1a2e;
+  width: 8px;
+  background: hsl(228 20% 8%);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #4a4a6a;
-  border: 2px solid #1a1a2e;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #6a6a8a;
+  background: hsl(228 15% 25%);
+  border: 2px solid hsl(228 20% 8%);
 }
