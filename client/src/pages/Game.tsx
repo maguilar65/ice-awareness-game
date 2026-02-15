@@ -3,39 +3,38 @@ import { GameWorld } from "@/components/GameWorld";
 import { GameHUD } from "@/components/GameHUD";
 import { DialogModal } from "@/components/DialogModal";
 import { useGameContent } from "@/hooks/use-game-content";
-import { type GameContent } from "@shared/schema";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
+import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
 import { Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Game() {
   const { data: contents, isLoading, error } = useGameContent();
 
-  const [activeContent, setActiveContent] = useState<GameContent | null>(null);
-  const [activeSpeaker, setActiveSpeaker] = useState("");
+  const [activeDialogue, setActiveDialogue] = useState<DialogueTree | null>(null);
   const [awareness, setAwareness] = useState(0);
   const [storiesFound, setStoriesFound] = useState<Set<number>>(new Set());
   const [gameState, setGameState] = useState<'title' | 'intro' | 'playing'>('title');
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
 
-  const handleInteract = (contentId: number, npcName: string) => {
-    const content = contents?.find(c => c.id === contentId);
-    if (content) {
-      setActiveContent(content);
-      setActiveSpeaker(npcName);
+  const handleInteract = (dialogueId: string) => {
+    const dialogue = npcDialogues[dialogueId];
+    if (dialogue) {
+      setActiveDialogue(dialogue);
+    }
+  };
 
-      if (!storiesFound.has(contentId)) {
-        const newStories = new Set(storiesFound).add(contentId);
-        setStoriesFound(newStories);
-        setAwareness(prev => Math.min(prev + 10, 100));
-      }
+  const handleContentRevealed = (contentId: number) => {
+    if (!storiesFound.has(contentId)) {
+      const newStories = new Set(storiesFound).add(contentId);
+      setStoriesFound(newStories);
+      setAwareness(prev => Math.min(prev + 10, 100));
     }
   };
 
   const handleCloseModal = () => {
-    setActiveContent(null);
-    setActiveSpeaker("");
+    setActiveDialogue(null);
   };
 
   const handleRoomChange = (roomId: string, spawnX: number, spawnY: number) => {
@@ -87,7 +86,7 @@ export default function Game() {
             className="text-white/70 leading-relaxed"
             style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}
           >
-            ICE has wrongfully detained and deported U.S. citizens. Used force against nonviolent people. Torn families apart in raids. Walk through the neighborhood of Esperanza, talk to your neighbors, and learn the truth.
+            Walk through the neighborhood of Esperanza. Talk to your neighbors. Make choices. Learn the truth about what is happening in communities across America.
           </motion.p>
 
           <motion.div
@@ -97,7 +96,7 @@ export default function Game() {
             className="nes-border border-white/30 bg-white/5 p-4"
           >
             <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }} className="text-white/50 mb-3">CONTROLS</p>
-            <div className="flex justify-center gap-8" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
+            <div className="flex justify-center gap-8 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
               <span className="text-white/70">WASD / Arrows - Move</span>
               <span className="text-white/70">SPACE - Talk / Enter</span>
             </div>
@@ -159,18 +158,18 @@ export default function Game() {
       <div className="flex-shrink-0">
         <GameWorld
           onInteract={handleInteract}
-          contents={contents || []}
           currentRoom={currentRoom}
           onRoomChange={handleRoomChange}
           playerStart={playerSpawn}
+          dialogueOpen={!!activeDialogue}
         />
       </div>
 
       <DialogModal
-        isOpen={!!activeContent}
-        content={activeContent}
-        speakerName={activeSpeaker}
+        isOpen={!!activeDialogue}
+        dialogue={activeDialogue}
         onClose={handleCloseModal}
+        onContentRevealed={handleContentRevealed}
       />
     </div>
   );

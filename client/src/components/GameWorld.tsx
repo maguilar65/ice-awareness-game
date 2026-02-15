@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
-import { GameContent } from "@shared/schema";
 import { rooms, buildWallMap, TILE, COLS, ROWS, type RoomDef, type NpcDef, type Exit } from "@/lib/gameData";
 
 const SPEED = 3;
@@ -9,20 +8,21 @@ const SPEED = 3;
 interface Position { x: number; y: number; }
 
 interface GameWorldProps {
-  onInteract: (contentId: number, npcName: string) => void;
-  contents: GameContent[];
+  onInteract: (dialogueId: string) => void;
   currentRoom: string;
   onRoomChange: (roomId: string, spawnX: number, spawnY: number) => void;
   playerStart: Position;
+  dialogueOpen: boolean;
 }
 
-function drawNpcSprite(npc: NpcDef, isNearby: boolean) {
+function NpcSprite({ npc, isNearby, onNpcClick }: { npc: NpcDef; isNearby: boolean; onNpcClick: (npc: NpcDef) => void }) {
   return (
     <div
       key={npc.id}
       data-testid={`npc-${npc.id}`}
-      className="absolute flex flex-col items-center"
+      className="absolute flex flex-col items-center cursor-pointer z-20"
       style={{ left: npc.x * TILE, top: npc.y * TILE, width: TILE, height: TILE }}
+      onClick={() => onNpcClick(npc)}
     >
       <div className="relative" style={{ width: 32, height: 36 }}>
         <div
@@ -43,24 +43,26 @@ function drawNpcSprite(npc: NpcDef, isNearby: boolean) {
         </div>
       </div>
 
-      {isNearby && (
-        <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-30"
-        >
-          <div className="bg-black/90 border border-white/40 px-2 py-0.5 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
-            <span className="text-green-400">{npc.name}</span>
-            <br />
-            <span className="text-white/60">SPACE to talk</span>
-          </div>
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: isNearby ? 1 : 0.7, y: 0 }}
+        className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-30"
+      >
+        <div className="bg-black/90 border border-white/40 px-2 py-0.5 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
+          <span className="text-green-400">{npc.name}</span>
+          {isNearby && (
+            <>
+              <br />
+              <span className="text-white/60">SPACE to talk</span>
+            </>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }
 
-export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, playerStart }: GameWorldProps) {
+export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, dialogueOpen }: GameWorldProps) {
   const room = rooms[currentRoom];
   const [playerPos, setPlayerPos] = useState<Position>({ x: playerStart.x * TILE, y: playerStart.y * TILE });
   const [wallMap, setWallMap] = useState(() => buildWallMap(room));
@@ -79,15 +81,15 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
     setWallMap(buildWallMap(room));
   }, [room]);
 
-  const handleKeyDown = useCallback(({ key }: KeyboardEvent) => {
-    keysPressed.current.add(key.toLowerCase());
-  }, []);
+  const interactRef = useRef(false);
 
-  const handleKeyUp = useCallback(({ key }: KeyboardEvent) => {
-    keysPressed.current.delete(key.toLowerCase());
-    if (key === ' ' || key === 'Enter') {
-      if (nearbyNpc && nearbyNpc.contentIds.length > 0) {
-        onInteract(nearbyNpc.contentIds[0], nearbyNpc.name);
+  const handleKeyDown = useCallback(({ key }: KeyboardEvent) => {
+    if (dialogueOpen) return;
+    keysPressed.current.add(key.toLowerCase());
+    if ((key === ' ' || key === 'Enter' || key === 'Space') && !interactRef.current) {
+      interactRef.current = true;
+      if (nearbyNpc) {
+        onInteract(nearbyNpc.dialogueId);
       } else if (nearbyExit && !transitioning) {
         setTransitioning(true);
         setTimeout(() => {
@@ -96,13 +98,20 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
         }, 300);
       }
     }
-  }, [nearbyNpc, nearbyExit, onInteract, onRoomChange, transitioning]);
+  }, [dialogueOpen, nearbyNpc, nearbyExit, onInteract, onRoomChange, transitioning]);
+
+  const handleKeyUp = useCallback(({ key }: KeyboardEvent) => {
+    keysPressed.current.delete(key.toLowerCase());
+    if (key === ' ' || key === 'Enter' || key === 'Space') {
+      interactRef.current = false;
+    }
+  }, []);
 
   useEventListener('keydown', handleKeyDown);
   useEventListener('keyup', handleKeyUp);
 
   const update = useCallback(() => {
-    if (transitioning) {
+    if (transitioning || dialogueOpen) {
       requestRef.current = requestAnimationFrame(update);
       return;
     }
@@ -128,7 +137,7 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
       return { x: nextX, y: nextY };
     });
     requestRef.current = requestAnimationFrame(update);
-  }, [wallMap, room.npcs, transitioning]);
+  }, [wallMap, room.npcs, transitioning, dialogueOpen]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(update);
@@ -139,7 +148,10 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
     const px = Math.floor((playerPos.x + TILE / 2) / TILE);
     const py = Math.floor((playerPos.y + TILE / 2) / TILE);
 
-    const npc = room.npcs.find(n => Math.abs(n.x - px) <= 1 && Math.abs(n.y - py) <= 1 && !(n.x === px && n.y === py));
+    const npc = room.npcs.find(n => {
+      const dist = Math.abs(n.x - px) + Math.abs(n.y - py);
+      return dist > 0 && dist <= 2;
+    });
     setNearbyNpc(npc || null);
 
     const exit = room.exits.find(e => Math.abs(e.x - px) <= 1 && Math.abs(e.y - py) <= 1);
@@ -223,7 +235,16 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
           </div>
         ))}
 
-        {room.npcs.map(npc => drawNpcSprite(npc, nearbyNpc?.id === npc.id))}
+        {room.npcs.map(npc => (
+          <NpcSprite
+            key={npc.id}
+            npc={npc}
+            isNearby={nearbyNpc?.id === npc.id}
+            onNpcClick={(clickedNpc) => {
+              if (!dialogueOpen) onInteract(clickedNpc.dialogueId);
+            }}
+          />
+        ))}
 
         <div
           data-testid="player"
@@ -268,7 +289,7 @@ export function GameWorld({ onInteract, contents, currentRoom, onRoomChange, pla
       <div className="absolute bottom-4 left-4 md:hidden z-40">
         <button data-testid="btn-interact" className="w-12 h-12 bg-green-700/30 border-2 border-green-500/50 active:bg-green-600/40 flex items-center justify-center text-green-300" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
           onTouchStart={() => {
-            if (nearbyNpc && nearbyNpc.contentIds.length > 0) onInteract(nearbyNpc.contentIds[0], nearbyNpc.name);
+            if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
             else if (nearbyExit && !transitioning) {
               setTransitioning(true);
               setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
