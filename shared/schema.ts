@@ -1,18 +1,29 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+// Content for the game - stories, facts, and scenarios
+export const gameContent = pgTable("game_content", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(), 
+  type: text("type").notNull(), // 'fact', 'story', 'scenario'
+  category: text("category").notNull(), // 'rights', 'history', 'community'
+  order: integer("order").default(0),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertGameContentSchema = createInsertSchema(gameContent);
+export type InsertGameContent = z.infer<typeof insertGameContentSchema>;
+export type GameContent = typeof gameContent.$inferSelect;
+
+// Simple progress tracking (optional for MVP, but good structure)
+export const playerProgress = pgTable("player_progress", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  contentId: integer("content_id").notNull(),
+  completed: boolean("completed").default(false),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export const insertPlayerProgressSchema = createInsertSchema(playerProgress);
+export type InsertPlayerProgress = z.infer<typeof insertPlayerProgressSchema>;
+export type PlayerProgress = typeof playerProgress.$inferSelect;
