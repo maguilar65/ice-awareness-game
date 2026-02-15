@@ -2,12 +2,12 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion } from "framer-motion";
 import { GameContent } from "@shared/schema";
+import { User, FileText, AlertTriangle } from "lucide-react";
 
-// Game Constants
-const TILE_SIZE = 48; // px
-const MAP_WIDTH = 20; // tiles
-const MAP_HEIGHT = 15; // tiles
-const MOVEMENT_SPEED = 4; // pixels per frame
+const TILE_SIZE = 48;
+const MAP_WIDTH = 20;
+const MAP_HEIGHT = 15;
+const MOVEMENT_SPEED = 4;
 
 interface Position {
   x: number;
@@ -16,9 +16,10 @@ interface Position {
 
 interface Interactable extends Position {
   id: number;
-  type: 'npc' | 'object';
+  type: 'npc' | 'object' | 'sign';
   contentId: number;
   label: string;
+  iconType: 'person' | 'document' | 'alert';
 }
 
 interface GameWorldProps {
@@ -26,73 +27,103 @@ interface GameWorldProps {
   contents: GameContent[];
 }
 
-// Generate a simple map layout (1 = wall, 0 = floor)
+const PRESET_LOCATIONS: { x: number; y: number; type: 'npc' | 'object' | 'sign' }[] = [
+  { x: 3, y: 3, type: 'npc' },
+  { x: 16, y: 3, type: 'sign' },
+  { x: 10, y: 2, type: 'object' },
+  { x: 3, y: 11, type: 'npc' },
+  { x: 16, y: 11, type: 'sign' },
+  { x: 8, y: 6, type: 'npc' },
+  { x: 14, y: 8, type: 'object' },
+  { x: 5, y: 7, type: 'sign' },
+  { x: 12, y: 12, type: 'npc' },
+  { x: 17, y: 7, type: 'object' },
+];
+
+const TYPE_COLORS: Record<string, string> = {
+  'npc': 'bg-cyan-400',
+  'object': 'bg-rose-400',
+  'sign': 'bg-amber-400',
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  'fact': 'LEARN',
+  'story': 'LISTEN',
+  'scenario': 'ACT',
+};
+
 const generateMap = () => {
   const map = Array(MAP_HEIGHT).fill(0).map(() => Array(MAP_WIDTH).fill(0));
-  
-  // Create walls
+
   for (let y = 0; y < MAP_HEIGHT; y++) {
     for (let x = 0; x < MAP_WIDTH; x++) {
       if (x === 0 || x === MAP_WIDTH - 1 || y === 0 || y === MAP_HEIGHT - 1) {
-        map[y][x] = 1; // Border walls
-      } else if (Math.random() > 0.85) {
-        map[y][x] = 1; // Random obstacles
+        map[y][x] = 1;
       }
     }
   }
-  
-  // Clear center spawn area
+
+  const buildingWalls = [
+    [2, 5], [2, 6],
+    [17, 5], [17, 6], [18, 5], [18, 6],
+    [9, 4], [10, 4], [11, 4],
+    [6, 9], [7, 9],
+    [13, 10], [14, 10], [15, 10],
+  ];
+  buildingWalls.forEach(([y, x]) => {
+    if (y < MAP_HEIGHT && x < MAP_WIDTH) map[y][x] = 1;
+  });
+
   for (let y = 5; y < 10; y++) {
     for (let x = 8; x < 12; x++) {
       map[y][x] = 0;
     }
   }
-  
+
+  PRESET_LOCATIONS.forEach(loc => {
+    map[loc.y][loc.x] = 0;
+    if (loc.y > 0) map[loc.y - 1][loc.x] = 0;
+    if (loc.y < MAP_HEIGHT - 1) map[loc.y + 1][loc.x] = 0;
+    if (loc.x > 0) map[loc.y][loc.x - 1] = 0;
+    if (loc.x < MAP_WIDTH - 1) map[loc.y][loc.x + 1] = 0;
+  });
+
   return map;
 };
 
 export function GameWorld({ onInteract, contents }: GameWorldProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [playerPos, setPlayerPos] = useState<Position>({ x: TILE_SIZE * 10, y: TILE_SIZE * 7 });
-  const [map] = useState(generateMap());
+  const [map] = useState(generateMap);
   const [interactables, setInteractables] = useState<Interactable[]>([]);
   const keysPressed = useRef<Set<string>>(new Set());
   const requestRef = useRef<number>();
   const [activeZone, setActiveZone] = useState<Interactable | null>(null);
+  const [facing, setFacing] = useState<'left' | 'right'>('right');
 
-  // Initialize interactables based on fetched content
   useEffect(() => {
     if (contents.length > 0) {
       const newInteractables: Interactable[] = contents.map((content, index) => {
-        // Simple algorithm to place them in valid spots
-        let x, y;
-        do {
-          x = Math.floor(Math.random() * (MAP_WIDTH - 2) + 1);
-          y = Math.floor(Math.random() * (MAP_HEIGHT - 2) + 1);
-        } while (map[y][x] === 1); // Avoid walls
-
+        const loc = PRESET_LOCATIONS[index % PRESET_LOCATIONS.length];
         return {
           id: index,
-          x: x * TILE_SIZE,
-          y: y * TILE_SIZE,
-          type: index % 2 === 0 ? 'npc' : 'object',
+          x: loc.x * TILE_SIZE,
+          y: loc.y * TILE_SIZE,
+          type: loc.type,
           contentId: content.id,
-          label: content.type === 'story' ? 'Story' : 'Fact',
+          label: TYPE_LABELS[content.type] || 'TALK',
+          iconType: content.type === 'story' ? 'person' as const : content.type === 'scenario' ? 'alert' as const : 'document' as const,
         };
       });
       setInteractables(newInteractables);
     }
   }, [contents, map]);
 
-  // Input handling
   const handleKeyDown = useCallback(({ key }: KeyboardEvent) => {
     keysPressed.current.add(key.toLowerCase());
   }, []);
 
   const handleKeyUp = useCallback(({ key }: KeyboardEvent) => {
     keysPressed.current.delete(key.toLowerCase());
-    
-    // Interaction logic on Space/Enter
     if ((key === ' ' || key === 'Enter') && activeZone) {
       onInteract(activeZone.contentId);
     }
@@ -101,7 +132,6 @@ export function GameWorld({ onInteract, contents }: GameWorldProps) {
   useEventListener('keydown', handleKeyDown);
   useEventListener('keyup', handleKeyUp);
 
-  // Game Loop
   const update = useCallback(() => {
     setPlayerPos((prev) => {
       let dx = 0;
@@ -109,21 +139,19 @@ export function GameWorld({ onInteract, contents }: GameWorldProps) {
 
       if (keysPressed.current.has('w') || keysPressed.current.has('arrowup')) dy -= MOVEMENT_SPEED;
       if (keysPressed.current.has('s') || keysPressed.current.has('arrowdown')) dy += MOVEMENT_SPEED;
-      if (keysPressed.current.has('a') || keysPressed.current.has('arrowleft')) dx -= MOVEMENT_SPEED;
-      if (keysPressed.current.has('d') || keysPressed.current.has('arrowright')) dx += MOVEMENT_SPEED;
+      if (keysPressed.current.has('a') || keysPressed.current.has('arrowleft')) { dx -= MOVEMENT_SPEED; setFacing('left'); }
+      if (keysPressed.current.has('d') || keysPressed.current.has('arrowright')) { dx += MOVEMENT_SPEED; setFacing('right'); }
 
       if (dx === 0 && dy === 0) return prev;
 
       const nextX = prev.x + dx;
       const nextY = prev.y + dy;
 
-      // Collision detection (simple bounding box vs tile center)
-      // Check the tile the player is trying to move into (center point)
-      const tileX = Math.floor((nextX + TILE_SIZE/2) / TILE_SIZE);
-      const tileY = Math.floor((nextY + TILE_SIZE/2) / TILE_SIZE);
+      const tileX = Math.floor((nextX + TILE_SIZE / 2) / TILE_SIZE);
+      const tileY = Math.floor((nextY + TILE_SIZE / 2) / TILE_SIZE);
 
       if (map[tileY] && map[tileY][tileX] === 1) {
-        return prev; // Collision with wall
+        return prev;
       }
 
       return { x: nextX, y: nextY };
@@ -139,51 +167,51 @@ export function GameWorld({ onInteract, contents }: GameWorldProps) {
     };
   }, [update]);
 
-  // Check for nearby interactables
   useEffect(() => {
     const nearby = interactables.find(obj => {
       const dist = Math.hypot(playerPos.x - obj.x, playerPos.y - obj.y);
-      return dist < TILE_SIZE * 1.2;
+      return dist < TILE_SIZE * 1.5;
     });
     setActiveZone(nearby || null);
   }, [playerPos, interactables]);
 
   return (
-    <div className="relative w-full h-full flex justify-center items-center bg-black overflow-hidden shadow-2xl border-8 border-muted rounded-lg">
-      <div 
-        className="relative transition-transform duration-75 ease-linear will-change-transform"
-        style={{ 
-          width: MAP_WIDTH * TILE_SIZE, 
+    <div className="relative w-full h-full flex justify-center items-center bg-black overflow-hidden shadow-2xl border-4 border-muted" data-testid="game-world">
+      <div
+        className="relative"
+        style={{
+          width: MAP_WIDTH * TILE_SIZE,
           height: MAP_HEIGHT * TILE_SIZE,
-          // Simple styling for map tiles
           backgroundSize: `${TILE_SIZE}px ${TILE_SIZE}px`,
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
           `,
-          backgroundColor: '#1a1a2e'
+          backgroundColor: '#111827'
         }}
       >
-        {/* Render Map Walls */}
         {map.map((row, y) => row.map((cell, x) => (
           cell === 1 ? (
-            <div 
-              key={`wall-${x}-${y}`} 
-              className="absolute bg-slate-700 border-t-4 border-slate-600 shadow-lg"
+            <div
+              key={`wall-${x}-${y}`}
+              className="absolute"
               style={{
                 left: x * TILE_SIZE,
                 top: y * TILE_SIZE,
                 width: TILE_SIZE,
                 height: TILE_SIZE,
+                backgroundColor: '#374151',
+                borderTop: '3px solid #4B5563',
+                borderLeft: '1px solid #4B5563',
               }}
             />
           ) : null
         )))}
 
-        {/* Render Interactables */}
         {interactables.map((obj) => (
           <div
             key={obj.id}
+            data-testid={`interactable-${obj.id}`}
             className="absolute flex flex-col items-center justify-center"
             style={{
               left: obj.x,
@@ -192,70 +220,86 @@ export function GameWorld({ onInteract, contents }: GameWorldProps) {
               height: TILE_SIZE,
             }}
           >
-            {/* Object Sprite */}
-            <div className={`w-8 h-8 rounded-full ${obj.type === 'npc' ? 'bg-secondary animate-bounce' : 'bg-accent animate-pulse'} shadow-[0_0_15px_currentColor]`} />
-            
-            {/* Interaction Prompt */}
+            <div className={`w-9 h-9 ${TYPE_COLORS[obj.type]} flex items-center justify-center text-black shadow-[0_0_12px_currentColor] ${activeZone?.id === obj.id ? 'animate-bounce' : 'animate-pulse'}`}>
+              {obj.iconType === 'person' && <User className="w-5 h-5" />}
+              {obj.iconType === 'document' && <FileText className="w-5 h-5" />}
+              {obj.iconType === 'alert' && <AlertTriangle className="w-5 h-5" />}
+            </div>
+
             {activeZone?.id === obj.id && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute -top-10 bg-black/80 text-white px-3 py-1 text-[10px] font-pixel whitespace-nowrap border border-white/20 rounded"
+                className="absolute -top-10 bg-black/90 text-white px-3 py-1 text-[9px] whitespace-nowrap border border-white/30"
+                style={{ fontFamily: 'var(--font-pixel)' }}
               >
-                PRESS SPACE
+                SPACE: {obj.label}
               </motion.div>
             )}
           </div>
         ))}
 
-        {/* Render Player */}
-        <div 
-          className="absolute z-10 w-10 h-10 bg-primary rounded-sm shadow-[0_0_20px_rgba(124,58,237,0.5)] border-2 border-white"
+        <div
+          data-testid="player"
+          className="absolute z-10"
           style={{
             left: playerPos.x,
             top: playerPos.y,
-            transition: 'all 0.05s linear' // Smooth out the frame updates slightly
+            width: TILE_SIZE - 8,
+            height: TILE_SIZE - 4,
+            transition: 'all 0.05s linear',
+            transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
           }}
         >
-          {/* Simple eyes for directionality hint */}
-          <div className="absolute top-2 left-2 w-2 h-2 bg-black rounded-full" />
-          <div className="absolute top-2 right-2 w-2 h-2 bg-black rounded-full" />
+          <div className="w-full h-full bg-violet-500 border-2 border-white shadow-[0_0_16px_rgba(139,92,246,0.6)]">
+            <div className="absolute top-2 left-1.5 w-2 h-2 bg-white" />
+            <div className="absolute top-2 right-3 w-2 h-2 bg-white" />
+            <div className="absolute bottom-1 left-2 right-2 h-1 bg-white/50" />
+          </div>
         </div>
-
       </div>
 
-      {/* Mobile Controls Overlay (visible only on small screens) */}
-      <div className="absolute bottom-8 right-8 grid grid-cols-3 gap-2 md:hidden">
+      <div className="absolute bottom-6 right-6 grid grid-cols-3 gap-1.5 md:hidden">
         <div />
-        <button 
-          className="w-12 h-12 bg-white/10 rounded-full border border-white/30 active:bg-white/30"
+        <button
+          data-testid="btn-up"
+          className="w-11 h-11 bg-white/10 border border-white/30 active:bg-white/30 flex items-center justify-center text-white"
           onTouchStart={() => keysPressed.current.add('w')}
           onTouchEnd={() => keysPressed.current.delete('w')}
-        >↑</button>
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+        >W</button>
         <div />
-        <button 
-          className="w-12 h-12 bg-white/10 rounded-full border border-white/30 active:bg-white/30"
+        <button
+          data-testid="btn-left"
+          className="w-11 h-11 bg-white/10 border border-white/30 active:bg-white/30 flex items-center justify-center text-white"
           onTouchStart={() => keysPressed.current.add('a')}
           onTouchEnd={() => keysPressed.current.delete('a')}
-        >←</button>
-        <button 
-          className="w-12 h-12 bg-white/10 rounded-full border border-white/30 active:bg-white/30"
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+        >A</button>
+        <button
+          data-testid="btn-down"
+          className="w-11 h-11 bg-white/10 border border-white/30 active:bg-white/30 flex items-center justify-center text-white"
           onTouchStart={() => keysPressed.current.add('s')}
           onTouchEnd={() => keysPressed.current.delete('s')}
-        >↓</button>
-        <button 
-          className="w-12 h-12 bg-white/10 rounded-full border border-white/30 active:bg-white/30"
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+        >S</button>
+        <button
+          data-testid="btn-right"
+          className="w-11 h-11 bg-white/10 border border-white/30 active:bg-white/30 flex items-center justify-center text-white"
           onTouchStart={() => keysPressed.current.add('d')}
           onTouchEnd={() => keysPressed.current.delete('d')}
-        >→</button>
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+        >D</button>
       </div>
 
-      <div className="absolute bottom-8 left-8 md:hidden">
-         <button 
-          className="w-16 h-16 bg-red-500/20 rounded-full border-2 border-red-500/50 active:bg-red-500/40 font-pixel text-xs text-red-200"
+      <div className="absolute bottom-6 left-6 md:hidden">
+        <button
+          data-testid="btn-interact"
+          className="w-14 h-14 bg-violet-500/30 border-2 border-violet-400/60 active:bg-violet-500/50 flex items-center justify-center text-violet-200"
           onTouchStart={() => {
             if (activeZone) onInteract(activeZone.contentId);
           }}
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px' }}
         >
           ACT
         </button>

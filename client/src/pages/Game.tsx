@@ -29,7 +29,7 @@ export default function Game() {
       if (!storiesFound.has(contentId)) {
         const newStories = new Set(storiesFound).add(contentId);
         setStoriesFound(newStories);
-        setAwareness(prev => Math.min(prev + 15, 100)); // Cap at 100%
+        setAwareness(prev => Math.min(prev + 10, 100));
         
         // Persist to backend
         updateProgress.mutate({
@@ -55,7 +55,7 @@ export default function Game() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-primary">
+      <div data-testid="loading-state" className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-primary">
         <Loader2 className="w-12 h-12 animate-spin" />
         <p className="font-pixel text-lg animate-pulse">LOADING WORLD...</p>
       </div>
@@ -64,7 +64,7 @@ export default function Game() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-destructive">
+      <div data-testid="error-state" className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-destructive">
         <h1 className="font-pixel text-2xl">ERROR</h1>
         <p className="font-retro text-xl">Failed to load game data. Please refresh.</p>
       </div>
@@ -75,11 +75,11 @@ export default function Game() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-8">
-          <h1 className="font-pixel text-4xl md:text-6xl text-primary text-shadow-retro mb-4 leading-relaxed">
+          <h1 className="font-pixel text-3xl md:text-5xl text-primary text-shadow-retro mb-4 leading-relaxed">
             COMMUNITY DEFENDER
           </h1>
           <p className="font-retro text-xl text-muted-foreground leading-relaxed">
-            Explore the neighborhood. Learn your rights. Strengthen your community.
+            ICE has wrongfully detained and deported U.S. citizens. Used force against nonviolent people. Torn families apart in raids. Walk through this neighborhood, talk to people, and learn what is happening — and what you can do about it.
           </p>
           
           <div className="p-6 border-2 border-dashed border-muted bg-card/50 rounded-lg">
@@ -97,8 +97,9 @@ export default function Game() {
           </div>
 
           <button 
+            data-testid="button-start-game"
             onClick={() => setIsPlaying(true)}
-            className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-pixel text-xl tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+            className="w-full py-4 bg-primary text-primary-foreground font-pixel text-xl tracking-widest shadow-[0_0_20px_rgba(124,58,237,0.4)] hover-elevate active-elevate-2"
           >
             START GAME
           </button>
