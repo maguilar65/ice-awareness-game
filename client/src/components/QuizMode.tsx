@@ -110,11 +110,11 @@ export function QuizMode({ onFinish }: QuizModeProps) {
     const gradeColor = percentage >= 90 ? "#4ade80" : percentage >= 70 ? "#facc15" : percentage >= 50 ? "#fb923c" : "#f87171";
 
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 sm:p-8 scanlines z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-black flex flex-col scanlines z-50 overflow-y-auto p-6 sm:p-12 lg:p-16">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-3xl text-center space-y-6 sm:space-y-8 py-4"
+          className="w-full flex-1 flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8"
         >
           <h2
             className="leading-loose"
@@ -162,8 +162,8 @@ export function QuizMode({ onFinish }: QuizModeProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 sm:p-8 scanlines z-50 overflow-y-auto">
-      <div className="w-full max-w-3xl py-4 space-y-4 sm:space-y-6">
+    <div className="fixed inset-0 bg-black flex flex-col scanlines z-50 overflow-y-auto p-6 sm:p-12 lg:p-16">
+      <div className="w-full flex-1 flex flex-col justify-center space-y-4 sm:space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)' }} className="text-green-400">
             KNOW YOUR RIGHTS QUIZ
@@ -192,7 +192,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
           >
             <p
               className="text-white leading-relaxed"
-              style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(18px, 4vw, 24px)' }}
+              style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(20px, 4.5vw, 32px)' }}
               data-testid="text-quiz-question"
             >
               {question.question}
@@ -224,10 +224,10 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                     data-testid={`button-quiz-choice-${i}`}
                     onClick={() => handleSelect(i)}
                     disabled={showResult}
-                    className="w-full text-left p-3 sm:p-4 transition-all duration-200"
+                    className="w-full text-left p-4 sm:p-5 transition-all duration-200"
                     style={{
                       fontFamily: 'var(--font-retro)',
-                      fontSize: 'clamp(14px, 3.5vw, 18px)',
+                      fontSize: 'clamp(16px, 3.5vw, 22px)',
                       border: `2px solid ${borderColor}`,
                       backgroundColor: bgColor,
                       color: textColor,
