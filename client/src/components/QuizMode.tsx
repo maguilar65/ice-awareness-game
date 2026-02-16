@@ -162,25 +162,25 @@ export function QuizMode({ onFinish }: QuizModeProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col scanlines z-50 overflow-y-auto p-6 sm:p-12 lg:p-16">
-      <div className="w-full flex-1 flex flex-col justify-center space-y-4 sm:space-y-6">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)' }} className="text-green-400">
-            KNOW YOUR RIGHTS QUIZ
-          </p>
-          <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 10px)' }} className="text-white/40" data-testid="text-question-progress">
-            {currentQ + 1} / {quizQuestions.length}
-          </p>
-        </div>
+    <div className="fixed inset-0 bg-black flex flex-col scanlines z-50 p-6 sm:p-10 lg:p-14">
+      <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)' }} className="text-green-400">
+          KNOW YOUR RIGHTS QUIZ
+        </p>
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 10px)' }} className="text-white/40" data-testid="text-question-progress">
+          {currentQ + 1} / {quizQuestions.length}
+        </p>
+      </div>
 
-        <div className="w-full bg-white/10 h-1">
-          <motion.div
-            className="h-full bg-green-500"
-            animate={{ width: `${((currentQ + 1) / quizQuestions.length) * 100}%` }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
+      <div className="w-full bg-white/10 h-1 mb-4 sm:mb-6 flex-shrink-0">
+        <motion.div
+          className="h-full bg-green-500"
+          animate={{ width: `${((currentQ + 1) / quizQuestions.length) * 100}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
 
+      <div className="flex-1 flex flex-col overflow-y-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQ}
@@ -188,17 +188,17 @@ export function QuizMode({ onFinish }: QuizModeProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25 }}
-            className="space-y-6 sm:space-y-8"
+            className="flex-1 flex flex-col"
           >
             <p
-              className="text-white leading-relaxed"
+              className="text-white leading-relaxed mb-6 sm:mb-8"
               style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(20px, 4.5vw, 32px)' }}
               data-testid="text-quiz-question"
             >
               {question.question}
             </p>
 
-            <div className="space-y-3 sm:space-y-4">
+            <div className="flex-1 flex flex-col gap-3 sm:gap-4 justify-center">
               {question.choices.map((choice, i) => {
                 let borderColor = 'rgba(255,255,255,0.15)';
                 let bgColor = 'rgba(255,255,255,0.03)';
@@ -224,7 +224,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                     data-testid={`button-quiz-choice-${i}`}
                     onClick={() => handleSelect(i)}
                     disabled={showResult}
-                    className="w-full text-left p-5 sm:p-6 transition-all duration-200"
+                    className="w-full flex-1 text-left p-5 sm:p-6 transition-all duration-200 flex items-center"
                     style={{
                       fontFamily: 'var(--font-retro)',
                       fontSize: 'clamp(16px, 3.5vw, 22px)',
