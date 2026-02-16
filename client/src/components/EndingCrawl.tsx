@@ -240,7 +240,7 @@ const CRAWL_SECTIONS = [
   },
 ];
 
-const CRAWL_DURATION = 150;
+const CRAWL_DURATION = 132;
 
 export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
   const [started, setStarted] = useState(false);
