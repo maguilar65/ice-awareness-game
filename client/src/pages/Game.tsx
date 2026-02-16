@@ -3,6 +3,7 @@ import { GameWorld } from "@/components/GameWorld";
 import { GameHUD } from "@/components/GameHUD";
 import { DialogModal } from "@/components/DialogModal";
 import { EndingCrawl } from "@/components/EndingCrawl";
+import { ProtestCutscene } from "@/components/ProtestCutscene";
 import { PauseMenu } from "@/components/PauseMenu";
 import { useGameContent } from "@/hooks/use-game-content";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
@@ -23,7 +24,7 @@ export default function Game() {
   const [awareness, setAwareness] = useState(0);
   const [storiesFound, setStoriesFound] = useState<Set<number>>(new Set());
   const [talkedTo, setTalkedTo] = useState<Set<string>>(new Set());
-  const [gameState, setGameState] = useState<'title' | 'intro' | 'playing' | 'ending' | 'credits'>('title');
+  const [gameState, setGameState] = useState<'title' | 'cutscene' | 'intro' | 'playing' | 'ending' | 'credits'>('title');
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
   const [paused, setPaused] = useState(false);
@@ -146,7 +147,7 @@ export default function Game() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
             <button
               data-testid="button-start-game"
-              onClick={() => setGameState('intro')}
+              onClick={() => setGameState('cutscene')}
               className="w-full py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
               style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
             >
@@ -156,6 +157,10 @@ export default function Game() {
         </div>
       </div>
     );
+  }
+
+  if (gameState === 'cutscene') {
+    return <ProtestCutscene onFinish={() => setGameState('intro')} />;
   }
 
   if (gameState === 'intro') {
