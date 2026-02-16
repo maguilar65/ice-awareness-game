@@ -6,6 +6,9 @@ import { EndingCrawl } from "@/components/EndingCrawl";
 import { ProtestCutscene } from "@/components/ProtestCutscene";
 import { PauseMenu } from "@/components/PauseMenu";
 import { QuizMode } from "@/components/QuizMode";
+import { RightsMatchGame } from "@/components/RightsMatchGame";
+import { MythOrFactGame } from "@/components/MythOrFactGame";
+import { SpeedQuizGame } from "@/components/SpeedQuizGame";
 import { useGameContent } from "@/hooks/use-game-content";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
 import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
@@ -29,6 +32,7 @@ export default function Game() {
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
   const [paused, setPaused] = useState(false);
+  const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -287,11 +291,13 @@ export default function Game() {
       <div className="flex-shrink-0">
         <GameWorld
           onInteract={handleInteract}
+          onMiniGame={(id) => setActiveMiniGame(id)}
           currentRoom={currentRoom}
           onRoomChange={handleRoomChange}
           playerStart={playerSpawn}
-          dialogueOpen={!!activeDialogue || paused}
+          dialogueOpen={!!activeDialogue || paused || !!activeMiniGame}
           onPause={() => setPaused(true)}
+          talkedTo={talkedTo}
         />
       </div>
 
@@ -328,6 +334,16 @@ export default function Game() {
         talkedTo={talkedTo.size}
         totalNpcs={TOTAL_NPCS}
       />
+
+      {activeMiniGame === 'rights_match' && (
+        <RightsMatchGame onClose={() => setActiveMiniGame(null)} />
+      )}
+      {activeMiniGame === 'myth_or_fact' && (
+        <MythOrFactGame onClose={() => setActiveMiniGame(null)} />
+      )}
+      {activeMiniGame === 'speed_quiz' && (
+        <SpeedQuizGame onClose={() => setActiveMiniGame(null)} />
+      )}
     </div>
   );
 }

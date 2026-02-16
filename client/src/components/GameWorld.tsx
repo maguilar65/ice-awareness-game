@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
-import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit } from "@/lib/gameData";
+import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
+import { MiniMap } from "./MiniMap";
 
 const SPEED = 3;
 const CANVAS_W = COLS * TILE;
@@ -33,11 +34,13 @@ interface Position { x: number; y: number; }
 
 interface GameWorldProps {
   onInteract: (dialogueId: string) => void;
+  onMiniGame?: (miniGameId: string) => void;
   currentRoom: string;
   onRoomChange: (roomId: string, spawnX: number, spawnY: number) => void;
   playerStart: Position;
   dialogueOpen: boolean;
   onPause?: () => void;
+  talkedTo?: Set<string>;
 }
 
 interface NpcWanderState {
@@ -126,6 +129,25 @@ function DecorationTile({ type, color, tileX, tileY, decX, decY, decW, decH }: {
             <>
               <div className="absolute top-2 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
               <div className="absolute bottom-3 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+            </>
+          )}
+        </div>
+      );
+    case 'arcade_cabinet':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: '#1a1a2e' }}>
+          <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: isTop ? '3px solid rgba(255,255,255,0.2)' : 'none', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.1)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.4)' : 'none', borderBottom: isBottom ? '3px solid rgba(0,0,0,0.4)' : 'none' }} />
+          {isTop && (
+            <>
+              <div className="absolute top-1 left-1 right-1 bottom-2" style={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <div className="absolute inset-1" style={{ background: `linear-gradient(135deg, ${color}44 0%, #00ff4444 50%, ${color}44 100%)`, animation: 'pulse 2s infinite' }} />
+              </div>
+            </>
+          )}
+          {isBottom && (
+            <>
+              <div className="absolute top-1 left-2 right-2 h-3" style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '1px' }} />
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style={{ backgroundColor: '#ff0', boxShadow: `0 0 4px ${color}`, opacity: 0.7 }} />
             </>
           )}
         </div>
@@ -280,7 +302,7 @@ function PlayerSprite({ facing, isMoving, stepCount }: { facing: 'left' | 'right
   );
 }
 
-export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, dialogueOpen, onPause }: GameWorldProps) {
+export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, playerStart, dialogueOpen, onPause, talkedTo }: GameWorldProps) {
   const scale = useGameScale();
   const room = rooms[currentRoom];
   const [playerPos, setPlayerPos] = useState<Position>(() => {
@@ -293,6 +315,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
   const requestRef = useRef<number>();
   const [nearbyNpc, setNearbyNpc] = useState<NpcDef | null>(null);
   const [nearbyExit, setNearbyExit] = useState<Exit | null>(null);
+  const [nearbyArcade, setNearbyArcade] = useState<Decoration | null>(null);
   const [facing, setFacing] = useState<'left' | 'right'>('right');
   const [transitioning, setTransitioning] = useState(false);
   const stepCountRef = useRef(0);
@@ -336,6 +359,8 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
       interactRef.current = true;
       if (nearbyNpc) {
         onInteract(nearbyNpc.dialogueId);
+      } else if (nearbyArcade && nearbyArcade.miniGame && onMiniGame) {
+        onMiniGame(nearbyArcade.miniGame);
       } else if (nearbyExit && !transitioning) {
         setTransitioning(true);
         playDoorTransition();
@@ -345,7 +370,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
         }, 300);
       }
     }
-  }, [dialogueOpen, nearbyNpc, nearbyExit, onInteract, onRoomChange, transitioning]);
+  }, [dialogueOpen, nearbyNpc, nearbyExit, nearbyArcade, onInteract, onMiniGame, onRoomChange, transitioning]);
 
   const handleKeyUp = useCallback(({ key }: KeyboardEvent) => {
     keysPressed.current.delete(key.toLowerCase());
@@ -476,6 +501,18 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
 
     const exit = room.exits.find(e => Math.abs(e.x - px) <= 1 && Math.abs(e.y - py) <= 1);
     setNearbyExit(exit || null);
+
+    const arcadeCab = room.decorations.find(d => {
+      if (d.type !== 'arcade_cabinet' || !d.miniGame) return false;
+      for (let dy = 0; dy < d.h; dy++) {
+        for (let dx = 0; dx < d.w; dx++) {
+          const dist = Math.abs((d.x + dx) - px) + Math.abs((d.y + dy) - py);
+          if (dist > 0 && dist <= 2) return true;
+        }
+      }
+      return false;
+    });
+    setNearbyArcade(arcadeCab || null);
   }, [playerPos, room, npcPositions]);
 
   return (
@@ -535,6 +572,22 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
                 backgroundColor: room.floorColor,
               }}>
                 {dec && <DecorationTile type={dec.type} color={dec.color} tileX={x} tileY={y} decX={dec.x} decY={dec.y} decW={dec.w} decH={dec.h} />}
+              {dec && dec.type === 'arcade_cabinet' && dec.label && x === dec.x && y === dec.y && (
+                <div className="absolute -top-6 left-1/2 z-30 whitespace-nowrap" style={{ transform: 'translateX(-25%)' }}>
+                  <div className="px-2 py-0.5 text-center" style={{
+                    fontFamily: 'var(--font-pixel)', fontSize: '6px',
+                    color: nearbyArcade === dec ? '#fbbf24' : dec.color,
+                    backgroundColor: 'rgba(0,0,0,0.9)',
+                    border: `1px solid ${nearbyArcade === dec ? 'rgba(251,191,36,0.6)' : 'rgba(255,255,255,0.2)'}`,
+                    boxShadow: nearbyArcade === dec ? `0 0 8px ${dec.color}44` : 'none',
+                  }}>
+                    {dec.label}
+                    {nearbyArcade === dec && (
+                      <><br /><span className="text-white/60">SPACE to play</span></>
+                    )}
+                  </div>
+                </div>
+              )}
               </div>
             );
           }
@@ -631,6 +684,10 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.15) 100%)',
           }} />
         )}
+
+        <div className="absolute bottom-1 right-1 z-40 pointer-events-none opacity-80">
+          <MiniMap currentRoom={currentRoom} playerPos={playerPos} talkedTo={talkedTo || new Set()} />
+        </div>
           </div>
         </div>
       </div>
@@ -641,13 +698,14 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             onTouchStart={(e) => {
               e.preventDefault();
               if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
+              else if (nearbyArcade && nearbyArcade.miniGame && onMiniGame) onMiniGame(nearbyArcade.miniGame);
               else if (nearbyExit && !transitioning) {
                 setTransitioning(true);
                 playDoorTransition();
                 setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
               }
             }}
-          >TALK</button>
+          >{nearbyArcade ? 'PLAY' : 'TALK'}</button>
           {onPause && (
             <button data-testid="btn-pause" className="w-10 h-10 rounded-full bg-white/10 border border-white/30 active:bg-white/20 flex items-center justify-center text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
               onClick={onPause}

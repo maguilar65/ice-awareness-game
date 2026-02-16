@@ -36,7 +36,9 @@ export interface Decoration {
   w: number;
   h: number;
   color: string;
-  type: 'table' | 'desk' | 'bench' | 'plant' | 'bookshelf' | 'fence' | 'crate' | 'counter' | 'fountain' | 'statue' | 'shelves' | 'bed' | 'chair';
+  type: 'table' | 'desk' | 'bench' | 'plant' | 'bookshelf' | 'fence' | 'crate' | 'counter' | 'fountain' | 'statue' | 'shelves' | 'bed' | 'chair' | 'arcade_cabinet';
+  label?: string;
+  miniGame?: string;
 }
 
 export const TILE = 40;
@@ -204,6 +206,7 @@ export const rooms: Record<string, RoomDef> = {
     exits: [
       { x: 15, y: 5, toRoom: "neighborhood", spawnX: 2, spawnY: 9, label: "Esperanza St." },
       { x: 0, y: 5, toRoom: "library", spawnX: 13, spawnY: 5, label: "Public Library" },
+      { x: 7, y: 0, toRoom: "arcade", spawnX: 7, spawnY: 9, label: "Arcade" },
     ],
     npcs: [
       { id: "mr_park", name: "Mr. Park", x: 5, y: 4, skinColor: "#f5d0a9", shirtColor: "#795548", dialogueId: "mr_park" },
@@ -259,6 +262,29 @@ export const rooms: Record<string, RoomDef> = {
       { x: 11, y: 2, w: 2, h: 4, color: "#4a3520", type: 'bookshelf' },
       { x: 4, y: 8, w: 4, h: 2, color: "#3d2b1f", type: 'table' },
       { x: 9, y: 8, w: 4, h: 2, color: "#3d2b1f", type: 'table' },
+    ],
+  },
+
+  arcade: {
+    id: "arcade",
+    name: "Esperanza Arcade",
+    bgColor: "#0a0a1a",
+    floorColor: "#1a1a2e",
+    wallColor: "#16213e",
+    wallHighlight: "#0f3460",
+    exits: [
+      { x: 7, y: 11, toRoom: "main_street", spawnX: 7, spawnY: 2, label: "Back to Main St." },
+    ],
+    npcs: [
+      { id: "arcade_kid", name: "Danny", x: 6, y: 6, skinColor: "#c68642", shirtColor: "#e74c3c", dialogueId: "arcade_kid" },
+      { id: "arcade_owner", name: "Val", x: 12, y: 5, skinColor: "#f5d0a9", shirtColor: "#9b59b6", dialogueId: "arcade_owner" },
+    ],
+    decorations: [
+      { x: 2, y: 2, w: 2, h: 2, color: "#e74c3c", type: 'arcade_cabinet', label: "RIGHTS MATCH", miniGame: "rights_match" },
+      { x: 7, y: 2, w: 2, h: 2, color: "#3498db", type: 'arcade_cabinet', label: "MYTH OR FACT", miniGame: "myth_or_fact" },
+      { x: 12, y: 2, w: 2, h: 2, color: "#f39c12", type: 'arcade_cabinet', label: "SPEED QUIZ", miniGame: "speed_quiz" },
+      { x: 5, y: 8, w: 3, h: 1, color: "#3d2b1f", type: 'bench' },
+      { x: 10, y: 8, w: 3, h: 1, color: "#3d2b1f", type: 'bench' },
     ],
   },
 };

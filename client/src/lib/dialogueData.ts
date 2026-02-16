@@ -65,7 +65,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
         speaker: "Elena",
         text: "That's what everyone asks. Apparently they're supposed to have warrants, but people are too scared to question it when armed agents show up. Attorney Kim at the courthouse might know more about the legal side.",
         choices: [
-          { text: "I'll go talk to Attorney Kim.", nextNodeId: "elena_end" },
+          { text: "I'll go talk to Attorney Kim.", nextNodeId: "elena_challenge" },
           { text: "What else can people do?", nextNodeId: "elena_help" },
         ],
       },
@@ -74,7 +74,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
         speaker: "Elena",
         text: "The neighbors took them in for now. But can you imagine? Those kids went from a normal Tuesday to wondering if they'll ever see their dad again. Ms. Martinez at the school has been trying to help the kids cope.",
         choices: [
-          { text: "I should talk to Ms. Martinez.", nextNodeId: "elena_end" },
+          { text: "I should talk to Ms. Martinez.", nextNodeId: "elena_challenge" },
           { text: "Is there anything else going on?", nextNodeId: "elena_others" },
         ],
       },
@@ -84,7 +84,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
         text: "The whole community is living in fear. People are afraid to go to the grocery store, to church, to pick their kids up from school. Rosa at the community center says attendance has dropped because families are hiding at home.",
         contentId: 12,
         choices: [
-          { text: "I'll check on the community center.", nextNodeId: "elena_end" },
+          { text: "I'll check on the community center.", nextNodeId: "elena_challenge" },
         ],
       },
       elena_help: {
@@ -92,7 +92,41 @@ export const npcDialogues: Record<string, DialogueTree> = {
         speaker: "Elena",
         text: "Pastor Davis at the community center is organizing know-your-rights workshops. And Tommy at the school has been telling kids about checkpoint rights. It's not much, but knowledge is power, right?",
         choices: [
-          { text: "Thanks, Elena. I'll look into that.", nextNodeId: "elena_end" },
+          { text: "Thanks, Elena. I'll look into that.", nextNodeId: "elena_challenge" },
+        ],
+      },
+      elena_challenge: {
+        id: "elena_challenge",
+        speaker: "Elena",
+        text: "Wait — before you go. Let me ask you something. Say you're walking home and you see ICE agents pulling someone out of their car on the street. What would you do?",
+        choices: [
+          { text: "Run over and try to physically stop them.", nextNodeId: "elena_challenge_wrong1" },
+          { text: "Record from a safe distance and note badge numbers.", nextNodeId: "elena_challenge_right" },
+          { text: "Ignore it — it's not my problem.", nextNodeId: "elena_challenge_wrong2" },
+        ],
+      },
+      elena_challenge_wrong1: {
+        id: "elena_challenge_wrong1",
+        speaker: "Elena",
+        text: "I get the instinct, but that could get you arrested or hurt too. The best thing you can do is be a witness — record from a safe distance, write down badge numbers, and contact a lawyer or community organization afterward. Your safety matters too.",
+        choices: [
+          { text: "That makes sense. Thanks, Elena.", nextNodeId: "elena_end" },
+        ],
+      },
+      elena_challenge_right: {
+        id: "elena_challenge_right",
+        speaker: "Elena",
+        text: "Exactly right. You have the legal right to observe and record from a safe distance. Get badge numbers, vehicle plates, and the time. That evidence can help lawyers fight wrongful detentions later. You're already thinking like a community defender.",
+        choices: [
+          { text: "I'll remember that. Thanks, Elena.", nextNodeId: "elena_end" },
+        ],
+      },
+      elena_challenge_wrong2: {
+        id: "elena_challenge_wrong2",
+        speaker: "Elena",
+        text: "I used to think that too. But what happens to one of us affects all of us. Today it's a stranger, tomorrow it could be your neighbor, your friend, your family. Being a witness — even just recording — can make a real difference.",
+        choices: [
+          { text: "You're right. I'll pay attention.", nextNodeId: "elena_end" },
         ],
       },
       elena_end: {
@@ -169,7 +203,41 @@ export const npcDialogues: Record<string, DialogueTree> = {
         text: "You have the right to remain silent. You don't have to answer questions about where you were born or your immigration status. You have the right to say 'I don't consent to a search.' Know your rights — it could save you or someone you love.",
         contentId: 10,
         choices: [
-          { text: "Thanks for telling me, Carlos.", nextNodeId: "carlos_end" },
+          { text: "Thanks for telling me, Carlos.", nextNodeId: "carlos_challenge" },
+        ],
+      },
+      carlos_challenge: {
+        id: "carlos_challenge",
+        speaker: "Carlos",
+        text: "Hold up — quick scenario. You're driving and you get stopped at a checkpoint. An agent asks where you were born and wants to search your car. What do you say?",
+        choices: [
+          { text: "Tell them everything and let them search.", nextNodeId: "carlos_challenge_wrong1" },
+          { text: "Say 'I exercise my right to remain silent' and 'I don't consent to a search.'", nextNodeId: "carlos_challenge_right" },
+          { text: "Speed away from the checkpoint.", nextNodeId: "carlos_challenge_wrong2" },
+        ],
+      },
+      carlos_challenge_wrong1: {
+        id: "carlos_challenge_wrong1",
+        speaker: "Carlos",
+        text: "You don't have to do that. The Fifth Amendment gives you the right to remain silent, and the Fourth Amendment protects you from unreasonable searches. You can politely say 'I don't consent to a search' and 'I exercise my right to remain silent.' It's your constitutional right.",
+        choices: [
+          { text: "Got it. I'll remember my rights.", nextNodeId: "carlos_end" },
+        ],
+      },
+      carlos_challenge_right: {
+        id: "carlos_challenge_right",
+        speaker: "Carlos",
+        text: "My man! That's exactly right. Stay calm, be polite, but firm. You don't have to answer questions about your birthplace or immigration status. And they can't search your car without your consent or a warrant. You know your stuff!",
+        choices: [
+          { text: "Thanks, Carlos!", nextNodeId: "carlos_end" },
+        ],
+      },
+      carlos_challenge_wrong2: {
+        id: "carlos_challenge_wrong2",
+        speaker: "Carlos",
+        text: "Whoa, no! That could get you arrested for real. Never flee. Stay calm, pull over, and exercise your rights verbally. Say 'I remain silent' and 'I don't consent to a search.' Running makes everything worse. Knowledge is your best defense, not speed.",
+        choices: [
+          { text: "Right, stay calm and know my rights.", nextNodeId: "carlos_end" },
         ],
       },
       carlos_end: {
@@ -477,7 +545,41 @@ export const npcDialogues: Record<string, DialogueTree> = {
         text: "Attend a workshop. Bring your neighbors. Share what you learn. Call your representatives. Show up at council meetings. Vote. And above all — treat every person with dignity. That's how we change things.",
         contentId: 14,
         choices: [
-          { text: "Thank you, Pastor Davis.", nextNodeId: "pastor_end" },
+          { text: "Thank you, Pastor Davis.", nextNodeId: "pastor_challenge" },
+        ],
+      },
+      pastor_challenge: {
+        id: "pastor_challenge",
+        speaker: "Pastor Davis",
+        text: "Before you go — let me test what you've learned. Imagine someone knocks on your door and says they're from ICE. They show you a paper and demand you open up. What do you do?",
+        choices: [
+          { text: "Open the door and cooperate fully.", nextNodeId: "pastor_challenge_wrong1" },
+          { text: "Ask to see the warrant slipped under the door — if it's not signed by a judge, keep the door closed.", nextNodeId: "pastor_challenge_right" },
+          { text: "Yell at them to go away and call 911.", nextNodeId: "pastor_challenge_wrong2" },
+        ],
+      },
+      pastor_challenge_wrong1: {
+        id: "pastor_challenge_wrong1",
+        speaker: "Pastor Davis",
+        text: "I understand wanting to cooperate. But you have the right to keep your door closed. An ICE administrative warrant is NOT a judicial warrant — it doesn't give them permission to enter. Ask to see it under the door. If a judge didn't sign it, you don't have to open.",
+        choices: [
+          { text: "I'll remember that.", nextNodeId: "pastor_end" },
+        ],
+      },
+      pastor_challenge_right: {
+        id: "pastor_challenge_right",
+        speaker: "Pastor Davis",
+        text: "You've been paying attention! That's exactly right. Only a judicial warrant — signed by a federal judge — gives them the legal right to enter your home. An ICE administrative warrant does not. You just passed the workshop test, child.",
+        choices: [
+          { text: "Thank you for teaching me, Pastor.", nextNodeId: "pastor_end" },
+        ],
+      },
+      pastor_challenge_wrong2: {
+        id: "pastor_challenge_wrong2",
+        speaker: "Pastor Davis",
+        text: "Stay calm, child. Yelling could escalate the situation. The right approach is to remain calm, keep the door closed, and ask them to slip the warrant under the door. If it's not signed by a judge, you have every right to keep that door shut. Calmness is strength.",
+        choices: [
+          { text: "I understand. Stay calm, check the warrant.", nextNodeId: "pastor_end" },
         ],
       },
       pastor_end: {
@@ -940,7 +1042,41 @@ export const npcDialogues: Record<string, DialogueTree> = {
         text: "We prepare. We know our rights. We stick together. We don't abandon our neighbors. And we speak up — call representatives, go to meetings, make our voices heard. This is our home, and we have every right to be here.",
         contentId: 14,
         choices: [
+          { text: "I love you, Mama.", nextNodeId: "mama_challenge" },
+        ],
+      },
+      mama_challenge: {
+        id: "mama_challenge",
+        speaker: "Mama",
+        text: "Mijo — one more thing. If something ever happens to me or your father, what's the most important thing you should have ready?",
+        choices: [
+          { text: "Money hidden somewhere safe.", nextNodeId: "mama_challenge_wrong1" },
+          { text: "An emergency plan — trusted contact, important documents in one place, and a lawyer's number memorized.", nextNodeId: "mama_challenge_right" },
+          { text: "A bag packed so I can run.", nextNodeId: "mama_challenge_wrong2" },
+        ],
+      },
+      mama_challenge_wrong1: {
+        id: "mama_challenge_wrong1",
+        speaker: "Mama",
+        text: "Money helps, but it's not enough. You need a full emergency plan. A trusted adult who can take care of you. All important documents — birth certificates, IDs — in one place. A lawyer's phone number memorized. That's how you stay safe and stay together.",
+        choices: [
+          { text: "I'll make sure we have all that.", nextNodeId: "mama_end" },
+        ],
+      },
+      mama_challenge_right: {
+        id: "mama_challenge_right",
+        speaker: "Mama",
+        text: "That's my smart child. An emergency plan is everything. A trusted person to care for you, documents ready, a lawyer's number you know by heart. Pastor Davis helped us put ours together. I'm proud of you for knowing this.",
+        choices: [
           { text: "I love you, Mama.", nextNodeId: "mama_end" },
+        ],
+      },
+      mama_challenge_wrong2: {
+        id: "mama_challenge_wrong2",
+        speaker: "Mama",
+        text: "Running isn't the answer, mijo. What you need is preparation. A designated guardian who can take care of you. Important documents in one place. A lawyer's phone number memorized. An emergency plan keeps the family connected even when things go wrong.",
+        choices: [
+          { text: "Let's make our plan together.", nextNodeId: "mama_end" },
         ],
       },
       mama_end: {
@@ -996,7 +1132,41 @@ export const npcDialogues: Record<string, DialogueTree> = {
         text: "Know the difference between local police and ICE. If you see ICE activity, you have the right to observe and record from a safe distance. And call your local police if you see something that isn't right. We're here to help.",
         contentId: 13,
         choices: [
-          { text: "Thanks, Officer Reyes.", nextNodeId: "reyes_end" },
+          { text: "Thanks, Officer Reyes.", nextNodeId: "reyes_challenge" },
+        ],
+      },
+      reyes_challenge: {
+        id: "reyes_challenge",
+        speaker: "Officer Reyes",
+        text: "One more thing — pop quiz. Someone in a uniform knocks on your neighbor's door and says 'Police, open up!' but they're actually ICE. How can your neighbor tell the difference?",
+        choices: [
+          { text: "They can't — all uniforms look the same.", nextNodeId: "reyes_challenge_wrong1" },
+          { text: "Ask for identification and check if they have a judicial warrant signed by a judge.", nextNodeId: "reyes_challenge_right" },
+          { text: "Just open the door since they said police.", nextNodeId: "reyes_challenge_wrong2" },
+        ],
+      },
+      reyes_challenge_wrong1: {
+        id: "reyes_challenge_wrong1",
+        speaker: "Officer Reyes",
+        text: "Actually, you can tell. ICE agents often say 'police' but they're not local PD. Ask to see identification through the window. Ask for a judicial warrant — one signed by a judge, not just an ICE agent. If they can't produce one, your neighbor has every right to keep that door closed.",
+        choices: [
+          { text: "I'll make sure my neighbors know this.", nextNodeId: "reyes_end" },
+        ],
+      },
+      reyes_challenge_right: {
+        id: "reyes_challenge_right",
+        speaker: "Officer Reyes",
+        text: "Exactly right. You don't have to open the door. Ask to see ID through the window or peephole. Ask for a judicial warrant. If they don't have one signed by a federal judge, your neighbor can legally keep the door closed. Smart thinking.",
+        choices: [
+          { text: "Thanks for the tip, Officer.", nextNodeId: "reyes_end" },
+        ],
+      },
+      reyes_challenge_wrong2: {
+        id: "reyes_challenge_wrong2",
+        speaker: "Officer Reyes",
+        text: "No — that's exactly what they hope people will do. ICE agents sometimes identify themselves as 'police' to get people to open up. Always ask for identification first, and always ask for a judicial warrant. No judicial warrant means no legal right to enter. Don't open that door.",
+        choices: [
+          { text: "I had no idea. Thank you.", nextNodeId: "reyes_end" },
         ],
       },
       reyes_end: {
@@ -1189,6 +1359,100 @@ export const npcDialogues: Record<string, DialogueTree> = {
         id: "sofia_end",
         speaker: "Sofia",
         text: "Thank you. Here — you can have this drawing. It's so you remember my Papa. His name is Miguel Ramirez. Please don't forget him, okay?",
+        isEnd: true,
+      },
+    },
+  },
+  arcade_kid: {
+    startNodeId: "danny_start",
+    nodes: {
+      danny_start: {
+        id: "danny_start",
+        speaker: "Danny",
+        text: "Yo, welcome to the arcade! I come here every day after school. Val lets us hang out as long as we play the educational games too. They're actually kinda fun once you try them.",
+        choices: [
+          { text: "What games are here?", nextNodeId: "danny_games" },
+          { text: "Educational games? Sounds boring.", nextNodeId: "danny_boring" },
+          { text: "Do you live around here?", nextNodeId: "danny_home" },
+        ],
+      },
+      danny_games: {
+        id: "danny_games",
+        speaker: "Danny",
+        text: "There are three cabinets! Rights Match is a memory game where you flip cards to match rights with what they mean. Myth or Fact tests how fast you can tell real facts from fake ones. And Speed Quiz is all about how many rights questions you can nail in 30 seconds.",
+        choices: [
+          { text: "I'll check them out!", nextNodeId: "danny_end" },
+        ],
+      },
+      danny_boring: {
+        id: "danny_boring",
+        speaker: "Danny",
+        text: "That's what I thought too! But then I started getting high scores and learning stuff I didn't know. Like, did you know you don't have to open your door for ICE unless they have a warrant from a judge? I learned that from the Speed Quiz game.",
+        contentId: 6,
+        choices: [
+          { text: "Okay, maybe I'll give them a try.", nextNodeId: "danny_end" },
+        ],
+      },
+      danny_home: {
+        id: "danny_home",
+        speaker: "Danny",
+        text: "Yeah, two blocks over. Things have been weird lately. My friend Marco's dad got taken a few weeks ago. That's actually why Val started putting in the educational games — so kids like us would learn our rights. Just in case.",
+        choices: [
+          { text: "That's smart. What games are here?", nextNodeId: "danny_games" },
+          { text: "I'm sorry about Marco's dad.", nextNodeId: "danny_end" },
+        ],
+      },
+      danny_end: {
+        id: "danny_end",
+        speaker: "Danny",
+        text: "Have fun! Try to beat my high scores. And hey — if you learn something new, that's a bonus. Knowledge is the best power-up!",
+        isEnd: true,
+      },
+    },
+  },
+
+  arcade_owner: {
+    startNodeId: "val_start",
+    nodes: {
+      val_start: {
+        id: "val_start",
+        speaker: "Val",
+        text: "Hey there! Welcome to the Esperanza Arcade. I set up these machines so kids in the neighborhood would have a safe place to hang out and learn something at the same time. Want to hear about the games?",
+        choices: [
+          { text: "Tell me about the games.", nextNodeId: "val_games" },
+          { text: "Why educational games?", nextNodeId: "val_why" },
+          { text: "This place is cool.", nextNodeId: "val_cool" },
+        ],
+      },
+      val_games: {
+        id: "val_games",
+        speaker: "Val",
+        text: "Three cabinets, three ways to learn! Rights Match tests your memory — flip cards and match rights to their meanings. Myth or Fact makes you sort truth from fiction fast. And Speed Quiz is pure rapid-fire knowledge. Walk up to any cabinet and press interact to play!",
+        choices: [
+          { text: "Thanks, Val!", nextNodeId: "val_end" },
+        ],
+      },
+      val_why: {
+        id: "val_why",
+        speaker: "Val",
+        text: "Because this neighborhood needs more than entertainment right now. Kids are scared, parents are scared. But when you turn learning into a game, people actually remember it. I've seen kids leave here knowing their rights better than most adults.",
+        contentId: 10,
+        choices: [
+          { text: "That's really thoughtful.", nextNodeId: "val_end" },
+        ],
+      },
+      val_cool: {
+        id: "val_cool",
+        speaker: "Val",
+        text: "Thanks! I wanted it to feel like a real old-school arcade but with games that actually matter. Every high score means someone learned something important. That's the real win.",
+        choices: [
+          { text: "I'll try all three games!", nextNodeId: "val_end" },
+        ],
+      },
+      val_end: {
+        id: "val_end",
+        speaker: "Val",
+        text: "Have fun and learn something! And remember — the more you know about your rights, the safer you and your community will be. That's the ultimate high score.",
         isEnd: true,
       },
     },
