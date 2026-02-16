@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
@@ -170,12 +170,14 @@ function DecorationTile({ type, color, tileX, tileY, decX, decY, decW, decH }: {
   }
 }
 
-function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame }: { npc: NpcDef; wanderState?: NpcWanderState; isNearby: boolean; onNpcClick: (npc: NpcDef) => void; animFrame: number }) {
+function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }: { npc: NpcDef; wanderState?: NpcWanderState; isNearby: boolean; onNpcClick: (npc: NpcDef) => void; animFrame: number; talked?: boolean }) {
   const posX = wanderState ? wanderState.x : npc.x * TILE;
   const posY = wanderState ? wanderState.y : npc.y * TILE;
   const face = wanderState?.facing || 'right';
   const isWalking = wanderState ? (Math.abs(wanderState.targetX - wanderState.x) > 2 || Math.abs(wanderState.targetY - wanderState.y) > 2) : false;
-  const bobY = isWalking ? Math.sin(animFrame * 0.15) * 1.5 : 0;
+  const walkBob = isWalking ? Math.sin(animFrame * 0.15) * 1.5 : 0;
+  const idleBob = !isWalking ? Math.sin(animFrame * 0.04) * 1.2 : 0;
+  const bobY = walkBob + idleBob;
   const legAnim = isWalking ? Math.sin(animFrame * 0.2) * 2 : 0;
 
   const darkerSkin = adjustColor(npc.skinColor, -20);
@@ -188,6 +190,7 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame }: { npc:
       style={{
         left: posX, top: posY + bobY, width: TILE, height: TILE,
         transition: 'left 0.06s linear, top 0.06s linear',
+        ...((!talked && !isWalking) ? { animation: 'npc-glow 2.5s ease-in-out infinite' } : {}),
       }}
       onClick={() => onNpcClick(npc)}
     >
@@ -268,10 +271,111 @@ function OutdoorEffects() {
           </div>
         </motion.div>
       ))}
+      <AmbientParticles />
       <div className="absolute inset-0 pointer-events-none z-[1]"
         style={{ boxShadow: 'inset 0 0 80px rgba(100,180,255,0.06)' }}
       />
     </>
+  );
+}
+
+function AmbientParticles() {
+  const particles = useRef(
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: 2 + Math.random() * 3,
+      delay: Math.random() * 8,
+      duration: 6 + Math.random() * 6,
+      dx: `${(Math.random() - 0.5) * 80}px`,
+      dy: `${-20 - Math.random() * 60}px`,
+      rot: `${Math.random() * 360}deg`,
+    }))
+  ).current;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none z-[2]">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: p.size,
+            height: p.size,
+            backgroundColor: 'rgba(180,220,140,0.3)',
+            '--dx': p.dx,
+            '--dy': p.dy,
+            '--rot': p.rot,
+            animation: `float-particle ${p.duration}s ${p.delay}s ease-in-out infinite`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ExitSparkles({ x, y }: { x: number; y: number }) {
+  const sparkles = useRef(
+    Array.from({ length: 4 }, (_, i) => ({
+      id: i,
+      offX: 4 + Math.random() * (TILE - 8),
+      offY: 4 + Math.random() * (TILE - 8),
+      delay: i * 0.4,
+      size: 2 + Math.random() * 2,
+    }))
+  ).current;
+
+  return (
+    <>
+      {sparkles.map(s => (
+        <div
+          key={s.id}
+          className="absolute rounded-full"
+          style={{
+            left: x * TILE + s.offX,
+            top: y * TILE + s.offY,
+            width: s.size,
+            height: s.size,
+            backgroundColor: 'rgba(74,222,128,0.7)',
+            animation: `sparkle 1.8s ${s.delay}s ease-in-out infinite`,
+            zIndex: 9,
+          }}
+        />
+      ))}
+    </>
+  );
+}
+
+function PixelTransition({ active }: { active: boolean }) {
+  if (!active) return null;
+  const gridSize = 32;
+  const cols = Math.ceil(CANVAS_W / gridSize);
+  const rows = Math.ceil(CANVAS_H / gridSize);
+  return (
+    <div className="absolute inset-0 z-50 pointer-events-none">
+      {Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => {
+          const delay = (r + c) * 12;
+          return (
+            <div
+              key={`${r}-${c}`}
+              className="absolute bg-black"
+              style={{
+                left: c * gridSize,
+                top: r * gridSize,
+                width: gridSize,
+                height: gridSize,
+                opacity: 0,
+                animation: `pixelBlockIn 0.15s ${delay}ms forwards`,
+              }}
+            />
+          );
+        })
+      )}
+    </div>
   );
 }
 
@@ -371,7 +475,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
         setTimeout(() => {
           onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY);
           setTransitioning(false);
-        }, 300);
+        }, 600);
       }
     }
   }, [dialogueOpen, nearbyNpc, nearbyExit, nearbyArcade, onInteract, onMiniGame, onRoomChange, transitioning]);
@@ -523,17 +627,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
     <div className="relative flex flex-col items-center" data-testid="game-world">
       <div style={{ width: CANVAS_W * scale, height: CANVAS_H * scale }} className="relative scanlines">
         <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: CANVAS_W, height: CANVAS_H }} className="relative">
-          <AnimatePresence>
-            {transitioning && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="absolute inset-0 bg-black z-50"
-              />
-            )}
-          </AnimatePresence>
+          <PixelTransition active={transitioning} />
 
           <div
             className="relative overflow-hidden"
@@ -659,6 +753,10 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
           );
         })}
 
+        {room.exits.map((exit, i) => (
+          <ExitSparkles key={`sparkle-${i}`} x={exit.x} y={exit.y} />
+        ))}
+
         {room.npcs.map(npc => (
           <NpcSprite
             key={npc.id}
@@ -666,6 +764,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
             wanderState={npcPositions[npc.id]}
             isNearby={nearbyNpc?.id === npc.id}
             animFrame={animFrame}
+            talked={talkedTo?.has(npc.dialogueId)}
             onNpcClick={(clickedNpc) => {
               if (!dialogueOpen) onInteract(clickedNpc.dialogueId);
             }}
@@ -703,7 +802,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
               else if (nearbyExit && !transitioning) {
                 setTransitioning(true);
                 playDoorTransition();
-                setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
+                setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 600);
               }
             }}
           >{nearbyArcade ? 'PLAY' : 'TALK'}</button>

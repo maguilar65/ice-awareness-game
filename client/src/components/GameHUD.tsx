@@ -1,5 +1,6 @@
-import { BookOpen, MapPin } from "lucide-react";
+import { BookOpen, MapPin, Compass } from "lucide-react";
 import { MiniMap } from "./MiniMap";
+import { getStoryHint, getNextStoryStep } from "@/lib/storyPath";
 
 interface HUDProps {
   awareness: number;
@@ -12,14 +13,29 @@ interface HUDProps {
 }
 
 export function GameHUD({ awareness, storiesFound, totalStories, roomName, currentRoom, playerPos, talkedTo }: HUDProps) {
+  const hint = getStoryHint(talkedTo);
+  const nextStep = getNextStoryStep(talkedTo);
+  const nextRoom = nextStep?.room || null;
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className="flex justify-between items-start p-1.5 sm:p-2 gap-1 sm:gap-2">
-        <div className="nes-border-light border-white/50 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
-          <MapPin className="w-3 h-3 text-green-400 hidden sm:block" />
-          <span data-testid="text-room-name" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
-            {roomName}
-          </span>
+        <div className="flex flex-col gap-1">
+          <div className="nes-border-light border-white/50 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+            <MapPin className="w-3 h-3 text-green-400 hidden sm:block" />
+            <span data-testid="text-room-name" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
+              {roomName}
+            </span>
+          </div>
+
+          {hint && (
+            <div className="nes-border-light border-yellow-500/40 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2 max-w-[200px] sm:max-w-[280px]">
+              <Compass className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+              <span data-testid="text-story-hint" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(8px, 1.5vw, 11px)', lineHeight: 1.3 }} className="text-yellow-300/90">
+                {hint}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-start gap-1 sm:gap-2">
@@ -49,7 +65,7 @@ export function GameHUD({ awareness, storiesFound, totalStories, roomName, curre
           </div>
 
           <div className="nes-border-light border-white/50 bg-black/90 p-1">
-            <MiniMap currentRoom={currentRoom} playerPos={playerPos} talkedTo={talkedTo} />
+            <MiniMap currentRoom={currentRoom} playerPos={playerPos} talkedTo={talkedTo} nextRoom={nextRoom} />
           </div>
         </div>
       </div>

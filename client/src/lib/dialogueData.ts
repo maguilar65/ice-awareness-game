@@ -132,7 +132,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       elena_end: {
         id: "elena_end",
         speaker: "Elena",
-        text: "Be careful out there. And if you learn anything that could help us, please come back and tell me. We have to look out for each other.",
+        text: "Be careful out there. You should talk to Carlos — he's right here on the street. His uncle just went through something terrible at a checkpoint.",
         isEnd: true,
       },
     },
@@ -243,7 +243,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       carlos_end: {
         id: "carlos_end",
         speaker: "Carlos",
-        text: "Stay aware out there. And spread the word. The more people who know their rights, the harder it is for anyone to take them away.",
+        text: "Stay aware out there. And talk to Mrs. Chen — she's been watching everything from her bench. She sees more than people think.",
         isEnd: true,
       },
     },
@@ -321,7 +321,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       chen_end: {
         id: "chen_end",
         speaker: "Mrs. Chen",
-        text: "Thank you for stopping to listen to an old woman. Most people are too busy or too scared these days. Don't let fear win, okay?",
+        text: "Thank you for stopping to listen to an old woman. You should go to the Community Center and find Pastor Davis — he's teaching people how to protect themselves.",
         isEnd: true,
       },
     },
@@ -397,7 +397,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       rosa_end: {
         id: "rosa_end",
         speaker: "Rosa",
-        text: "Thank you for coming. It means a lot that someone cares enough to show up. Come back anytime.",
+        text: "Thank you for coming. Before you leave, talk to James — he's right here. He's been documenting cases that the world needs to hear.",
         isEnd: true,
       },
     },
@@ -472,7 +472,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       james_end: {
         id: "james_end",
         speaker: "James",
-        text: "Thank you for listening. Most people look away. The fact that you're here, asking questions — that matters more than you know.",
+        text: "Thank you for listening. You should head to the Courthouse and talk to Attorney Kim. She's fighting these cases legally. And Davino is there too — his story will change how you see everything.",
         isEnd: true,
       },
     },
@@ -585,7 +585,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       pastor_end: {
         id: "pastor_end",
         speaker: "Pastor Davis",
-        text: "Go in peace, and carry this knowledge with you. An informed community is a protected community.",
+        text: "Go in peace, and carry this knowledge with you. Rosa is here at the center too — she's the one organizing everything. Talk to her.",
         isEnd: true,
       },
     },
@@ -670,7 +670,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       kim_end: {
         id: "kim_end",
         speaker: "Atty. Kim",
-        text: "Knowledge of the law is your strongest shield. Please share what you've learned with others. My office is always open.",
+        text: "Knowledge of the law is your strongest shield. Davino Watson is here at the courthouse — please talk to him. Hearing his story firsthand is something you'll never forget.",
         isEnd: true,
       },
     },
@@ -736,7 +736,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       davino_end: {
         id: "davino_end",
         speaker: "Davino",
-        text: "Thank you for listening. Really. Most people see the headlines and move on. You stopped. You listened. That's how change starts.",
+        text: "Thank you for listening. Really. You should go to the School and talk to Ms. Martinez — she sees what this does to children every single day.",
         isEnd: true,
       },
     },
@@ -819,7 +819,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       martinez_end: {
         id: "martinez_end",
         speaker: "Ms. Martinez",
-        text: "Thank you for caring. These kids need to know that people out there see them. If you can, tell others what's happening here. Their stories deserve to be heard.",
+        text: "Thank you for caring. Talk to Sofia while you're here — she's one of the Ramirez kids. And Tommy runs the rights club. They both need people who will listen.",
         isEnd: true,
       },
     },
@@ -886,7 +886,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       tommy_end: {
         id: "tommy_end",
         speaker: "Tommy",
-        text: "Thanks! And hey — if you talk to anyone else around here, tell them about the club? The more people who know their rights, the safer we all are. Together we're stronger!",
+        text: "Thanks! You should head to the Park and find Officer Reyes. He's a local cop who's actually on our side. And Lucia is there organizing supplies for families.",
         isEnd: true,
       },
     },
@@ -970,7 +970,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       abuela_end: {
         id: "abuela_end",
         speaker: "Abuela",
-        text: "Come back anytime, mijo. My door is always open. That's the whole point, isn't it? We keep our doors open for each other.",
+        text: "Come back anytime, mijo. My door is always open. You've talked to everyone now — you've heard our stories. Now carry them with you. That's the whole point, isn't it? We keep our doors open for each other.",
         isEnd: true,
       },
     },
@@ -1082,7 +1082,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       mama_end: {
         id: "mama_end",
         speaker: "Mama",
-        text: "I love you too. Now go — keep talking to people, keep learning. And come home safe. I'll be right here waiting.",
+        text: "I love you too. Go talk to Abuela before you leave — she has wisdom that only comes from a lifetime of courage.",
         isEnd: true,
       },
     },
@@ -1172,7 +1172,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       reyes_end: {
         id: "reyes_end",
         speaker: "Officer Reyes",
-        text: "Stay safe out there. And remember — you can always come to me. I'm on your side.",
+        text: "Stay safe out there. Lucia is here at the park too — she's been quietly organizing supply drives for affected families. She could use your help.",
         isEnd: true,
       },
     },
@@ -1238,7 +1238,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       lucia_end: {
         id: "lucia_end",
         speaker: "Lucia",
-        text: "Thank you. Every hand makes a difference. Come find me at the park if you learn anything new. We're in this together.",
+        text: "Thank you. Every hand makes a difference. Head to Main Street and talk to Mr. Park — his closed restaurant tells the story of what fear does to a neighborhood.",
         isEnd: true,
       },
     },
@@ -1295,7 +1295,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       park_end: {
         id: "park_end",
         speaker: "Mr. Park",
-        text: "Thank you. And tell people — when this is over, the restaurant will reopen. This community will come back. I have to believe that.",
+        text: "Thank you. Now go Home and talk to your family. Your Mama and Abuela have been worried. They have important things to tell you.",
         isEnd: true,
       },
     },
@@ -1358,7 +1358,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       sofia_end: {
         id: "sofia_end",
         speaker: "Sofia",
-        text: "Thank you. Here — you can have this drawing. It's so you remember my Papa. His name is Miguel Ramirez. Please don't forget him, okay?",
+        text: "Thank you. Here — you can have this drawing. It's so you remember my Papa. His name is Miguel Ramirez. Please don't forget him, okay? Tommy is here too — he teaches kids about their rights.",
         isEnd: true,
       },
     },

@@ -5,6 +5,7 @@ interface MiniMapProps {
   currentRoom: string;
   playerPos: { x: number; y: number };
   talkedTo: Set<string>;
+  nextRoom?: string | null;
 }
 
 const MAP_SCALE = 3;
@@ -27,7 +28,7 @@ const WORLD_LAYOUT: Record<string, { wx: number; wy: number }> = {
 const GRID_COLS = 4;
 const GRID_ROWS = 3;
 
-export function MiniMap({ currentRoom, playerPos, talkedTo }: MiniMapProps) {
+export function MiniMap({ currentRoom, playerPos, talkedTo, nextRoom }: MiniMapProps) {
   const room = rooms[currentRoom];
   if (!room) return null;
 
@@ -58,16 +59,20 @@ export function MiniMap({ currentRoom, playerPos, talkedTo }: MiniMapProps) {
           }} />
         ))}
 
-        {room.exits.map((exit, i) => (
-          <div key={`e-${i}`} className="absolute" style={{
-            left: exit.x * MAP_SCALE,
-            top: exit.y * MAP_SCALE,
-            width: MAP_SCALE,
-            height: MAP_SCALE,
-            backgroundColor: '#fbbf24',
-            boxShadow: '0 0 2px rgba(251,191,36,0.5)',
-          }} />
-        ))}
+        {room.exits.map((exit, i) => {
+          const isNextRoomExit = nextRoom && exit.toRoom === nextRoom && nextRoom !== currentRoom;
+          return (
+            <div key={`e-${i}`} className="absolute" style={{
+              left: exit.x * MAP_SCALE,
+              top: exit.y * MAP_SCALE,
+              width: MAP_SCALE,
+              height: MAP_SCALE,
+              backgroundColor: isNextRoomExit ? '#f472b6' : '#fbbf24',
+              boxShadow: isNextRoomExit ? '0 0 4px rgba(244,114,182,0.8)' : '0 0 2px rgba(251,191,36,0.5)',
+              animation: isNextRoomExit ? 'minimap-pulse 1s ease-in-out infinite' : 'none',
+            }} />
+          );
+        })}
 
         {room.npcs.map(npc => {
           const talked = talkedTo.has(npc.dialogueId);
@@ -98,19 +103,21 @@ export function MiniMap({ currentRoom, playerPos, talkedTo }: MiniMapProps) {
           const pos = WORLD_LAYOUT[roomId];
           if (!pos) return null;
           const isCurrent = roomId === currentRoom;
+          const isNext = roomId === nextRoom && nextRoom !== currentRoom;
           return (
             <div key={roomId} className="absolute" style={{
               left: pos.wx * cellW,
               top: pos.wy * cellH,
               width: cellW - 1,
               height: cellH - 1,
-              backgroundColor: isCurrent ? 'rgba(74,222,128,0.25)' : 'rgba(255,255,255,0.06)',
-              border: isCurrent ? '1px solid rgba(74,222,128,0.5)' : '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: isCurrent ? 'rgba(74,222,128,0.25)' : isNext ? 'rgba(244,114,182,0.2)' : 'rgba(255,255,255,0.06)',
+              border: isCurrent ? '1px solid rgba(74,222,128,0.5)' : isNext ? '1px solid rgba(244,114,182,0.5)' : '1px solid rgba(255,255,255,0.1)',
+              animation: isNext ? 'minimap-pulse 1.5s ease-in-out infinite' : 'none',
             }}>
               <span className="absolute inset-0 flex items-center justify-center" style={{
                 fontFamily: 'var(--font-pixel)',
                 fontSize: '3px',
-                color: isCurrent ? '#4ade80' : 'rgba(255,255,255,0.3)',
+                color: isCurrent ? '#4ade80' : isNext ? '#f472b6' : 'rgba(255,255,255,0.3)',
                 lineHeight: 1,
                 textAlign: 'center',
                 overflow: 'hidden',

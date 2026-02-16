@@ -184,6 +184,44 @@ html, body {
   }
 }
 
+@keyframes minimap-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes npc-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(96,165,250,0.3); }
+  50% { box-shadow: 0 0 10px rgba(96,165,250,0.7), 0 0 20px rgba(96,165,250,0.3); }
+}
+
+@keyframes npc-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float-particle {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.4; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+
+@keyframes pixel-wipe {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes pixelBlockIn {
+  0% { opacity: 0; transform: scale(0); }
+  60% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   background: hsl(228 20% 8%);
