@@ -5,6 +5,7 @@ import { DialogModal } from "@/components/DialogModal";
 import { EndingCrawl } from "@/components/EndingCrawl";
 import { ProtestCutscene } from "@/components/ProtestCutscene";
 import { PauseMenu } from "@/components/PauseMenu";
+import { QuizMode } from "@/components/QuizMode";
 import { useGameContent } from "@/hooks/use-game-content";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
 import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
@@ -24,7 +25,7 @@ export default function Game() {
   const [awareness, setAwareness] = useState(0);
   const [storiesFound, setStoriesFound] = useState<Set<number>>(new Set());
   const [talkedTo, setTalkedTo] = useState<Set<string>>(new Set());
-  const [gameState, setGameState] = useState<'title' | 'cutscene' | 'intro' | 'playing' | 'ending' | 'credits'>('title');
+  const [gameState, setGameState] = useState<'title' | 'cutscene' | 'intro' | 'playing' | 'ending' | 'credits' | 'quiz'>('title');
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
   const [paused, setPaused] = useState(false);
@@ -225,7 +226,15 @@ export default function Game() {
             <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Jeremiah Feliciano</p>
             <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Robert Long-Smith</p>
           </div>
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <button
+              data-testid="button-take-quiz"
+              onClick={() => setGameState('quiz')}
+              className="px-8 py-3 bg-yellow-600 text-white border-2 border-yellow-400 hover-elevate active-elevate-2"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2.5vw, 12px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+            >
+              TAKE THE QUIZ
+            </button>
             <button
               data-testid="button-play-again"
               onClick={() => {
@@ -237,14 +246,30 @@ export default function Game() {
                 setPlayerSpawn({ x: 7, y: 6 });
                 setPaused(false);
               }}
-              className="px-10 py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+              className="px-8 py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2.5vw, 12px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
             >
               PLAY AGAIN
             </button>
           </div>
         </motion.div>
       </div>
+    );
+  }
+
+  if (gameState === 'quiz') {
+    return (
+      <QuizMode
+        onFinish={() => {
+          setGameState('title');
+          setTalkedTo(new Set());
+          setStoriesFound(new Set());
+          setAwareness(0);
+          setCurrentRoom("neighborhood");
+          setPlayerSpawn({ x: 7, y: 6 });
+          setPaused(false);
+        }}
+      />
     );
   }
 
