@@ -122,7 +122,7 @@ export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
       }, 500);
     };
 
-    const timer = setTimeout(cycle, 2500);
+    const timer = setTimeout(cycle, 4000);
     return () => clearTimeout(timer);
   }, [index, done]);
 
@@ -225,7 +225,7 @@ export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
           height: 2,
           backgroundColor: article.tagColor,
           opacity: 0.4,
-          animation: visible ? 'progressBar 2.5s linear forwards' : 'none',
+          animation: visible ? 'progressBar 4s linear forwards' : 'none',
           transformOrigin: 'left',
         }} />
       </div>
