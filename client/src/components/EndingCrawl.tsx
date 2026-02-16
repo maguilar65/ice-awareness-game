@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+const CRAWL_DISTANCE = 5000;
+
 const CRAWL_SECTIONS = [
   {
     type: "header" as const,
@@ -245,6 +247,7 @@ const CRAWL_DURATION = 132;
 export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
   const [started, setStarted] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
+  const [speed, setSpeed] = useState(1);
 
   useEffect(() => {
     const t = setTimeout(() => setStarted(true), 1500);
@@ -255,11 +258,6 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
     const t = setTimeout(() => setShowSkip(true), 5000);
     return () => clearTimeout(t);
   }, []);
-
-  useEffect(() => {
-    const autoEnd = setTimeout(() => onFinish(), (CRAWL_DURATION + 5) * 1000);
-    return () => clearTimeout(autoEnd);
-  }, [onFinish]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -296,11 +294,12 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
       <div className="absolute inset-0 flex justify-center overflow-hidden">
         <div className="w-full max-w-2xl px-4 sm:px-8 absolute top-full">
           {started && (
-            <motion.div
-              initial={{ y: 0 }}
-              animate={{ y: `-${CRAWL_SECTIONS.length * 120 + 1200}px` }}
-              transition={{ duration: CRAWL_DURATION, ease: "linear" }}
-              className="space-y-6 text-center pb-[100vh]"
+            <div
+              className="space-y-6 text-center pb-[100vh] crawl-text"
+              style={{
+                transform: `translateY(-${CRAWL_DISTANCE}px)`,
+                transition: `transform ${CRAWL_DURATION / speed}s linear`,
+              }}
             >
               {CRAWL_SECTIONS.map((section, i) => {
                 if (section.type === "spacer") {
@@ -394,22 +393,40 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                   </p>
                 );
               })}
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
 
       {showSkip && (
-        <motion.button
-          data-testid="button-skip-crawl"
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          onClick={onFinish}
-          className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 px-4 py-2 text-white/40 border border-white/20 hover-elevate"
-          style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+          className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 flex gap-2"
         >
-          SKIP
-        </motion.button>
+          <button
+            data-testid="button-speed-toggle"
+            onClick={() => setSpeed(s => s === 1 ? 2 : 1)}
+            className="px-3 py-2 border hover-elevate active-elevate-2"
+            style={{
+              fontFamily: 'var(--font-pixel)',
+              fontSize: '8px',
+              color: speed === 2 ? '#facc15' : 'rgba(255,255,255,0.4)',
+              borderColor: speed === 2 ? 'rgba(250,204,21,0.4)' : 'rgba(255,255,255,0.2)',
+              backgroundColor: speed === 2 ? 'rgba(250,204,21,0.1)' : 'transparent',
+            }}
+          >
+            2x
+          </button>
+          <button
+            data-testid="button-skip-crawl"
+            onClick={onFinish}
+            className="px-4 py-2 text-white/40 border border-white/20 hover-elevate active-elevate-2"
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+          >
+            SKIP
+          </button>
+        </motion.div>
       )}
     </div>
   );
