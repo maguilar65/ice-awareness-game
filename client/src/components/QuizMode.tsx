@@ -110,11 +110,11 @@ export function QuizMode({ onFinish }: QuizModeProps) {
     const gradeColor = percentage >= 90 ? "#4ade80" : percentage >= 70 ? "#facc15" : percentage >= 50 ? "#fb923c" : "#f87171";
 
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 scanlines z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 sm:p-8 scanlines z-50 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-lg text-center space-y-6 py-4"
+          className="w-full max-w-3xl text-center space-y-6 sm:space-y-8 py-4"
         >
           <h2
             className="leading-loose"
@@ -162,8 +162,8 @@ export function QuizMode({ onFinish }: QuizModeProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 scanlines z-50 overflow-y-auto">
-      <div className="w-full max-w-lg py-4 space-y-4 sm:space-y-6">
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 sm:p-8 scanlines z-50 overflow-y-auto">
+      <div className="w-full max-w-3xl py-4 space-y-4 sm:space-y-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)' }} className="text-green-400">
             KNOW YOUR RIGHTS QUIZ
