@@ -191,47 +191,49 @@ export default function Game() {
 
   if (gameState === 'credits') {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 scanlines">
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-8 scanlines z-50">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="max-w-lg w-full text-center space-y-8"
+          className="w-full max-w-2xl text-center space-y-10"
         >
           <h1
             className="text-green-400 leading-loose"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '24px', textShadow: '0 0 20px rgba(74,222,128,0.4)' }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '36px', textShadow: '0 0 30px rgba(74,222,128,0.5), 2px 2px 0 #064e3b' }}
           >
             COMMUNITY DEFENDER
           </h1>
-          <p className="text-white/60 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '20px' }}>
+          <p className="text-white/70 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '26px' }}>
             You talked to {TOTAL_NPCS} neighbors and learned {storiesFound.size} facts about civil rights and community safety.
           </p>
-          <p className="text-yellow-400/80 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
+          <p className="text-yellow-400 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '24px' }}>
             Knowledge is protection. Share what you learned.
           </p>
-          <div className="pt-4 space-y-2">
-            <p className="text-white/30" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>MADE BY</p>
-            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Marcos Aguilar</p>
-            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Jeremiah Feliciano</p>
-            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Robert Long-Smith</p>
+          <div className="pt-6 space-y-4">
+            <p className="text-white/40" style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', letterSpacing: '0.2em' }}>MADE BY</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Marcos Aguilar</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Jeremiah Feliciano</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Robert Long-Smith</p>
           </div>
-          <button
-            data-testid="button-play-again"
-            onClick={() => {
-              setGameState('title');
-              setTalkedTo(new Set());
-              setStoriesFound(new Set());
-              setAwareness(0);
-              setCurrentRoom("neighborhood");
-              setPlayerSpawn({ x: 7, y: 6 });
-              setPaused(false);
-            }}
-            className="px-8 py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
-          >
-            PLAY AGAIN
-          </button>
+          <div className="pt-4">
+            <button
+              data-testid="button-play-again"
+              onClick={() => {
+                setGameState('title');
+                setTalkedTo(new Set());
+                setStoriesFound(new Set());
+                setAwareness(0);
+                setCurrentRoom("neighborhood");
+                setPlayerSpawn({ x: 7, y: 6 });
+                setPaused(false);
+              }}
+              className="px-10 py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+            >
+              PLAY AGAIN
+            </button>
+          </div>
         </motion.div>
       </div>
     );
