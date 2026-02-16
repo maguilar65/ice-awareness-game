@@ -188,7 +188,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25 }}
-            className="space-y-4 sm:space-y-6"
+            className="space-y-6 sm:space-y-8"
           >
             <p
               className="text-white leading-relaxed"
@@ -198,7 +198,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
               {question.question}
             </p>
 
-            <div className="space-y-2 sm:space-y-3">
+            <div className="space-y-3 sm:space-y-4">
               {question.choices.map((choice, i) => {
                 let borderColor = 'rgba(255,255,255,0.15)';
                 let bgColor = 'rgba(255,255,255,0.03)';
@@ -224,7 +224,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                     data-testid={`button-quiz-choice-${i}`}
                     onClick={() => handleSelect(i)}
                     disabled={showResult}
-                    className="w-full text-left p-4 sm:p-5 transition-all duration-200"
+                    className="w-full text-left p-5 sm:p-6 transition-all duration-200"
                     style={{
                       fontFamily: 'var(--font-retro)',
                       fontSize: 'clamp(16px, 3.5vw, 22px)',
