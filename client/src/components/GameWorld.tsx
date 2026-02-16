@@ -576,12 +576,22 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
               </div>
               {nearbyExit === exit && (
                 <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute -top-8 whitespace-nowrap z-30"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute left-1/2 z-30"
+                  style={{
+                    transform: 'translateX(-50%)',
+                    ...(exit.y === 0
+                      ? { top: TILE + 4 }
+                      : exit.y === ROWS - 1
+                        ? { bottom: TILE + 4 }
+                        : exit.x === 0
+                          ? { left: TILE + 4, top: '50%', transform: 'translateY(-50%)' }
+                          : { right: -(TILE + 4), left: 'auto', top: '50%', transform: 'translateY(-50%)' }),
+                  }}
                 >
-                  <div className="bg-black/95 border border-green-500/60 px-2 py-1" style={{
-                    fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#4ade80',
+                  <div className="bg-black/95 border border-green-500/60 px-2 py-1 whitespace-nowrap" style={{
+                    fontFamily: 'var(--font-pixel)', fontSize: '7px', color: '#4ade80',
                     boxShadow: '0 0 10px rgba(74,222,128,0.2)',
                   }}>
                     {exit.label}
