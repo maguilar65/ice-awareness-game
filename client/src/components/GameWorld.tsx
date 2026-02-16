@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
-import { rooms, buildWallMap, TILE, COLS, ROWS, type RoomDef, type NpcDef, type Exit } from "@/lib/gameData";
+import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
 const SPEED = 3;
@@ -25,47 +25,155 @@ interface NpcWanderState {
   facing: 'left' | 'right';
 }
 
-function NpcSprite({ npc, wanderState, isNearby, onNpcClick }: { npc: NpcDef; wanderState?: NpcWanderState; isNearby: boolean; onNpcClick: (npc: NpcDef) => void }) {
+function DecorationTile({ type, color, tileX, tileY, decX, decY, decW, decH }: { type: string; color: string; tileX: number; tileY: number; decX: number; decY: number; decW: number; decH: number }) {
+  const relX = tileX - decX;
+  const relY = tileY - decY;
+  const isLeft = relX === 0;
+  const isRight = relX === decW - 1;
+  const isTop = relY === 0;
+  const isBottom = relY === decH - 1;
+
+  switch (type) {
+    case 'table':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: color }}>
+          <div className="absolute inset-0" style={{ borderTop: isTop ? '3px solid rgba(255,255,255,0.15)' : 'none', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.1)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.3)' : 'none', borderBottom: isBottom ? '3px solid rgba(0,0,0,0.3)' : 'none' }} />
+          <div className="absolute inset-1" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)' }} />
+        </div>
+      );
+    case 'desk':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: color }}>
+          <div className="absolute inset-0" style={{ borderTop: '3px solid rgba(255,255,255,0.12)', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.08)' : 'none', borderBottom: '2px solid rgba(0,0,0,0.3)' }} />
+          {isTop && <div className="absolute top-1 left-1/2 -translate-x-1/2 w-3 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />}
+        </div>
+      );
+    case 'bookshelf':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: color }}>
+          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.1)', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.06)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.2)' : 'none' }} />
+          <div className="absolute top-1 left-1 right-1 h-2" style={{ backgroundColor: '#c0392b', opacity: 0.6 }} />
+          <div className="absolute top-4 left-1 right-1 h-2" style={{ backgroundColor: '#2980b9', opacity: 0.5 }} />
+          <div className="absolute bottom-2 left-1 right-1 h-2" style={{ backgroundColor: '#27ae60', opacity: 0.4 }} />
+          {relX % 2 === 0 && <div className="absolute top-2 left-2 w-1.5 h-3" style={{ backgroundColor: '#f1c40f', opacity: 0.4 }} />}
+        </div>
+      );
+    case 'bench':
+      return (
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 right-0 h-3" style={{ backgroundColor: color, borderTop: '2px solid rgba(255,255,255,0.12)' }} />
+          {isLeft && <div className="absolute top-3 left-1 w-2 h-full" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }} />}
+          {isRight && <div className="absolute top-3 right-1 w-2 h-full" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }} />}
+        </div>
+      );
+    case 'plant':
+      return (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-6 h-7">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-3" style={{ backgroundColor: '#5c3a1e', borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full" style={{ backgroundColor: color, boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(100,255,100,0.15)' }} />
+            {relX === 0 && <div className="absolute top-1 left-0 w-2 h-2 rounded-full" style={{ backgroundColor: color, opacity: 0.7 }} />}
+          </div>
+        </div>
+      );
+    case 'fountain':
+      return (
+        <div className="absolute inset-0">
+          <div className="absolute inset-1 rounded-sm" style={{ backgroundColor: '#4a6a8a', border: '2px solid #5a7a9a', boxShadow: 'inset 0 0 8px rgba(100,180,255,0.3)' }} />
+          {isTop && relX === Math.floor(decW / 2) && (
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-3" style={{ backgroundColor: '#7ab8e0', opacity: 0.7, boxShadow: '0 0 6px rgba(100,200,255,0.5)' }} />
+          )}
+        </div>
+      );
+    case 'bed':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: '#4a4a5a' }}>
+          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.08)' }} />
+          {isLeft && <div className="absolute top-1 left-1 w-3 h-3 rounded-sm" style={{ backgroundColor: '#ddd', opacity: 0.3 }} />}
+          <div className="absolute top-2 left-0 right-0 bottom-1" style={{ backgroundColor: '#3a5a7a', opacity: 0.5, borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+        </div>
+      );
+    case 'counter':
+    case 'shelves':
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: color }}>
+          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.12)', borderLeft: isLeft ? '1px solid rgba(255,255,255,0.06)' : 'none', borderBottom: '2px solid rgba(0,0,0,0.25)' }} />
+          {type === 'shelves' && (
+            <>
+              <div className="absolute top-2 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+              <div className="absolute bottom-3 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+            </>
+          )}
+        </div>
+      );
+    case 'fence':
+      return (
+        <div className="absolute inset-0 flex items-end justify-center">
+          <div className="w-full h-3/4 flex justify-around">
+            <div className="w-1.5 h-full" style={{ backgroundColor: color }} />
+            <div className="w-1.5 h-full" style={{ backgroundColor: color }} />
+          </div>
+          <div className="absolute top-1/4 left-0 right-0 h-1" style={{ backgroundColor: color, opacity: 0.8 }} />
+          <div className="absolute top-1/2 left-0 right-0 h-1" style={{ backgroundColor: color, opacity: 0.8 }} />
+        </div>
+      );
+    default:
+      return (
+        <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: '2px solid rgba(255,255,255,0.1)', borderLeft: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3)' }} />
+      );
+  }
+}
+
+function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame }: { npc: NpcDef; wanderState?: NpcWanderState; isNearby: boolean; onNpcClick: (npc: NpcDef) => void; animFrame: number }) {
   const posX = wanderState ? wanderState.x : npc.x * TILE;
   const posY = wanderState ? wanderState.y : npc.y * TILE;
   const face = wanderState?.facing || 'right';
+  const isWalking = wanderState ? (Math.abs(wanderState.targetX - wanderState.x) > 2 || Math.abs(wanderState.targetY - wanderState.y) > 2) : false;
+  const bobY = isWalking ? Math.sin(animFrame * 0.15) * 1.5 : 0;
+  const legAnim = isWalking ? Math.sin(animFrame * 0.2) * 2 : 0;
+
+  const darkerSkin = adjustColor(npc.skinColor, -20);
+  const darkerShirt = adjustColor(npc.shirtColor, -30);
 
   return (
     <div
       data-testid={`npc-${npc.id}`}
       className="absolute flex flex-col items-center cursor-pointer z-20"
       style={{
-        left: posX, top: posY, width: TILE, height: TILE,
+        left: posX, top: posY + bobY, width: TILE, height: TILE,
         transition: 'left 0.06s linear, top 0.06s linear',
-        transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
       }}
       onClick={() => onNpcClick(npc)}
     >
-      <div className="relative" style={{ width: 32, height: 36, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5"
-          style={{ backgroundColor: npc.skinColor, border: '2px solid rgba(0,0,0,0.3)' }}
-        />
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 flex gap-1">
-          <div className="w-1 h-1 bg-black" />
-          <div className="w-1 h-1 bg-black" />
+      <div className="relative" style={{ width: 32, height: 38, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 14, height: 14, backgroundColor: npc.skinColor, border: `2px solid ${darkerSkin}`, borderRadius: '2px' }}>
+          <div className="absolute top-2 left-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 1px rgba(255,255,255,0.5)' }} />
+          <div className="absolute top-2 right-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 1px rgba(255,255,255,0.5)' }} />
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-2 h-0.5" style={{ backgroundColor: darkerSkin }} />
         </div>
-        <div
-          className="absolute top-5 left-1/2 -translate-x-1/2 w-7 h-4"
-          style={{ backgroundColor: npc.shirtColor, border: '2px solid rgba(0,0,0,0.2)' }}
-        />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-1">
-          <div className="w-2 h-2" style={{ backgroundColor: '#2c3e50' }} />
-          <div className="w-2 h-2" style={{ backgroundColor: '#2c3e50' }} />
+        <div className="absolute" style={{ top: -2, left: '50%', transform: 'translateX(-50%)', width: 16, height: 6, backgroundColor: '#2c2c2c', borderRadius: '2px 2px 0 0' }} />
+        <div className="absolute" style={{ top: 14, left: '50%', transform: 'translateX(-50%)', width: 18, height: 12, backgroundColor: npc.shirtColor, border: `2px solid ${darkerShirt}`, borderRadius: '1px' }}>
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)` }} />
         </div>
+        <div className="absolute" style={{ top: 18, left: 4, width: 5, height: 7, backgroundColor: npc.skinColor, border: `1px solid ${darkerSkin}`, borderRadius: '1px' }} />
+        <div className="absolute" style={{ top: 18, right: 4, width: 5, height: 7, backgroundColor: npc.skinColor, border: `1px solid ${darkerSkin}`, borderRadius: '1px' }} />
+        <div className="absolute" style={{ bottom: 0, left: 7, width: 7, height: 6, backgroundColor: '#34495e', border: '1px solid #2c3e50', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: 0, right: 7, width: 7, height: 6, backgroundColor: '#34495e', border: '1px solid #2c3e50', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: -1, left: 6, width: 8, height: 3, backgroundColor: '#1a1a1a', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: -1, right: 6, width: 8, height: 3, backgroundColor: '#1a1a1a', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
       </div>
 
       <div
-        className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-30"
-        style={{ transform: face === 'left' ? 'scaleX(-1) translateX(50%)' : 'translateX(-50%)' }}
+        className="absolute -top-8 left-1/2 whitespace-nowrap z-30"
+        style={{ transform: 'translateX(-50%)' }}
       >
-        <div className="bg-black/90 border border-white/40 px-2 py-0.5 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', opacity: isNearby ? 1 : 0.7 }}>
-          <span className="text-green-400">{npc.name}</span>
+        <div className="bg-black/90 border px-2 py-0.5 text-center" style={{
+          fontFamily: 'var(--font-pixel)', fontSize: '7px',
+          borderColor: isNearby ? 'rgba(74,222,128,0.7)' : 'rgba(255,255,255,0.3)',
+          opacity: isNearby ? 1 : 0.75,
+          boxShadow: isNearby ? '0 0 8px rgba(74,222,128,0.3)' : 'none',
+        }}>
+          <span style={{ color: isNearby ? '#4ade80' : '#a0d0a0' }}>{npc.name}</span>
           {isNearby && (
             <>
               <br />
@@ -78,46 +186,83 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick }: { npc: NpcDef; wa
   );
 }
 
+function adjustColor(hex: string, amount: number): string {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, Math.min(255, ((num >> 16) & 0xff) + amount));
+  const g = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + amount));
+  const b = Math.max(0, Math.min(255, (num & 0xff) + amount));
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+}
+
 function OutdoorEffects() {
   return (
     <>
       <div className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: 'linear-gradient(180deg, rgba(100,160,220,0.12) 0%, rgba(80,140,200,0.06) 30%, transparent 60%)',
+          background: 'linear-gradient(180deg, rgba(80,140,210,0.18) 0%, rgba(60,120,180,0.08) 25%, transparent 55%)',
         }}
       />
       {[
-        { left: '10%', top: '3%', w: 80, delay: 0 },
-        { left: '35%', top: '6%', w: 60, delay: 2 },
-        { left: '65%', top: '2%', w: 90, delay: 4 },
-        { left: '85%', top: '5%', w: 50, delay: 1 },
+        { left: '8%', top: '2%', w: 90, delay: 0 },
+        { left: '32%', top: '5%', w: 65, delay: 2.5 },
+        { left: '58%', top: '1%', w: 100, delay: 5 },
+        { left: '82%', top: '4%', w: 55, delay: 1.5 },
       ].map((cloud, i) => (
         <motion.div
           key={i}
           className="absolute pointer-events-none z-[2]"
           style={{ left: cloud.left, top: cloud.top }}
-          animate={{ x: [0, 30, 0] }}
-          transition={{ duration: 20 + cloud.delay * 3, repeat: Infinity, ease: "linear" }}
+          animate={{ x: [0, 40, 0] }}
+          transition={{ duration: 25 + cloud.delay * 4, repeat: Infinity, ease: "linear" }}
         >
-          <div className="flex gap-0" style={{ opacity: 0.15 }}>
+          <div className="flex gap-0" style={{ opacity: 0.12 }}>
             <div className="rounded-full bg-white" style={{ width: cloud.w * 0.4, height: cloud.w * 0.2 }} />
-            <div className="rounded-full bg-white -ml-2" style={{ width: cloud.w * 0.5, height: cloud.w * 0.3, marginTop: -cloud.w * 0.05 }} />
-            <div className="rounded-full bg-white -ml-2" style={{ width: cloud.w * 0.35, height: cloud.w * 0.2 }} />
+            <div className="rounded-full bg-white -ml-3" style={{ width: cloud.w * 0.55, height: cloud.w * 0.3, marginTop: -cloud.w * 0.06 }} />
+            <div className="rounded-full bg-white -ml-3" style={{ width: cloud.w * 0.38, height: cloud.w * 0.22 }} />
           </div>
         </motion.div>
       ))}
       <div className="absolute inset-0 pointer-events-none z-[1]"
-        style={{
-          boxShadow: 'inset 0 0 60px rgba(100,180,255,0.08)',
-        }}
+        style={{ boxShadow: 'inset 0 0 80px rgba(100,180,255,0.06)' }}
       />
     </>
   );
 }
 
+function PlayerSprite({ facing, isMoving, stepCount }: { facing: 'left' | 'right'; isMoving: boolean; stepCount: number }) {
+  const bobY = isMoving ? Math.sin(stepCount * 0.3) * 1.5 : 0;
+  const legAnim = isMoving ? Math.sin(stepCount * 0.25) * 2.5 : 0;
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center" style={{ transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
+      <div className="relative" style={{ width: 30, height: 38, transform: `translateY(${bobY}px)` }}>
+        <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)', width: 14, height: 14, backgroundColor: '#f5d0a9', border: '2px solid #c9a57a', borderRadius: '2px' }}>
+          <div className="absolute top-2 left-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 2px rgba(255,255,255,0.4)' }} />
+          <div className="absolute top-2 right-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 2px rgba(255,255,255,0.4)' }} />
+          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-0.5 bg-red-400/50 rounded-full" />
+        </div>
+        <div className="absolute" style={{ top: -3, left: '50%', transform: 'translateX(-50%)', width: 16, height: 7, backgroundColor: '#4a2800', borderRadius: '3px 3px 0 0', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.1)' }} />
+        <div className="absolute" style={{ top: 14, left: '50%', transform: 'translateX(-50%)', width: 18, height: 12, backgroundColor: '#2563eb', border: '2px solid #1d4ed8', borderRadius: '1px' }}>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%)' }} />
+        </div>
+        <div className="absolute" style={{ top: 18, left: 3, width: 5, height: 7, backgroundColor: '#f5d0a9', border: '1px solid #c9a57a', borderRadius: '1px' }} />
+        <div className="absolute" style={{ top: 18, right: 3, width: 5, height: 7, backgroundColor: '#f5d0a9', border: '1px solid #c9a57a', borderRadius: '1px' }} />
+        <div className="absolute" style={{ bottom: 0, left: 7, width: 7, height: 7, backgroundColor: '#374151', border: '1px solid #1f2937', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: 0, right: 7, width: 7, height: 7, backgroundColor: '#374151', border: '1px solid #1f2937', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: -1, left: 6, width: 8, height: 3, backgroundColor: '#b91c1c', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
+        <div className="absolute" style={{ bottom: -1, right: 6, width: 8, height: 3, backgroundColor: '#b91c1c', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
+      </div>
+    </div>
+  );
+}
+
 export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, dialogueOpen }: GameWorldProps) {
   const room = rooms[currentRoom];
-  const [playerPos, setPlayerPos] = useState<Position>({ x: playerStart.x * TILE, y: playerStart.y * TILE });
+  const [playerPos, setPlayerPos] = useState<Position>(() => {
+    const wm = buildWallMap(room);
+    const safe = findSafeSpawn(wm, playerStart.x, playerStart.y, room.npcs);
+    return { x: safe.x * TILE, y: safe.y * TILE };
+  });
   const [wallMap, setWallMap] = useState(() => buildWallMap(room));
   const keysPressed = useRef<Set<string>>(new Set());
   const requestRef = useRef<number>();
@@ -127,6 +272,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
   const [transitioning, setTransitioning] = useState(false);
   const stepCountRef = useRef(0);
   const [isMoving, setIsMoving] = useState(false);
+  const [animFrame, setAnimFrame] = useState(0);
 
   const [npcPositions, setNpcPositions] = useState<Record<string, NpcWanderState>>({});
 
@@ -146,8 +292,11 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
   }, [currentRoom]);
 
   useEffect(() => {
-    setPlayerPos({ x: playerStart.x * TILE, y: playerStart.y * TILE });
-  }, [playerStart.x, playerStart.y]);
+    const destRoom = rooms[currentRoom];
+    const destWallMap = buildWallMap(destRoom);
+    const safe = findSafeSpawn(destWallMap, playerStart.x, playerStart.y, destRoom.npcs);
+    setPlayerPos({ x: safe.x * TILE, y: safe.y * TILE });
+  }, [playerStart.x, playerStart.y, currentRoom]);
 
   useEffect(() => {
     setWallMap(buildWallMap(room));
@@ -188,6 +337,8 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
       requestRef.current = requestAnimationFrame(update);
       return;
     }
+
+    setAnimFrame(f => f + 1);
 
     setPlayerPos((prev) => {
       let dx = 0, dy = 0;
@@ -310,6 +461,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="absolute inset-0 bg-black z-50"
           />
         )}
@@ -327,23 +479,23 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
 
         {wallMap.map((row, y) => row.map((cell, x) => {
           if (cell === 1) {
-            if (room.outdoor) {
-              return (
-                <div key={`w-${x}-${y}`} className="absolute" style={{
-                  left: x * TILE, top: y * TILE, width: TILE, height: TILE,
-                  backgroundColor: y === 0 ? 'transparent' : room.wallColor,
-                  borderTop: y === 0 ? 'none' : `3px solid ${room.wallHighlight}`,
-                  borderLeft: y === 0 ? 'none' : `1px solid ${room.wallHighlight}`,
-                }} />
-              );
+            const isEdge = x === 0 || x === COLS - 1;
+            const isTopWall = y === 0;
+            if (room.outdoor && isTopWall) {
+              return <div key={`w-${x}-${y}`} className="absolute" style={{ left: x * TILE, top: y * TILE, width: TILE, height: TILE }} />;
             }
             return (
               <div key={`w-${x}-${y}`} className="absolute" style={{
                 left: x * TILE, top: y * TILE, width: TILE, height: TILE,
                 backgroundColor: room.wallColor,
-                borderTop: `3px solid ${room.wallHighlight}`,
-                borderLeft: `1px solid ${room.wallHighlight}`,
-              }} />
+                borderTop: isTopWall ? 'none' : `3px solid ${room.wallHighlight}`,
+                borderLeft: isEdge ? 'none' : `1px solid ${room.wallHighlight}`,
+                boxShadow: room.outdoor ? 'none' : 'inset 0 -2px 4px rgba(0,0,0,0.2)',
+              }}>
+                {!room.outdoor && y > 0 && y < 3 && x % 4 === 2 && (
+                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-3 h-2" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
+                )}
+              </div>
             );
           }
           if (cell === 2) {
@@ -353,43 +505,65 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             return (
               <div key={`d-${x}-${y}`} className="absolute" style={{
                 left: x * TILE, top: y * TILE, width: TILE, height: TILE,
-                backgroundColor: dec?.color || '#333',
-                borderTop: '2px solid rgba(255,255,255,0.1)',
-                borderLeft: '1px solid rgba(255,255,255,0.05)',
-                boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3)',
-              }} />
+                backgroundColor: room.floorColor,
+              }}>
+                {dec && <DecorationTile type={dec.type} color={dec.color} tileX={x} tileY={y} decX={dec.x} decY={dec.y} decW={dec.w} decH={dec.h} />}
+              </div>
             );
           }
           return (
             <div key={`f-${x}-${y}`} className="absolute" style={{
               left: x * TILE, top: y * TILE, width: TILE, height: TILE,
               backgroundColor: room.floorColor,
-              borderRight: '1px solid rgba(255,255,255,0.02)',
-              borderBottom: '1px solid rgba(255,255,255,0.02)',
-            }} />
+            }}>
+              {((x + y) % 2 === 0) && (
+                <div className="absolute inset-0" style={{ backgroundColor: 'rgba(255,255,255,0.015)' }} />
+              )}
+              {room.outdoor && (x + y * 3) % 7 === 0 && (
+                <div className="absolute" style={{ left: '30%', top: '40%', width: 3, height: 3, backgroundColor: 'rgba(100,180,100,0.15)', borderRadius: '50%' }} />
+              )}
+            </div>
           );
         }))}
 
-        {room.exits.map((exit, i) => (
-          <div key={`exit-${i}`} className="absolute z-10 flex items-center justify-center" style={{
-            left: exit.x * TILE, top: exit.y * TILE, width: TILE, height: TILE,
-          }}>
-            <div className={`w-full h-full ${nearbyExit === exit ? 'bg-green-500/30' : 'bg-green-900/20'} border border-green-500/40 flex items-center justify-center transition-colors`}>
-              <div className="w-3 h-3 border-t-2 border-r-2 border-green-400 rotate-45" style={{ transform: exit.y === 0 ? 'rotate(-45deg)' : exit.y === ROWS - 1 ? 'rotate(135deg)' : exit.x === 0 ? 'rotate(-135deg)' : 'rotate(45deg)' }} />
+        {room.exits.map((exit, i) => {
+          const isVertical = exit.y === 0 || exit.y === ROWS - 1;
+          const arrowDir = exit.y === 0 ? 'up' : exit.y === ROWS - 1 ? 'down' : exit.x === 0 ? 'left' : 'right';
+          const arrowRotation = arrowDir === 'up' ? '-45deg' : arrowDir === 'down' ? '135deg' : arrowDir === 'left' ? '-135deg' : '45deg';
+
+          return (
+            <div key={`exit-${i}`} className="absolute z-10 flex items-center justify-center" style={{
+              left: exit.x * TILE, top: exit.y * TILE, width: TILE, height: TILE,
+            }}>
+              <div className={`w-full h-full flex items-center justify-center transition-all duration-200`} style={{
+                backgroundColor: nearbyExit === exit ? 'rgba(74,222,128,0.25)' : 'rgba(34,197,94,0.08)',
+                border: nearbyExit === exit ? '2px solid rgba(74,222,128,0.6)' : '1px solid rgba(74,222,128,0.25)',
+                boxShadow: nearbyExit === exit ? '0 0 12px rgba(74,222,128,0.3)' : 'none',
+              }}>
+                <motion.div
+                  animate={{ [isVertical ? 'y' : 'x']: [0, arrowDir === 'up' || arrowDir === 'left' ? -3 : 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-3 h-3 border-t-2 border-r-2 border-green-400"
+                  style={{ transform: `rotate(${arrowRotation})` }}
+                />
+              </div>
+              {nearbyExit === exit && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute -top-8 whitespace-nowrap z-30"
+                >
+                  <div className="bg-black/95 border border-green-500/60 px-2 py-1" style={{
+                    fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#4ade80',
+                    boxShadow: '0 0 10px rgba(74,222,128,0.2)',
+                  }}>
+                    SPACE: {exit.label}
+                  </div>
+                </motion.div>
+              )}
             </div>
-            {nearbyExit === exit && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute -top-7 whitespace-nowrap z-30"
-              >
-                <div className="bg-black/90 border border-green-500/50 px-2 py-0.5" style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#4ade80' }}>
-                  SPACE: {exit.label}
-                </div>
-              </motion.div>
-            )}
-          </div>
-        ))}
+          );
+        })}
 
         {room.npcs.map(npc => (
           <NpcSprite
@@ -397,6 +571,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             npc={npc}
             wanderState={npcPositions[npc.id]}
             isNearby={nearbyNpc?.id === npc.id}
+            animFrame={animFrame}
             onNpcClick={(clickedNpc) => {
               if (!dialogueOpen) onInteract(clickedNpc.dialogueId);
             }}
@@ -409,25 +584,16 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
           style={{
             left: playerPos.x, top: playerPos.y, width: TILE, height: TILE,
             transition: 'all 0.04s linear',
-            transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
           }}
         >
-          <div className="relative w-full h-full flex items-center justify-center">
-            <div className="relative" style={{ width: 28, height: 34 }}>
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 bg-amber-200 border-2 border-amber-700/30" />
-              <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-6 h-2 bg-amber-800" style={{ top: '-2px' }} />
-              <div className="absolute top-1 left-2 flex gap-1.5">
-                <div className="w-1 h-1 bg-black" />
-                <div className="w-1 h-1 bg-black" />
-              </div>
-              <div className="absolute top-5 left-1/2 -translate-x-1/2 w-7 h-4 bg-blue-600 border-2 border-blue-900/30" />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-0.5">
-                <div className="w-2.5 h-2" style={{ backgroundColor: '#2c3e50', transform: isMoving ? `translateY(${Math.sin(stepCountRef.current * 0.3) * 1}px)` : 'none' }} />
-                <div className="w-2.5 h-2" style={{ backgroundColor: '#2c3e50', transform: isMoving ? `translateY(${Math.sin(stepCountRef.current * 0.3 + Math.PI) * 1}px)` : 'none' }} />
-              </div>
-            </div>
-          </div>
+          <PlayerSprite facing={facing} isMoving={isMoving} stepCount={stepCountRef.current} />
         </div>
+
+        {!room.outdoor && (
+          <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+            background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.15) 100%)',
+          }} />
+        )}
       </div>
 
       <div className="absolute bottom-4 right-4 grid grid-cols-3 gap-1 md:hidden z-40">

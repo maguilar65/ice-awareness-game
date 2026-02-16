@@ -300,3 +300,28 @@ export function buildWallMap(room: RoomDef): number[][] {
 
   return map;
 }
+
+export function findSafeSpawn(wallMap: number[][], targetX: number, targetY: number, npcs: NpcDef[]): { x: number; y: number } {
+  if (
+    targetY > 0 && targetY < ROWS - 1 &&
+    targetX > 0 && targetX < COLS - 1 &&
+    wallMap[targetY]?.[targetX] === 0 &&
+    !npcs.some(n => n.x === targetX && n.y === targetY)
+  ) {
+    return { x: targetX, y: targetY };
+  }
+  for (let radius = 1; radius <= 4; radius++) {
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const nx = targetX + dx;
+        const ny = targetY + dy;
+        if (ny > 0 && ny < ROWS - 1 && nx > 0 && nx < COLS - 1 &&
+            wallMap[ny]?.[nx] === 0 &&
+            !npcs.some(n => n.x === nx && n.y === ny)) {
+          return { x: nx, y: ny };
+        }
+      }
+    }
+  }
+  return { x: targetX, y: targetY };
+}
