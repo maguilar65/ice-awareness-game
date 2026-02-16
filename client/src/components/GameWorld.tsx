@@ -15,10 +15,11 @@ function useGameScale() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const hud = 44;
-      const controlsH = vw < 768 ? 140 : 0;
+      const isMobile = vw < 768;
+      const controlsH = isMobile ? 140 : 0;
       const availH = vh - hud - controlsH;
-      const sx = Math.min(vw / CANVAS_W, 1);
-      const sy = Math.min(availH / CANVAS_H, 1);
+      const sx = vw / CANVAS_W;
+      const sy = availH / CANVAS_H;
       setScale(Math.min(sx, sy));
     };
     calc();
