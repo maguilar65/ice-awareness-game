@@ -33,6 +33,7 @@ export default function Game() {
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
   const [paused, setPaused] = useState(false);
   const [activeMiniGame, setActiveMiniGame] = useState<string | null>(null);
+  const [playerPos, setPlayerPos] = useState({ x: 7 * 32, y: 6 * 32 });
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -286,6 +287,9 @@ export default function Game() {
         storiesFound={talkedTo.size}
         totalStories={TOTAL_NPCS}
         roomName={roomData?.name || "Unknown"}
+        currentRoom={currentRoom}
+        playerPos={playerPos}
+        talkedTo={talkedTo}
       />
 
       <div className="flex-shrink-0">
@@ -298,6 +302,7 @@ export default function Game() {
           dialogueOpen={!!activeDialogue || paused || !!activeMiniGame}
           onPause={() => setPaused(true)}
           talkedTo={talkedTo}
+          onPlayerMove={setPlayerPos}
         />
       </div>
 

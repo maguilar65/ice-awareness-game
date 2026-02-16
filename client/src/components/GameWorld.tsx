@@ -3,7 +3,6 @@ import { useEventListener } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
 import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
-import { MiniMap } from "./MiniMap";
 
 const SPEED = 3;
 const CANVAS_W = COLS * TILE;
@@ -41,6 +40,7 @@ interface GameWorldProps {
   dialogueOpen: boolean;
   onPause?: () => void;
   talkedTo?: Set<string>;
+  onPlayerMove?: (pos: { x: number; y: number }) => void;
 }
 
 interface NpcWanderState {
@@ -302,7 +302,7 @@ function PlayerSprite({ facing, isMoving, stepCount }: { facing: 'left' | 'right
   );
 }
 
-export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, playerStart, dialogueOpen, onPause, talkedTo }: GameWorldProps) {
+export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, playerStart, dialogueOpen, onPause, talkedTo, onPlayerMove }: GameWorldProps) {
   const scale = useGameScale();
   const room = rooms[currentRoom];
   const [playerPos, setPlayerPos] = useState<Position>(() => {
@@ -349,6 +349,10 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
   useEffect(() => {
     setWallMap(buildWallMap(room));
   }, [room]);
+
+  useEffect(() => {
+    if (onPlayerMove) onPlayerMove(playerPos);
+  }, [playerPos.x, playerPos.y]);
 
   const interactRef = useRef(false);
 
@@ -685,9 +689,6 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
           }} />
         )}
 
-        <div className="absolute bottom-1 right-1 z-40 pointer-events-none opacity-80">
-          <MiniMap currentRoom={currentRoom} playerPos={playerPos} talkedTo={talkedTo || new Set()} />
-        </div>
           </div>
         </div>
       </div>
