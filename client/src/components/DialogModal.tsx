@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type DialogueNode, type DialogueTree } from "@/lib/dialogueData";
+import { playTalkBleep, playChoiceSelect, playDialogOpen, playDialogClose } from "@/lib/audioEngine";
 
 interface DialogModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
     if (isOpen && dialogue) {
       setCurrentNodeId(dialogue.startNodeId);
       setRevealedContentIds(new Set());
+      playDialogOpen();
     } else {
       setCurrentNodeId("");
       setDisplayedText("");
@@ -57,6 +59,10 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
     intervalRef.current = setInterval(() => {
       idx++;
       setDisplayedText(fullText.slice(0, idx));
+      const char = fullText[idx - 1];
+      if (char && char !== ' ' && char !== '.' && char !== ',') {
+        playTalkBleep(currentNode.speaker, idx);
+      }
       if (idx >= fullText.length) {
         setIsTyping(false);
         if (intervalRef.current) clearInterval(intervalRef.current);
@@ -81,16 +87,21 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
         if (isTyping) {
           finishTyping();
         } else if (currentNode.isEnd) {
+          playDialogClose();
           onClose();
         }
       }
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        playDialogClose();
+        onClose();
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [isOpen, isTyping, currentNode, onClose, finishTyping]);
 
   const handleChoiceClick = (nextNodeId: string) => {
+    playChoiceSelect();
     setCurrentNodeId(nextNodeId);
   };
 
@@ -113,6 +124,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
             if (isTyping) {
               finishTyping();
             } else if (currentNode.isEnd) {
+              playDialogClose();
               onClose();
             }
           }}
