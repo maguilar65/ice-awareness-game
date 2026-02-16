@@ -119,6 +119,79 @@ export function playDialogOpen() {
   } catch {}
 }
 
+let lastStepTime = 0;
+
+export function playFootstep(stepIndex: number) {
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+
+    if (now - lastStepTime < 0.18) return;
+    lastStepTime = now;
+
+    const freq = stepIndex % 2 === 0 ? 90 : 110;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const noise = ctx.createOscillator();
+    const noiseGain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now);
+    osc.frequency.linearRampToValueAtTime(freq * 0.5, now + 0.04);
+
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.05);
+
+    noise.type = 'sawtooth';
+    noise.frequency.setValueAtTime(200 + Math.random() * 100, now);
+    noiseGain.gain.setValueAtTime(0.015, now);
+    noiseGain.gain.linearRampToValueAtTime(0, now + 0.03);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    noise.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.05);
+    noise.start(now);
+    noise.stop(now + 0.03);
+  } catch {}
+}
+
+export function playDoorTransition() {
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(150, now);
+    osc1.frequency.linearRampToValueAtTime(80, now + 0.12);
+    gain1.gain.setValueAtTime(0.05, now);
+    gain1.gain.linearRampToValueAtTime(0, now + 0.15);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.15);
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(300, now + 0.1);
+    osc2.frequency.linearRampToValueAtTime(500, now + 0.2);
+    gain2.gain.setValueAtTime(0, now + 0.1);
+    gain2.gain.linearRampToValueAtTime(0.04, now + 0.15);
+    gain2.gain.linearRampToValueAtTime(0, now + 0.25);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.1);
+    osc2.stop(now + 0.25);
+  } catch {}
+}
+
 export function playDialogClose() {
   try {
     const ctx = getAudioContext();

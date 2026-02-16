@@ -5,6 +5,7 @@ export interface RoomDef {
   floorColor: string;
   wallColor: string;
   wallHighlight: string;
+  outdoor?: boolean;
   exits: Exit[];
   npcs: NpcDef[];
   decorations: Decoration[];
@@ -51,10 +52,11 @@ export const rooms: Record<string, RoomDef> = {
   neighborhood: {
     id: "neighborhood",
     name: "Esperanza St.",
-    bgColor: "#0f1923",
-    floorColor: "#1a2a1a",
+    bgColor: "#1a2833",
+    floorColor: "#2a3a2a",
     wallColor: "#2d1f0e",
     wallHighlight: "#4a3520",
+    outdoor: true,
     exits: [
       { x: 7, y: 0, toRoom: "community_center", spawnX: 7, spawnY: 9, label: "Community Center" },
       { x: 15, y: 5, toRoom: "courthouse", spawnX: 2, spawnY: 5, label: "Courthouse" },
@@ -167,10 +169,11 @@ export const rooms: Record<string, RoomDef> = {
   park: {
     id: "park",
     name: "Esperanza Park",
-    bgColor: "#0f1f15",
-    floorColor: "#1a2e1a",
+    bgColor: "#1a2f20",
+    floorColor: "#2a3e2a",
     wallColor: "#1a3a1a",
     wallHighlight: "#2d5a2d",
+    outdoor: true,
     exits: [
       { x: 0, y: 5, toRoom: "neighborhood", spawnX: 13, spawnY: 9, label: "Back to Street" },
       { x: 15, y: 5, toRoom: "shelter", spawnX: 2, spawnY: 5, label: "Community Shelter" },
@@ -193,10 +196,11 @@ export const rooms: Record<string, RoomDef> = {
   main_street: {
     id: "main_street",
     name: "Main Street",
-    bgColor: "#151215",
-    floorColor: "#1e1a1e",
+    bgColor: "#1a2025",
+    floorColor: "#2a2a2e",
     wallColor: "#2d2020",
     wallHighlight: "#4a3535",
+    outdoor: true,
     exits: [
       { x: 15, y: 5, toRoom: "neighborhood", spawnX: 2, spawnY: 9, label: "Esperanza St." },
       { x: 0, y: 5, toRoom: "library", spawnX: 13, spawnY: 5, label: "Public Library" },

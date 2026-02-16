@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
 import { rooms, buildWallMap, TILE, COLS, ROWS, type RoomDef, type NpcDef, type Exit } from "@/lib/gameData";
+import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
 const SPEED = 3;
 
@@ -15,16 +16,32 @@ interface GameWorldProps {
   dialogueOpen: boolean;
 }
 
-function NpcSprite({ npc, isNearby, onNpcClick }: { npc: NpcDef; isNearby: boolean; onNpcClick: (npc: NpcDef) => void }) {
+interface NpcWanderState {
+  x: number;
+  y: number;
+  targetX: number;
+  targetY: number;
+  waitTimer: number;
+  facing: 'left' | 'right';
+}
+
+function NpcSprite({ npc, wanderState, isNearby, onNpcClick }: { npc: NpcDef; wanderState?: NpcWanderState; isNearby: boolean; onNpcClick: (npc: NpcDef) => void }) {
+  const posX = wanderState ? wanderState.x : npc.x * TILE;
+  const posY = wanderState ? wanderState.y : npc.y * TILE;
+  const face = wanderState?.facing || 'right';
+
   return (
     <div
-      key={npc.id}
       data-testid={`npc-${npc.id}`}
       className="absolute flex flex-col items-center cursor-pointer z-20"
-      style={{ left: npc.x * TILE, top: npc.y * TILE, width: TILE, height: TILE }}
+      style={{
+        left: posX, top: posY, width: TILE, height: TILE,
+        transition: 'left 0.06s linear, top 0.06s linear',
+        transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
+      }}
       onClick={() => onNpcClick(npc)}
     >
-      <div className="relative" style={{ width: 32, height: 36 }}>
+      <div className="relative" style={{ width: 32, height: 36, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5"
           style={{ backgroundColor: npc.skinColor, border: '2px solid rgba(0,0,0,0.3)' }}
@@ -43,12 +60,11 @@ function NpcSprite({ npc, isNearby, onNpcClick }: { npc: NpcDef; isNearby: boole
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: isNearby ? 1 : 0.7, y: 0 }}
+      <div
         className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-30"
+        style={{ transform: face === 'left' ? 'scaleX(-1) translateX(50%)' : 'translateX(-50%)' }}
       >
-        <div className="bg-black/90 border border-white/40 px-2 py-0.5 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
+        <div className="bg-black/90 border border-white/40 px-2 py-0.5 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', opacity: isNearby ? 1 : 0.7 }}>
           <span className="text-green-400">{npc.name}</span>
           {isNearby && (
             <>
@@ -57,8 +73,45 @@ function NpcSprite({ npc, isNearby, onNpcClick }: { npc: NpcDef; isNearby: boole
             </>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
+  );
+}
+
+function OutdoorEffects() {
+  return (
+    <>
+      <div className="absolute inset-0 pointer-events-none z-[1]"
+        style={{
+          background: 'linear-gradient(180deg, rgba(100,160,220,0.12) 0%, rgba(80,140,200,0.06) 30%, transparent 60%)',
+        }}
+      />
+      {[
+        { left: '10%', top: '3%', w: 80, delay: 0 },
+        { left: '35%', top: '6%', w: 60, delay: 2 },
+        { left: '65%', top: '2%', w: 90, delay: 4 },
+        { left: '85%', top: '5%', w: 50, delay: 1 },
+      ].map((cloud, i) => (
+        <motion.div
+          key={i}
+          className="absolute pointer-events-none z-[2]"
+          style={{ left: cloud.left, top: cloud.top }}
+          animate={{ x: [0, 30, 0] }}
+          transition={{ duration: 20 + cloud.delay * 3, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="flex gap-0" style={{ opacity: 0.15 }}>
+            <div className="rounded-full bg-white" style={{ width: cloud.w * 0.4, height: cloud.w * 0.2 }} />
+            <div className="rounded-full bg-white -ml-2" style={{ width: cloud.w * 0.5, height: cloud.w * 0.3, marginTop: -cloud.w * 0.05 }} />
+            <div className="rounded-full bg-white -ml-2" style={{ width: cloud.w * 0.35, height: cloud.w * 0.2 }} />
+          </div>
+        </motion.div>
+      ))}
+      <div className="absolute inset-0 pointer-events-none z-[1]"
+        style={{
+          boxShadow: 'inset 0 0 60px rgba(100,180,255,0.08)',
+        }}
+      />
+    </>
   );
 }
 
@@ -72,6 +125,25 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
   const [nearbyExit, setNearbyExit] = useState<Exit | null>(null);
   const [facing, setFacing] = useState<'left' | 'right'>('right');
   const [transitioning, setTransitioning] = useState(false);
+  const stepCountRef = useRef(0);
+  const [isMoving, setIsMoving] = useState(false);
+
+  const [npcPositions, setNpcPositions] = useState<Record<string, NpcWanderState>>({});
+
+  useEffect(() => {
+    const initial: Record<string, NpcWanderState> = {};
+    room.npcs.forEach(npc => {
+      initial[npc.id] = {
+        x: npc.x * TILE,
+        y: npc.y * TILE,
+        targetX: npc.x * TILE,
+        targetY: npc.y * TILE,
+        waitTimer: Math.random() * 120 + 60,
+        facing: Math.random() > 0.5 ? 'left' : 'right',
+      };
+    });
+    setNpcPositions(initial);
+  }, [currentRoom]);
 
   useEffect(() => {
     setPlayerPos({ x: playerStart.x * TILE, y: playerStart.y * TILE });
@@ -92,6 +164,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
         onInteract(nearbyNpc.dialogueId);
       } else if (nearbyExit && !transitioning) {
         setTransitioning(true);
+        playDoorTransition();
         setTimeout(() => {
           onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY);
           setTransitioning(false);
@@ -122,7 +195,10 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
       if (keysPressed.current.has('s') || keysPressed.current.has('arrowdown')) dy += SPEED;
       if (keysPressed.current.has('a') || keysPressed.current.has('arrowleft')) { dx -= SPEED; setFacing('left'); }
       if (keysPressed.current.has('d') || keysPressed.current.has('arrowright')) { dx += SPEED; setFacing('right'); }
-      if (dx === 0 && dy === 0) return prev;
+      if (dx === 0 && dy === 0) {
+        setIsMoving(false);
+        return prev;
+      }
 
       const nextX = prev.x + dx;
       const nextY = prev.y + dy;
@@ -131,13 +207,78 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
 
       if (tileY < 0 || tileY >= ROWS || tileX < 0 || tileX >= COLS) return prev;
 
-      const npcBlock = room.npcs.some(n => n.x === tileX && n.y === tileY);
+      const npcBlock = Object.values(npcPositions).some(np => {
+        const npTileX = Math.floor((np.x + TILE / 2) / TILE);
+        const npTileY = Math.floor((np.y + TILE / 2) / TILE);
+        return npTileX === tileX && npTileY === tileY;
+      });
       if (wallMap[tileY]?.[tileX] !== 0 || npcBlock) return prev;
+
+      setIsMoving(true);
+      stepCountRef.current++;
+      playFootstep(stepCountRef.current);
 
       return { x: nextX, y: nextY };
     });
+
+    setNpcPositions(prev => {
+      const next = { ...prev };
+      let changed = false;
+      for (const npcId in next) {
+        const state = { ...next[npcId] };
+        if (state.waitTimer > 0) {
+          state.waitTimer--;
+          next[npcId] = state;
+          changed = true;
+          continue;
+        }
+
+        const distX = state.targetX - state.x;
+        const distY = state.targetY - state.y;
+        const dist = Math.abs(distX) + Math.abs(distY);
+
+        if (dist < 2) {
+          const npc = room.npcs.find(n => n.id === npcId);
+          if (!npc) continue;
+          const wanderRange = 2;
+          const newTileX = Math.max(2, Math.min(COLS - 3, npc.x + Math.floor(Math.random() * (wanderRange * 2 + 1)) - wanderRange));
+          const newTileY = Math.max(2, Math.min(ROWS - 3, npc.y + Math.floor(Math.random() * (wanderRange * 2 + 1)) - wanderRange));
+
+          if (wallMap[newTileY]?.[newTileX] === 0) {
+            state.targetX = newTileX * TILE;
+            state.targetY = newTileY * TILE;
+          }
+          state.waitTimer = Math.random() * 180 + 90;
+        } else {
+          const npcSpeed = 1;
+          let newX = state.x;
+          let newY = state.y;
+          if (Math.abs(distX) > 1) {
+            newX += Math.sign(distX) * npcSpeed;
+            state.facing = distX > 0 ? 'right' : 'left';
+          }
+          if (Math.abs(distY) > 1) {
+            newY += Math.sign(distY) * npcSpeed;
+          }
+          const checkTileX = Math.floor((newX + TILE / 2) / TILE);
+          const checkTileY = Math.floor((newY + TILE / 2) / TILE);
+          if (checkTileX > 0 && checkTileX < COLS - 1 && checkTileY > 0 && checkTileY < ROWS - 1 && wallMap[checkTileY]?.[checkTileX] === 0) {
+            state.x = newX;
+            state.y = newY;
+          } else {
+            state.targetX = state.x;
+            state.targetY = state.y;
+            state.waitTimer = 60;
+          }
+        }
+        next[npcId] = state;
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+
     requestRef.current = requestAnimationFrame(update);
-  }, [wallMap, room.npcs, transitioning, dialogueOpen]);
+  }, [wallMap, room.npcs, transitioning, dialogueOpen, npcPositions]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(update);
@@ -149,14 +290,17 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
     const py = Math.floor((playerPos.y + TILE / 2) / TILE);
 
     const npc = room.npcs.find(n => {
-      const dist = Math.abs(n.x - px) + Math.abs(n.y - py);
+      const np = npcPositions[n.id];
+      const nx = np ? Math.floor((np.x + TILE / 2) / TILE) : n.x;
+      const ny = np ? Math.floor((np.y + TILE / 2) / TILE) : n.y;
+      const dist = Math.abs(nx - px) + Math.abs(ny - py);
       return dist > 0 && dist <= 2;
     });
     setNearbyNpc(npc || null);
 
     const exit = room.exits.find(e => Math.abs(e.x - px) <= 1 && Math.abs(e.y - py) <= 1);
     setNearbyExit(exit || null);
-  }, [playerPos, room]);
+  }, [playerPos, room, npcPositions]);
 
   return (
     <div className="relative scanlines" data-testid="game-world">
@@ -172,15 +316,27 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
       </AnimatePresence>
 
       <div
-        className="relative"
+        className="relative overflow-hidden"
         style={{
           width: COLS * TILE,
           height: ROWS * TILE,
           backgroundColor: room.bgColor,
         }}
       >
+        {room.outdoor && <OutdoorEffects />}
+
         {wallMap.map((row, y) => row.map((cell, x) => {
           if (cell === 1) {
+            if (room.outdoor) {
+              return (
+                <div key={`w-${x}-${y}`} className="absolute" style={{
+                  left: x * TILE, top: y * TILE, width: TILE, height: TILE,
+                  backgroundColor: y === 0 ? 'transparent' : room.wallColor,
+                  borderTop: y === 0 ? 'none' : `3px solid ${room.wallHighlight}`,
+                  borderLeft: y === 0 ? 'none' : `1px solid ${room.wallHighlight}`,
+                }} />
+              );
+            }
             return (
               <div key={`w-${x}-${y}`} className="absolute" style={{
                 left: x * TILE, top: y * TILE, width: TILE, height: TILE,
@@ -239,6 +395,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
           <NpcSprite
             key={npc.id}
             npc={npc}
+            wanderState={npcPositions[npc.id]}
             isNearby={nearbyNpc?.id === npc.id}
             onNpcClick={(clickedNpc) => {
               if (!dialogueOpen) onInteract(clickedNpc.dialogueId);
@@ -265,8 +422,8 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
               </div>
               <div className="absolute top-5 left-1/2 -translate-x-1/2 w-7 h-4 bg-blue-600 border-2 border-blue-900/30" />
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-0.5">
-                <div className="w-2.5 h-2 bg-indigo-900" />
-                <div className="w-2.5 h-2 bg-indigo-900" />
+                <div className="w-2.5 h-2" style={{ backgroundColor: '#2c3e50', transform: isMoving ? `translateY(${Math.sin(stepCountRef.current * 0.3) * 1}px)` : 'none' }} />
+                <div className="w-2.5 h-2" style={{ backgroundColor: '#2c3e50', transform: isMoving ? `translateY(${Math.sin(stepCountRef.current * 0.3 + Math.PI) * 1}px)` : 'none' }} />
               </div>
             </div>
           </div>
@@ -292,6 +449,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
             else if (nearbyExit && !transitioning) {
               setTransitioning(true);
+              playDoorTransition();
               setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
             }
           }}
