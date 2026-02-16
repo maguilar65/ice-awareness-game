@@ -60,7 +60,7 @@ export function PauseMenu({ isOpen, onResume, onSkipToCredits, talkedTo, totalNp
             </button>
           </div>
 
-          <p className="text-white/30 text-center" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
+          <p className="text-white/30 text-center hidden sm:block" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
             PRESS ESC TO RESUME
           </p>
         </div>

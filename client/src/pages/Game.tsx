@@ -104,18 +104,18 @@ export default function Game() {
 
   if (gameState === 'title') {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 scanlines">
-        <div className="max-w-lg w-full text-center space-y-8">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 sm:p-6 scanlines">
+        <div className="max-w-lg w-full text-center space-y-6 sm:space-y-8">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <h1
               className="text-green-400 mb-2 leading-loose"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '28px', textShadow: '2px 2px 0 #064e3b, 0 0 20px rgba(74,222,128,0.3)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(18px, 5vw, 28px)', textShadow: '2px 2px 0 #064e3b, 0 0 20px rgba(74,222,128,0.3)' }}
             >
               COMMUNITY
             </h1>
             <h1
               className="text-white leading-loose"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '28px', textShadow: '2px 2px 0 #1a1a1a' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(18px, 5vw, 28px)', textShadow: '2px 2px 0 #1a1a1a' }}
             >
               DEFENDER
             </h1>
@@ -126,7 +126,7 @@ export default function Game() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className="text-white/70 leading-relaxed"
-            style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}
+            style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(16px, 4vw, 22px)' }}
           >
             Walk through the neighborhood of Esperanza. Talk to your neighbors. Make choices. Learn the truth about what is happening in communities across America.
           </motion.p>
@@ -135,12 +135,16 @@ export default function Game() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="nes-border border-white/30 bg-white/5 p-4"
+            className="nes-border border-white/30 bg-white/5 p-3 sm:p-4"
           >
             <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }} className="text-white/50 mb-3">CONTROLS</p>
-            <div className="flex justify-center gap-8 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
+            <div className="hidden sm:flex justify-center gap-8 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
               <span className="text-white/70">WASD / Arrows - Move</span>
               <span className="text-white/70">SPACE - Talk / Enter</span>
+            </div>
+            <div className="sm:hidden flex justify-center gap-4 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: '16px' }}>
+              <span className="text-white/70">D-Pad - Move</span>
+              <span className="text-white/70">TALK Button - Interact</span>
             </div>
           </motion.div>
 
@@ -149,7 +153,7 @@ export default function Game() {
               data-testid="button-start-game"
               onClick={() => setGameState('cutscene')}
               className="w-full py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
             >
               START
             </button>
@@ -165,16 +169,16 @@ export default function Game() {
 
   if (gameState === 'intro') {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 scanlines">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 sm:p-6 scanlines">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="max-w-lg w-full text-center space-y-6"
         >
-          <h2 className="text-green-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', textShadow: '1px 1px 0 #064e3b' }}>
+          <h2 className="text-green-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', textShadow: '1px 1px 0 #064e3b' }}>
             {CHAPTER_INTRO.title}
           </h2>
-          <p className="text-white/80 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}>
+          <p className="text-white/80 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(16px, 4vw, 22px)' }}>
             {CHAPTER_INTRO.text}
           </p>
           <button
@@ -196,30 +200,30 @@ export default function Game() {
 
   if (gameState === 'credits') {
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-8 scanlines z-50">
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 sm:p-8 scanlines z-50 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="w-full max-w-2xl text-center space-y-10"
+          className="w-full max-w-2xl text-center space-y-6 sm:space-y-10 py-4"
         >
           <h1
             className="text-green-400 leading-loose"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '36px', textShadow: '0 0 30px rgba(74,222,128,0.5), 2px 2px 0 #064e3b' }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(20px, 6vw, 36px)', textShadow: '0 0 30px rgba(74,222,128,0.5), 2px 2px 0 #064e3b' }}
           >
             COMMUNITY DEFENDER
           </h1>
-          <p className="text-white/70 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '26px' }}>
+          <p className="text-white/70 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(18px, 4vw, 26px)' }}>
             You talked to {TOTAL_NPCS} neighbors and learned {storiesFound.size} facts about civil rights and community safety.
           </p>
-          <p className="text-yellow-400 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '24px' }}>
+          <p className="text-yellow-400 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(16px, 3.5vw, 24px)' }}>
             Knowledge is protection. Share what you learned.
           </p>
-          <div className="pt-6 space-y-4">
-            <p className="text-white/40" style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', letterSpacing: '0.2em' }}>MADE BY</p>
-            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Marcos Aguilar</p>
-            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Jeremiah Feliciano</p>
-            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Robert Long-Smith</p>
+          <div className="pt-4 sm:pt-6 space-y-3 sm:space-y-4">
+            <p className="text-white/40" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', letterSpacing: '0.2em' }}>MADE BY</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Marcos Aguilar</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Jeremiah Feliciano</p>
+            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Robert Long-Smith</p>
           </div>
           <div className="pt-4">
             <button
@@ -234,7 +238,7 @@ export default function Game() {
                 setPaused(false);
               }}
               className="px-10 py-3 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
             >
               PLAY AGAIN
             </button>
@@ -262,6 +266,7 @@ export default function Game() {
           onRoomChange={handleRoomChange}
           playerStart={playerSpawn}
           dialogueOpen={!!activeDialogue || paused}
+          onPause={() => setPaused(true)}
         />
       </div>
 
@@ -269,7 +274,7 @@ export default function Game() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10"
+          className="hidden md:block absolute bottom-4 left-1/2 -translate-x-1/2 z-10"
         >
           <div
             className="bg-black/80 border border-white/20 px-3 py-1"

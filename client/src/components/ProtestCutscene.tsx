@@ -156,7 +156,7 @@ export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 32,
+        padding: 'clamp(16px, 4vw, 32px)',
         opacity: done ? 0 : 1,
         transition: 'opacity 1s ease-out',
       }}
@@ -193,7 +193,7 @@ export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
 
         <h2 style={{
           fontFamily: '"Press Start 2P", monospace',
-          fontSize: 15,
+          fontSize: 'clamp(10px, 3vw, 15px)',
           color: '#ffffff',
           lineHeight: 1.8,
           marginBottom: 16,
@@ -204,7 +204,7 @@ export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
 
         <p style={{
           fontFamily: '"VT323", monospace',
-          fontSize: 22,
+          fontSize: 'clamp(16px, 4vw, 22px)',
           color: 'rgba(255,255,255,0.6)',
           lineHeight: 1.5,
           marginBottom: 12,

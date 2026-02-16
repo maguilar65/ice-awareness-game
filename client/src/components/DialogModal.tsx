@@ -112,13 +112,13 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[100] flex items-end justify-center p-2 sm:p-4 pointer-events-none">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 30, opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="w-full max-w-3xl pointer-events-auto"
+          className="w-full max-w-3xl pointer-events-auto mb-[env(safe-area-inset-bottom,0px)]"
           data-testid="dialog-modal"
           onClick={() => {
             if (isTyping) {
@@ -129,8 +129,8 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
             }
           }}
         >
-          <div className="nes-border border-white/80 bg-black/95 p-4">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="nes-border border-white/80 bg-black/95 p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
               <div
                 className="px-2 py-0.5 bg-green-600 text-black font-bold"
                 style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
@@ -150,8 +150,8 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
             </div>
 
             <p
-              className="text-white/90 leading-relaxed min-h-[50px] mb-3"
-              style={{ fontFamily: 'var(--font-retro)', fontSize: '20px' }}
+              className="text-white/90 leading-relaxed min-h-[40px] sm:min-h-[50px] mb-2 sm:mb-3"
+              style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3.5vw, 20px)' }}
               data-testid="dialog-text"
             >
               {displayedText}
@@ -162,7 +162,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-1.5 border-t border-white/20 pt-3"
+                className="space-y-1.5 border-t border-white/20 pt-2 sm:pt-3"
                 data-testid="dialog-choices"
               >
                 {currentNode.choices!.map((choice, i) => (
@@ -173,8 +173,8 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
                       e.stopPropagation();
                       handleChoiceClick(choice.nextNodeId);
                     }}
-                    className="w-full text-left px-3 py-2 bg-white/5 border border-white/20 text-white/90 hover-elevate active-elevate-2 flex items-center gap-2 transition-colors"
-                    style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}
+                    className="w-full text-left px-2 sm:px-3 py-2 bg-white/5 border border-white/20 text-white/90 hover-elevate active-elevate-2 flex items-center gap-2 transition-colors"
+                    style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(14px, 3vw, 18px)' }}
                   >
                     <span className="text-green-400 flex-shrink-0" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>
                       {String.fromCharCode(65 + i)}.
@@ -194,7 +194,8 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
                   style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
                   className="text-white/60"
                 >
-                  PRESS SPACE TO CLOSE
+                  <span className="hidden sm:inline">PRESS SPACE TO CLOSE</span>
+                  <span className="sm:hidden">TAP TO CLOSE</span>
                 </motion.span>
               </div>
             )}

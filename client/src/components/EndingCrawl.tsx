@@ -294,7 +294,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
       </div>
 
       <div className="absolute inset-0 flex justify-center overflow-hidden">
-        <div className="w-full max-w-2xl px-8 absolute top-full">
+        <div className="w-full max-w-2xl px-4 sm:px-8 absolute top-full">
           {started && (
             <motion.div
               initial={{ y: 0 }}
@@ -324,7 +324,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                       className="text-yellow-400 leading-relaxed pt-4"
                       style={{
                         fontFamily: 'var(--font-pixel)',
-                        fontSize: '16px',
+                        fontSize: 'clamp(11px, 3vw, 16px)',
                         textShadow: '0 0 15px rgba(250,204,21,0.4)',
                       }}
                     >
@@ -337,7 +337,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                     <p
                       key={i}
                       className="text-cyan-300 leading-relaxed"
-                      style={{ fontFamily: 'var(--font-retro)', fontSize: '20px' }}
+                      style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3.5vw, 20px)' }}
                     >
                       {section.text}
                     </p>
@@ -348,7 +348,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                     <p
                       key={i}
                       className="text-green-400 leading-relaxed"
-                      style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}
+                      style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(14px, 3vw, 18px)' }}
                     >
                       {section.text}
                     </p>
@@ -361,7 +361,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                       className="text-white leading-relaxed"
                       style={{
                         fontFamily: 'var(--font-pixel)',
-                        fontSize: '14px',
+                        fontSize: 'clamp(10px, 2.5vw, 14px)',
                         textShadow: '0 0 10px rgba(255,255,255,0.3)',
                       }}
                     >
@@ -376,7 +376,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                       className="text-white leading-relaxed pt-4"
                       style={{
                         fontFamily: 'var(--font-pixel)',
-                        fontSize: '18px',
+                        fontSize: 'clamp(12px, 3.5vw, 18px)',
                         textShadow: '0 0 20px rgba(255,255,255,0.3)',
                       }}
                     >
@@ -388,7 +388,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                   <p
                     key={i}
                     className="text-white/80 leading-relaxed"
-                    style={{ fontFamily: 'var(--font-retro)', fontSize: '20px' }}
+                    style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3.5vw, 20px)' }}
                   >
                     {section.text}
                   </p>
@@ -405,7 +405,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={onFinish}
-          className="absolute bottom-8 right-8 z-50 px-4 py-2 text-white/40 border border-white/20 hover-elevate"
+          className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 px-4 py-2 text-white/40 border border-white/20 hover-elevate"
           style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
         >
           SKIP

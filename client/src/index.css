@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
 :root {
   --background: 228 20% 8%;
   --foreground: 60 20% 90%;

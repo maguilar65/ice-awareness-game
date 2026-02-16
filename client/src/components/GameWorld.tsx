@@ -5,6 +5,28 @@ import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
 const SPEED = 3;
+const CANVAS_W = COLS * TILE;
+const CANVAS_H = ROWS * TILE;
+
+function useGameScale() {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const calc = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const hud = 44;
+      const controlsH = vw < 768 ? 140 : 0;
+      const availH = vh - hud - controlsH;
+      const sx = Math.min(vw / CANVAS_W, 1);
+      const sy = Math.min(availH / CANVAS_H, 1);
+      setScale(Math.min(sx, sy));
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+  return scale;
+}
 
 interface Position { x: number; y: number; }
 
@@ -14,6 +36,7 @@ interface GameWorldProps {
   onRoomChange: (roomId: string, spawnX: number, spawnY: number) => void;
   playerStart: Position;
   dialogueOpen: boolean;
+  onPause?: () => void;
 }
 
 interface NpcWanderState {
@@ -256,7 +279,8 @@ function PlayerSprite({ facing, isMoving, stepCount }: { facing: 'left' | 'right
   );
 }
 
-export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, dialogueOpen }: GameWorldProps) {
+export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, dialogueOpen, onPause }: GameWorldProps) {
+  const scale = useGameScale();
   const room = rooms[currentRoom];
   const [playerPos, setPlayerPos] = useState<Position>(() => {
     const wm = buildWallMap(room);
@@ -454,27 +478,29 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
   }, [playerPos, room, npcPositions]);
 
   return (
-    <div className="relative scanlines" data-testid="game-world">
-      <AnimatePresence>
-        {transitioning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-black z-50"
-          />
-        )}
-      </AnimatePresence>
+    <div className="relative flex flex-col items-center" data-testid="game-world">
+      <div style={{ width: CANVAS_W * scale, height: CANVAS_H * scale }} className="relative scanlines">
+        <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: CANVAS_W, height: CANVAS_H }} className="relative">
+          <AnimatePresence>
+            {transitioning && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="absolute inset-0 bg-black z-50"
+              />
+            )}
+          </AnimatePresence>
 
-      <div
-        className="relative overflow-hidden"
-        style={{
-          width: COLS * TILE,
-          height: ROWS * TILE,
-          backgroundColor: room.bgColor,
-        }}
-      >
+          <div
+            className="relative overflow-hidden"
+            style={{
+              width: CANVAS_W,
+              height: CANVAS_H,
+              backgroundColor: room.bgColor,
+            }}
+          >
         {room.outdoor && <OutdoorEffects />}
 
         {wallMap.map((row, y) => row.map((cell, x) => {
@@ -557,7 +583,7 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
                     fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#4ade80',
                     boxShadow: '0 0 10px rgba(74,222,128,0.2)',
                   }}>
-                    SPACE: {exit.label}
+                    {exit.label}
                   </div>
                 </motion.div>
               )}
@@ -594,32 +620,42 @@ export function GameWorld({ onInteract, currentRoom, onRoomChange, playerStart, 
             background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.15) 100%)',
           }} />
         )}
+          </div>
+        </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 grid grid-cols-3 gap-1 md:hidden z-40">
-        <div />
-        <button data-testid="btn-up" className="w-10 h-10 bg-white/10 border border-white/20 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
-          onTouchStart={() => keysPressed.current.add('w')} onTouchEnd={() => keysPressed.current.delete('w')}>W</button>
-        <div />
-        <button data-testid="btn-left" className="w-10 h-10 bg-white/10 border border-white/20 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
-          onTouchStart={() => keysPressed.current.add('a')} onTouchEnd={() => keysPressed.current.delete('a')}>A</button>
-        <button data-testid="btn-down" className="w-10 h-10 bg-white/10 border border-white/20 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
-          onTouchStart={() => keysPressed.current.add('s')} onTouchEnd={() => keysPressed.current.delete('s')}>S</button>
-        <button data-testid="btn-right" className="w-10 h-10 bg-white/10 border border-white/20 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
-          onTouchStart={() => keysPressed.current.add('d')} onTouchEnd={() => keysPressed.current.delete('d')}>D</button>
-      </div>
+      <div className="md:hidden w-full flex items-center justify-between px-4 py-2" style={{ maxWidth: CANVAS_W * scale }}>
+        <div className="flex items-center gap-2">
+          <button data-testid="btn-interact" className="w-14 h-14 rounded-full bg-green-700/40 border-2 border-green-500/60 active:bg-green-600/50 flex items-center justify-center text-green-300" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
+              else if (nearbyExit && !transitioning) {
+                setTransitioning(true);
+                playDoorTransition();
+                setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
+              }
+            }}
+          >TALK</button>
+          {onPause && (
+            <button data-testid="btn-pause" className="w-10 h-10 rounded-full bg-white/10 border border-white/30 active:bg-white/20 flex items-center justify-center text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
+              onClick={onPause}
+            >| |</button>
+          )}
+        </div>
 
-      <div className="absolute bottom-4 left-4 md:hidden z-40">
-        <button data-testid="btn-interact" className="w-12 h-12 bg-green-700/30 border-2 border-green-500/50 active:bg-green-600/40 flex items-center justify-center text-green-300" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
-          onTouchStart={() => {
-            if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
-            else if (nearbyExit && !transitioning) {
-              setTransitioning(true);
-              playDoorTransition();
-              setTimeout(() => { onRoomChange(nearbyExit.toRoom, nearbyExit.spawnX, nearbyExit.spawnY); setTransitioning(false); }, 300);
-            }
-          }}
-        >TALK</button>
+        <div className="grid grid-cols-3 gap-1">
+          <div />
+          <button data-testid="btn-up" className="w-12 h-12 rounded-md bg-white/10 border border-white/25 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current.add('w'); }} onTouchEnd={() => keysPressed.current.delete('w')}>W</button>
+          <div />
+          <button data-testid="btn-left" className="w-12 h-12 rounded-md bg-white/10 border border-white/25 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current.add('a'); }} onTouchEnd={() => keysPressed.current.delete('a')}>A</button>
+          <button data-testid="btn-down" className="w-12 h-12 rounded-md bg-white/10 border border-white/25 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current.add('s'); }} onTouchEnd={() => keysPressed.current.delete('s')}>S</button>
+          <button data-testid="btn-right" className="w-12 h-12 rounded-md bg-white/10 border border-white/25 active:bg-white/25 flex items-center justify-center text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current.add('d'); }} onTouchEnd={() => keysPressed.current.delete('d')}>D</button>
+        </div>
       </div>
     </div>
   );
