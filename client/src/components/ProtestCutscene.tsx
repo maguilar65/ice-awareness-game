@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface ProtestCutsceneProps {
   onFinish: () => void;
@@ -10,7 +9,8 @@ interface NewsArticle {
   source: string;
   date: string;
   snippet: string;
-  category: 'raid' | 'detention' | 'rights' | 'family' | 'community';
+  tag: string;
+  tagColor: string;
 }
 
 const ARTICLES: NewsArticle[] = [
@@ -19,295 +19,275 @@ const ARTICLES: NewsArticle[] = [
     source: "Associated Press",
     date: "Aug 7, 2019",
     snippet: "Federal agents carried out the largest single-state immigration enforcement operation in U.S. history at food processing plants across Mississippi, leaving children stranded.",
-    category: 'raid',
+    tag: "RAIDS",
+    tagColor: "#ef4444",
   },
   {
     headline: "U.S. Citizen Held in ICE Detention for 1,273 Days",
     source: "The New York Times",
     date: "Oct 29, 2018",
     snippet: "Davino Watson, born in the United States, was detained by ICE for over three years. Officials ignored his repeated claims of citizenship.",
-    category: 'detention',
+    tag: "DETENTION",
+    tagColor: "#f97316",
   },
   {
-    headline: "Families Separated at the Border: What We Know",
+    headline: "Thousands of Children Separated From Parents at Border",
     source: "NBC News",
     date: "Jun 20, 2018",
-    snippet: "Thousands of children have been separated from their parents under the administration's zero-tolerance policy. Many families remain apart.",
-    category: 'family',
+    snippet: "Thousands of children have been separated from their parents under the zero-tolerance policy. Many families remain apart years later.",
+    tag: "FAMILIES",
+    tagColor: "#a855f7",
   },
   {
-    headline: "Report: ICE Detainees Denied Medical Care",
+    headline: "ICE Detainees Denied Medical Care, Watchdog Finds",
     source: "The Washington Post",
     date: "Mar 15, 2020",
-    snippet: "A government watchdog found inadequate medical care in ICE detention facilities, with detainees suffering from untreated infections, chronic conditions, and mental health crises.",
-    category: 'detention',
+    snippet: "A government watchdog found inadequate medical care in ICE detention facilities, with detainees suffering from untreated infections and chronic conditions.",
+    tag: "DETENTION",
+    tagColor: "#f97316",
   },
   {
     headline: "Communities in Fear: ICE Raids Keep Children Home From School",
     source: "CNN",
     date: "Aug 8, 2019",
     snippet: "In the wake of massive immigration raids, schools reported record absences as terrified families kept their children home.",
-    category: 'community',
+    tag: "COMMUNITY",
+    tagColor: "#22c55e",
   },
   {
     headline: "ACLU: Know Your Rights When Encountering Immigration Agents",
     source: "ACLU",
     date: "Jan 12, 2020",
-    snippet: "You have constitutional rights regardless of immigration status. You have the right to remain silent, the right to refuse entry without a judicial warrant, and the right to an attorney.",
-    category: 'rights',
+    snippet: "You have constitutional rights regardless of immigration status. You have the right to remain silent and the right to refuse entry without a judicial warrant.",
+    tag: "CIVIL RIGHTS",
+    tagColor: "#3b82f6",
   },
   {
     headline: "ICE Courthouse Arrests Deter Immigrants From Seeking Justice",
     source: "Reuters",
     date: "Apr 3, 2019",
-    snippet: "Reports of ICE agents making arrests at courthouses have caused a dramatic drop in immigrants reporting crimes or appearing as witnesses.",
-    category: 'community',
+    snippet: "Reports of ICE agents arresting people at courthouses caused a dramatic drop in immigrants reporting crimes or appearing as witnesses.",
+    tag: "COMMUNITY",
+    tagColor: "#22c55e",
   },
   {
     headline: "9-Year-Old U.S. Citizen Detained at Border for 32 Hours",
     source: "NBC News",
     date: "Mar 22, 2019",
-    snippet: "A young American citizen was held by CBP agents who questioned her citizenship, despite carrying a U.S. passport.",
-    category: 'rights',
-  },
-  {
-    headline: "Deaths in ICE Custody Reach Highest Level in 15 Years",
-    source: "The Guardian",
-    date: "Dec 5, 2020",
-    snippet: "At least 21 people died in ICE custody this fiscal year, the most in over a decade, raising questions about conditions and oversight.",
-    category: 'detention',
-  },
-  {
-    headline: "Immigrant Communities Organize 'Know Your Rights' Workshops",
-    source: "Los Angeles Times",
-    date: "Feb 14, 2020",
-    snippet: "Community organizations across the country are holding workshops teaching residents their constitutional rights during ICE encounters.",
-    category: 'community',
-  },
-  {
-    headline: "ICE Uses Facial Recognition on Millions of Driver's License Photos",
-    source: "The Washington Post",
-    date: "Jul 7, 2019",
-    snippet: "Federal agents have been scanning driver's license databases using facial recognition technology without the knowledge or consent of the individuals involved.",
-    category: 'rights',
+    snippet: "A young American citizen was held by border agents who questioned her citizenship, despite carrying a U.S. passport.",
+    tag: "CIVIL RIGHTS",
+    tagColor: "#3b82f6",
   },
   {
     headline: "Father Deported While Driving Daughter to School",
     source: "CBS News",
     date: "Mar 3, 2020",
     snippet: "A father of four U.S.-born children was arrested by ICE agents during a routine school drop-off. His daughter watched from the car.",
-    category: 'family',
+    tag: "FAMILIES",
+    tagColor: "#a855f7",
+  },
+  {
+    headline: "Immigrant Communities Organize Know Your Rights Workshops",
+    source: "Los Angeles Times",
+    date: "Feb 14, 2020",
+    snippet: "Community organizations across the country are holding workshops teaching residents their constitutional rights during ICE encounters.",
+    tag: "COMMUNITY",
+    tagColor: "#22c55e",
   },
 ];
 
-const CATEGORY_COLORS: Record<string, string> = {
-  raid: '#ef4444',
-  detention: '#f97316',
-  rights: '#3b82f6',
-  family: '#a855f7',
-  community: '#22c55e',
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  raid: 'RAIDS',
-  detention: 'DETENTION',
-  rights: 'CIVIL RIGHTS',
-  family: 'FAMILIES',
-  community: 'COMMUNITY',
-};
-
 export function ProtestCutscene({ onFinish }: ProtestCutsceneProps) {
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [fadeOut, setFadeOut] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [done, setDone] = useState(false);
   const onFinishRef = useRef(onFinish);
   onFinishRef.current = onFinish;
-  const finishedRef = useRef(false);
+  const calledRef = useRef(false);
 
   useEffect(() => {
-    const showNext = () => {
-      setCurrentIndex(prev => {
-        const next = prev + 1;
-        if (next >= ARTICLES.length) {
-          setFadeOut(true);
-          setTimeout(() => {
-            if (!finishedRef.current) {
-              finishedRef.current = true;
-              onFinishRef.current();
-            }
-          }, 1500);
-          return prev;
-        }
-        return next;
-      });
+    if (done) return;
+
+    const cycle = () => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex(prev => {
+          const next = prev + 1;
+          if (next >= ARTICLES.length) {
+            setDone(true);
+            return prev;
+          }
+          setVisible(true);
+          return next;
+        });
+      }, 500);
     };
 
-    const initialDelay = setTimeout(showNext, 400);
+    const timer = setTimeout(cycle, 2500);
+    return () => clearTimeout(timer);
+  }, [index, done]);
 
-    const interval = setInterval(showNext, 2200);
-
-    return () => {
-      clearTimeout(initialDelay);
-      clearInterval(interval);
-    };
-  }, []);
+  useEffect(() => {
+    if (done && !calledRef.current) {
+      calledRef.current = true;
+      const t = setTimeout(() => onFinishRef.current(), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [done]);
 
   const handleSkip = () => {
-    if (!finishedRef.current) {
-      finishedRef.current = true;
-      setFadeOut(true);
-      setTimeout(() => onFinishRef.current(), 800);
+    if (!calledRef.current) {
+      calledRef.current = true;
+      setDone(true);
+      setTimeout(() => onFinishRef.current(), 600);
     }
   };
 
-  const article = currentIndex >= 0 && currentIndex < ARTICLES.length ? ARTICLES[currentIndex] : null;
-  const catColor = article ? CATEGORY_COLORS[article.category] : '#666';
-  const catLabel = article ? CATEGORY_LABELS[article.category] : '';
+  const article = ARTICLES[index];
 
   return (
-    <div className="fixed inset-0 bg-black z-50 overflow-hidden scanlines" data-testid="protest-cutscene">
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 30%, rgba(30,30,50,1) 0%, rgba(5,5,10,1) 100%)',
-      }} />
+    <div
+      data-testid="protest-cutscene"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        backgroundColor: '#0a0a0f',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 32,
+        opacity: done ? 0 : 1,
+        transition: 'opacity 1s ease-out',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 640,
+          width: '100%',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.4s ease, transform 0.4s ease',
+        }}
+      >
+        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{
+            display: 'inline-block',
+            padding: '3px 8px',
+            backgroundColor: article.tagColor,
+            color: '#fff',
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: 7,
+            letterSpacing: '0.1em',
+          }}>
+            {article.tag}
+          </span>
+          <span style={{
+            fontFamily: '"VT323", monospace',
+            fontSize: 18,
+            color: 'rgba(255,255,255,0.35)',
+          }}>
+            {article.source}
+          </span>
+        </div>
 
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.03 }}>
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="absolute left-0 right-0" style={{
-            top: `${i * 12.5}%`,
-            height: '1px',
-            backgroundColor: 'rgba(255,255,255,0.5)',
-          }} />
-        ))}
+        <h2 style={{
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: 15,
+          color: '#ffffff',
+          lineHeight: 1.8,
+          marginBottom: 16,
+          textShadow: '1px 1px 0 rgba(0,0,0,0.5)',
+        }}>
+          {article.headline}
+        </h2>
+
+        <p style={{
+          fontFamily: '"VT323", monospace',
+          fontSize: 22,
+          color: 'rgba(255,255,255,0.6)',
+          lineHeight: 1.5,
+          marginBottom: 12,
+        }}>
+          {article.snippet}
+        </p>
+
+        <p style={{
+          fontFamily: '"VT323", monospace',
+          fontSize: 16,
+          color: 'rgba(255,255,255,0.2)',
+        }}>
+          {article.date}
+        </p>
+
+        <div style={{
+          marginTop: 20,
+          height: 2,
+          backgroundColor: article.tagColor,
+          opacity: 0.4,
+          animation: visible ? 'progressBar 2.5s linear forwards' : 'none',
+          transformOrigin: 'left',
+        }} />
       </div>
 
-      <AnimatePresence mode="wait">
-        {article && !fadeOut && (
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="absolute inset-0 flex items-center justify-center p-8"
-          >
-            <div className="max-w-2xl w-full">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1, duration: 0.3 }}
-                className="mb-4 flex items-center gap-3"
-              >
-                <div className="px-2 py-0.5" style={{
-                  backgroundColor: catColor,
-                  fontFamily: 'var(--font-pixel)',
-                  fontSize: '7px',
-                  color: '#fff',
-                  letterSpacing: '0.1em',
-                }}>
-                  {catLabel}
-                </div>
-                <span style={{
-                  fontFamily: 'var(--font-retro)',
-                  fontSize: '16px',
-                  color: 'rgba(255,255,255,0.3)',
-                }}>
-                  {article.source}
-                </span>
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-                className="text-white mb-4 leading-tight"
-                style={{
-                  fontFamily: 'var(--font-pixel)',
-                  fontSize: '16px',
-                  lineHeight: 1.6,
-                  textShadow: '1px 1px 0 rgba(0,0,0,0.8)',
-                }}
-              >
-                {article.headline}
-              </motion.h2>
-
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-                className="leading-relaxed"
-                style={{
-                  fontFamily: 'var(--font-retro)',
-                  fontSize: '20px',
-                  color: 'rgba(255,255,255,0.65)',
-                  lineHeight: 1.6,
-                }}
-              >
-                {article.snippet}
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.3 }}
-                className="mt-4"
-                style={{
-                  fontFamily: 'var(--font-retro)',
-                  fontSize: '14px',
-                  color: 'rgba(255,255,255,0.2)',
-                }}
-              >
-                {article.date}
-              </motion.div>
-
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 2.0, ease: 'linear' }}
-                className="mt-6 h-0.5 origin-left"
-                style={{ backgroundColor: catColor, opacity: 0.4 }}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-40">
+      <div style={{
+        position: 'absolute',
+        bottom: 24,
+        display: 'flex',
+        gap: 6,
+      }}>
         {ARTICLES.map((_, i) => (
           <div
             key={i}
-            className="w-1.5 h-1.5 rounded-full transition-all duration-300"
             style={{
-              backgroundColor: i <= currentIndex ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.15)',
-              transform: i === currentIndex ? 'scale(1.5)' : 'scale(1)',
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              backgroundColor: i <= index ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.15)',
+              transform: i === index ? 'scale(1.4)' : 'scale(1)',
+              transition: 'all 0.3s ease',
             }}
           />
         ))}
       </div>
 
-      <div className="absolute top-6 right-6 z-40" style={{
-        fontFamily: 'var(--font-pixel)',
-        fontSize: '7px',
-        color: 'rgba(255,255,255,0.2)',
+      <div style={{
+        position: 'absolute',
+        top: 24,
+        right: 24,
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: 7,
+        color: 'rgba(255,255,255,0.25)',
       }}>
-        {currentIndex >= 0 ? `${currentIndex + 1}/${ARTICLES.length}` : ''}
+        {index + 1}/{ARTICLES.length}
       </div>
-
-      {fadeOut && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0 bg-black z-50"
-        />
-      )}
 
       <button
         data-testid="button-skip-cutscene"
         onClick={handleSkip}
-        className="absolute top-6 left-6 z-50 px-3 py-1 bg-black/60 border border-white/20 text-white/40 hover:text-white transition-colors"
-        style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+        style={{
+          position: 'absolute',
+          top: 24,
+          left: 24,
+          zIndex: 10,
+          padding: '4px 12px',
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          color: 'rgba(255,255,255,0.4)',
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: 8,
+          cursor: 'pointer',
+        }}
       >
         SKIP
       </button>
+
+      <style>{`
+        @keyframes progressBar {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+      `}</style>
     </div>
   );
 }
