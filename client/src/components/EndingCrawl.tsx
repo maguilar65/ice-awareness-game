@@ -293,23 +293,12 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
         ))}
       </div>
 
-      <div
-        className="absolute inset-0 flex justify-center"
-        style={{ perspective: '400px' }}
-      >
-        <div
-          className="w-full max-w-2xl px-8"
-          style={{
-            transformOrigin: '50% 100%',
-            transform: 'rotateX(25deg)',
-            position: 'absolute',
-            top: '100%',
-          }}
-        >
+      <div className="absolute inset-0 flex justify-center overflow-hidden">
+        <div className="w-full max-w-2xl px-8 absolute top-full">
           {started && (
             <motion.div
               initial={{ y: 0 }}
-              animate={{ y: `-${CRAWL_SECTIONS.length * 120 + 800}px` }}
+              animate={{ y: `-${CRAWL_SECTIONS.length * 120 + 1200}px` }}
               transition={{ duration: CRAWL_DURATION, ease: "linear" }}
               className="space-y-6 text-center pb-[100vh]"
             >
