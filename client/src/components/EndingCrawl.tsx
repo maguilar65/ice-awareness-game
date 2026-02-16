@@ -1,7 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 const CRAWL_DISTANCE = 5000;
+const CRAWL_KEYFRAMES = `
+@keyframes crawlUp {
+  from { transform: translateY(0); }
+  to { transform: translateY(-${CRAWL_DISTANCE}px); }
+}`;
+if (typeof document !== 'undefined') {
+  const s = document.createElement('style');
+  s.textContent = CRAWL_KEYFRAMES;
+  document.head.appendChild(s);
+}
 
 const CRAWL_SECTIONS = [
   {
@@ -248,6 +258,13 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
   const [started, setStarted] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const crawlRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (crawlRef.current) {
+      crawlRef.current.style.animationDuration = `${CRAWL_DURATION / speed}s`;
+    }
+  }, [speed]);
 
   useEffect(() => {
     const t = setTimeout(() => setStarted(true), 1500);
@@ -295,11 +312,12 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
         <div className="w-full max-w-2xl px-4 sm:px-8 absolute top-full">
           {started && (
             <div
-              className="space-y-6 text-center pb-[100vh] crawl-text"
+              ref={crawlRef}
+              className="space-y-6 text-center pb-[100vh]"
               style={{
-                transform: `translateY(-${CRAWL_DISTANCE}px)`,
-                transition: `transform ${CRAWL_DURATION / speed}s linear`,
+                animation: `crawlUp ${CRAWL_DURATION / speed}s linear forwards`,
               }}
+              onAnimationEnd={onFinish}
             >
               {CRAWL_SECTIONS.map((section, i) => {
                 if (section.type === "spacer") {
