@@ -190,6 +190,54 @@ const CRAWL_SECTIONS = [
     type: "body" as const,
     text: "Thank you for playing.",
   },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "divider" as const,
+    text: "- - - - - - - - - -",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "header" as const,
+    text: "MADE BY",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "credit" as const,
+    text: "Marcos Aguilar",
+  },
+  {
+    type: "credit" as const,
+    text: "Jeremiah Feliciano",
+  },
+  {
+    type: "credit" as const,
+    text: "Robert Long-Smith",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
+  {
+    type: "spacer" as const,
+    text: "",
+  },
 ];
 
 const CRAWL_DURATION = 90;
@@ -312,6 +360,21 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
                       key={i}
                       className="text-green-400 leading-relaxed"
                       style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}
+                    >
+                      {section.text}
+                    </p>
+                  );
+                }
+                if (section.type === "credit") {
+                  return (
+                    <p
+                      key={i}
+                      className="text-white leading-relaxed"
+                      style={{
+                        fontFamily: 'var(--font-pixel)',
+                        fontSize: '14px',
+                        textShadow: '0 0 10px rgba(255,255,255,0.3)',
+                      }}
                     >
                       {section.text}
                     </p>

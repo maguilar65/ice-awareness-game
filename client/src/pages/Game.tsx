@@ -3,6 +3,7 @@ import { GameWorld } from "@/components/GameWorld";
 import { GameHUD } from "@/components/GameHUD";
 import { DialogModal } from "@/components/DialogModal";
 import { EndingCrawl } from "@/components/EndingCrawl";
+import { PauseMenu } from "@/components/PauseMenu";
 import { useGameContent } from "@/hooks/use-game-content";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
 import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
@@ -25,6 +26,18 @@ export default function Game() {
   const [gameState, setGameState] = useState<'title' | 'intro' | 'playing' | 'ending' | 'credits'>('title');
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && gameState === 'playing' && !activeDialogue) {
+        e.preventDefault();
+        setPaused(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [gameState, activeDialogue]);
 
   const handleInteract = (dialogueId: string) => {
     const dialogue = npcDialogues[dialogueId];
@@ -197,6 +210,12 @@ export default function Game() {
           <p className="text-yellow-400/80 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
             Knowledge is protection. Share what you learned.
           </p>
+          <div className="pt-4 space-y-2">
+            <p className="text-white/30" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>MADE BY</p>
+            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Marcos Aguilar</p>
+            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Jeremiah Feliciano</p>
+            <p className="text-white/70" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>Robert Long-Smith</p>
+          </div>
           <button
             data-testid="button-play-again"
             onClick={() => {
@@ -206,6 +225,7 @@ export default function Game() {
               setAwareness(0);
               setCurrentRoom("neighborhood");
               setPlayerSpawn({ x: 7, y: 6 });
+              setPaused(false);
             }}
             className="px-8 py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
             style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
@@ -234,7 +254,7 @@ export default function Game() {
           currentRoom={currentRoom}
           onRoomChange={handleRoomChange}
           playerStart={playerSpawn}
-          dialogueOpen={!!activeDialogue}
+          dialogueOpen={!!activeDialogue || paused}
         />
       </div>
 
@@ -259,6 +279,17 @@ export default function Game() {
         dialogue={activeDialogue}
         onClose={handleCloseModal}
         onContentRevealed={handleContentRevealed}
+      />
+
+      <PauseMenu
+        isOpen={paused && gameState === 'playing'}
+        onResume={() => setPaused(false)}
+        onSkipToCredits={() => {
+          setPaused(false);
+          setGameState('ending');
+        }}
+        talkedTo={talkedTo.size}
+        totalNpcs={TOTAL_NPCS}
       />
     </div>
   );
