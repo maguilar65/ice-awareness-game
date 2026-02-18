@@ -28,14 +28,14 @@ export function PauseMenu({ isOpen, onResume, onSkipToCredits, talkedTo, totalNp
         <div className="border-2 border-white/30 bg-black p-6 space-y-6" style={{ boxShadow: '4px 4px 0 rgba(0,0,0,0.5), inset 0 0 30px rgba(74,222,128,0.05)' }}>
           <h2
             className="text-green-400 text-center"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '16px', textShadow: '0 0 10px rgba(74,222,128,0.3)' }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '20px', textShadow: '0 0 10px rgba(74,222,128,0.3)' }}
           >
             PAUSED
           </h2>
 
           <div className="space-y-1 text-center">
-            <p className="text-white/50" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>PROGRESS</p>
-            <p className="text-white/80" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
+            <p className="text-white/50" style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}>PROGRESS</p>
+            <p className="text-white/80" style={{ fontFamily: 'var(--font-retro)', fontSize: '22px' }}>
               Neighbors talked to: <span className="text-green-400">{talkedTo}</span> / {totalNpcs}
             </p>
           </div>
@@ -45,7 +45,7 @@ export function PauseMenu({ isOpen, onResume, onSkipToCredits, talkedTo, totalNp
               data-testid="button-resume"
               onClick={onResume}
               className="w-full py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
             >
               RESUME
             </button>
@@ -54,13 +54,13 @@ export function PauseMenu({ isOpen, onResume, onSkipToCredits, talkedTo, totalNp
               data-testid="button-skip-credits"
               onClick={onSkipToCredits}
               className="w-full py-2 bg-white/10 text-white/70 border-2 border-white/20 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.2), inset 3px 3px 0 rgba(255,255,255,0.05)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.2), inset 3px 3px 0 rgba(255,255,255,0.05)' }}
             >
               SKIP TO CREDITS
             </button>
           </div>
 
-          <p className="text-white/30 text-center hidden sm:block" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}>
+          <p className="text-white/30 text-center hidden sm:block" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}>
             PRESS ESC TO RESUME
           </p>
         </div>

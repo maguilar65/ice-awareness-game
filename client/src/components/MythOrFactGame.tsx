@@ -136,11 +136,11 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
         <div className="w-full max-w-2xl flex flex-col items-center gap-3 sm:gap-4">
           {gameState !== 'ready' && (
             <div className="flex items-center justify-between w-full">
-              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 11px)' }}>
+              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 14px)' }}>
                 SCORE: <span className="text-yellow-400">{score}</span>
               </span>
               <span style={{
-                fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 11px)',
+                fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 14px)',
                 color: timeLeft <= 10 ? '#f87171' : '#fff',
               }}>
                 {timeLeft}s
@@ -150,10 +150,10 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
 
           {gameState === 'ready' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-3 sm:space-y-5">
-              <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 18px)' }}>
+              <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 22px)' }}>
                 Read each statement and decide — is it a FACT or a MYTH? You have 45 seconds. Streaks give bonus points!
               </p>
-              <div className="flex justify-center gap-4 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(11px, 2vw, 14px)' }}>
+              <div className="flex justify-center gap-4 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 17px)' }}>
                 <span className="text-red-400">M / Left = Myth</span>
                 <span className="text-green-400">F / Right = Fact</span>
               </div>
@@ -161,7 +161,7 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                 data-testid="button-start-myth"
                 onClick={() => setGameState('playing')}
                 className="px-6 py-2 bg-blue-700 text-white border-2 border-blue-500 hover-elevate active-elevate-2"
-                style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)' }}
+                style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)' }}
               >
                 START
               </button>
@@ -177,13 +177,13 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
             >
               {streak >= 3 && (
                 <div className="text-center mb-2">
-                  <span className="text-yellow-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.5vw, 10px)' }}>
+                  <span className="text-yellow-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}>
                     STREAK x{streak}!
                   </span>
                 </div>
               )}
               <div className="nes-border border-white/40 bg-white/5 p-3 sm:p-5 text-center">
-                <p className="text-white leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 20px)' }}>
+                <p className="text-white leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 24px)' }}>
                   "{current.text}"
                 </p>
               </div>
@@ -201,12 +201,12 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                     }}
                   >
                     <p style={{
-                      fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 1.8vw, 11px)',
+                      fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2vw, 14px)',
                       color: lastAnswer === 'correct' ? '#4ade80' : '#f87171',
                     }}>
                       {lastAnswer === 'correct' ? 'CORRECT!' : 'WRONG!'}
                     </p>
-                    <p className="text-white/60 mt-1" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(10px, 1.8vw, 13px)' }}>
+                    <p className="text-white/60 mt-1" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(12px, 2.2vw, 16px)' }}>
                       {current.explanation}
                     </p>
                   </motion.div>
@@ -219,7 +219,7 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                     data-testid="button-myth"
                     onClick={() => handleAnswer(false)}
                     className="flex-1 max-w-[180px] py-2.5 bg-red-800/50 text-white border-2 border-red-500/60 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)' }}
                   >
                     MYTH
                   </button>
@@ -227,7 +227,7 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                     data-testid="button-fact"
                     onClick={() => handleAnswer(true)}
                     className="flex-1 max-w-[180px] py-2.5 bg-green-800/50 text-white border-2 border-green-500/60 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)' }}
                   >
                     FACT
                   </button>
@@ -243,13 +243,13 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
               className="text-center space-y-3 w-full"
             >
               <div className="nes-border border-white/60 bg-black p-4 sm:p-6 space-y-3">
-                <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 20px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
+                <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(15px, 4vw, 24px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
                   {getRating().text}
                 </h2>
-                <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 18px)' }}>
+                <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 22px)' }}>
                   Final score: {score} points
                 </p>
-                <p className="text-white/50" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(11px, 2vw, 14px)' }}>
+                <p className="text-white/50" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 17px)' }}>
                   You answered {currentIdx} out of {statements.length} statements
                 </p>
                 <div className="flex gap-3 justify-center pt-2">
@@ -265,7 +265,7 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                       setLastAnswer(null);
                     }}
                     className="px-3 py-1.5 bg-blue-700 text-white border-2 border-blue-500 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                   >
                     PLAY AGAIN
                   </button>
@@ -273,7 +273,7 @@ export function MythOrFactGame({ onClose }: MythOrFactGameProps) {
                     data-testid="button-exit-myth"
                     onClick={onClose}
                     className="px-3 py-1.5 bg-white/10 text-white border-2 border-white/30 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                   >
                     WALK AWAY
                   </button>

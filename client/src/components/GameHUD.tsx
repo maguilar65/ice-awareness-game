@@ -23,7 +23,7 @@ export function GameHUD({ awareness, storiesFound, totalStories, roomName, curre
         <div className="flex flex-col gap-1">
           <div className="nes-border-light border-white/50 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
             <MapPin className="w-3 h-3 text-green-400 hidden sm:block" />
-            <span data-testid="text-room-name" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
+            <span data-testid="text-room-name" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }} className="text-green-400">
               {roomName}
             </span>
           </div>
@@ -31,7 +31,7 @@ export function GameHUD({ awareness, storiesFound, totalStories, roomName, curre
           {hint && (
             <div className="nes-border-light border-yellow-500/40 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2 max-w-[200px] sm:max-w-[280px]">
               <Compass className="w-3 h-3 text-yellow-400 flex-shrink-0" />
-              <span data-testid="text-story-hint" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(8px, 1.5vw, 11px)', lineHeight: 1.3 }} className="text-yellow-300/90">
+              <span data-testid="text-story-hint" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(10px, 2vw, 14px)', lineHeight: 1.3 }} className="text-yellow-300/90">
                 {hint}
               </span>
             </div>
@@ -41,7 +41,7 @@ export function GameHUD({ awareness, storiesFound, totalStories, roomName, curre
         <div className="flex items-start gap-1 sm:gap-2">
           <div className="flex flex-col gap-1">
             <div className="nes-border-light border-white/50 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2">
-              <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px' }} className="text-white/60 hidden sm:inline">
+              <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px' }} className="text-white/60 hidden sm:inline">
                 AWARENESS
               </span>
               <div className="w-12 sm:w-20 h-2 bg-gray-800 border border-gray-600">
@@ -51,14 +51,14 @@ export function GameHUD({ awareness, storiesFound, totalStories, roomName, curre
                   style={{ width: `${Math.min(awareness, 100)}%` }}
                 />
               </div>
-              <span data-testid="text-awareness-pct" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-green-400">
+              <span data-testid="text-awareness-pct" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }} className="text-green-400">
                 {awareness}%
               </span>
             </div>
 
             <div className="nes-border-light border-white/50 bg-black/90 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2">
               <BookOpen className="w-3 h-3 text-yellow-400" />
-              <span data-testid="text-stories-count" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }} className="text-yellow-400">
+              <span data-testid="text-stories-count" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }} className="text-yellow-400">
                 {storiesFound}/{totalStories}
               </span>
             </div>

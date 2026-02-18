@@ -257,7 +257,7 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
         style={{ transform: 'translateX(-50%)' }}
       >
         <div className="bg-black border-2 px-2 py-0.5 text-center" style={{
-          fontFamily: 'var(--font-pixel)', fontSize: '7px',
+          fontFamily: 'var(--font-pixel)', fontSize: '10px',
           borderColor: isNearby ? '#4ade80' : '#555',
           opacity: isNearby ? 1 : 0.75,
         }}>
@@ -733,7 +733,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
               {dec && dec.type === 'arcade_cabinet' && dec.label && x === dec.x && y === dec.y && (
                 <div className="absolute -top-6 left-1/2 z-30 whitespace-nowrap" style={{ transform: 'translateX(-25%)' }}>
                   <div className="px-2 py-0.5 text-center" style={{
-                    fontFamily: 'var(--font-pixel)', fontSize: '6px',
+                    fontFamily: 'var(--font-pixel)', fontSize: '9px',
                     color: nearbyArcade === dec ? '#fbbf24' : dec.color,
                     backgroundColor: '#000',
                     border: `2px solid ${nearbyArcade === dec ? '#fbbf24' : '#555'}`,
@@ -803,7 +803,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
                   }}
                 >
                   <div className="bg-black border-2 px-2 py-1 whitespace-nowrap" style={{
-                    fontFamily: 'var(--font-pixel)', fontSize: '7px', color: '#4ade80',
+                    fontFamily: 'var(--font-pixel)', fontSize: '10px', color: '#4ade80',
                     borderColor: '#4ade80',
                   }}>
                     {exit.label}
@@ -855,7 +855,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
 
       <div className="md:hidden w-full flex items-center justify-between px-4 py-2" style={{ maxWidth: CANVAS_W * scale }}>
         <div className="flex items-center gap-2">
-          <button data-testid="btn-interact" className="w-14 h-14 rounded-full bg-green-700/40 border-2 border-green-500/60 active:bg-green-600/50 flex items-center justify-center text-green-300" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+          <button data-testid="btn-interact" className="w-14 h-14 rounded-full bg-green-700/40 border-2 border-green-500/60 active:bg-green-600/50 flex items-center justify-center text-green-300" style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}
             onTouchStart={(e) => {
               e.preventDefault();
               if (nearbyNpc) onInteract(nearbyNpc.dialogueId);
@@ -868,7 +868,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
             }}
           >{nearbyArcade ? 'PLAY' : 'TALK'}</button>
           {onPause && (
-            <button data-testid="btn-pause" className="w-10 h-10 rounded-full bg-white/10 border border-white/30 active:bg-white/20 flex items-center justify-center text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
+            <button data-testid="btn-pause" className="w-10 h-10 rounded-full bg-white/10 border border-white/30 active:bg-white/20 flex items-center justify-center text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
               onClick={onPause}
             >| |</button>
           )}

@@ -70,7 +70,7 @@ export function ArcadeCabinet({ title, color, onClose, joystickDirection = 'cent
               data-testid="button-cabinet-exit"
               onClick={onClose}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-white/40"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}
             >
               ESC
             </button>
@@ -164,7 +164,7 @@ export function ArcadeCabinet({ title, color, onClose, joystickDirection = 'cent
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-3">
-                <span className="text-white/20 hidden sm:block" style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px' }}>
+                <span className="text-white/20 hidden sm:block" style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px' }}>
                   INSERT COIN
                 </span>
                 <div className="w-6 h-1 rounded-full" style={{

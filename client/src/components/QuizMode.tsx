@@ -143,7 +143,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                 setFinished(false);
               }}
               className="px-6 py-2 bg-white/10 text-white border border-white/30 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.1)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 14px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.1)' }}
             >
               RETAKE QUIZ
             </button>
@@ -151,7 +151,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
               data-testid="button-back-to-title"
               onClick={onFinish}
               className="px-6 py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.1)' }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 14px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.1)' }}
             >
               BACK TO TITLE
             </button>
@@ -164,10 +164,10 @@ export function QuizMode({ onFinish }: QuizModeProps) {
   return (
     <div className="fixed inset-0 bg-black flex flex-col scanlines z-50 p-6 sm:p-10 lg:p-14">
       <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
-        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)' }} className="text-green-400">
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 14px)' }} className="text-green-400">
           KNOW YOUR RIGHTS QUIZ
         </p>
-        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 10px)' }} className="text-white/40" data-testid="text-question-progress">
+        <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 13px)' }} className="text-white/40" data-testid="text-question-progress">
           {currentQ + 1} / {quizQuestions.length}
         </p>
       </div>
@@ -235,7 +235,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                       boxShadow: !showResult ? 'inset -2px -2px 0 rgba(0,0,0,0.2), inset 2px 2px 0 rgba(255,255,255,0.05)' : 'none',
                     }}
                   >
-                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 10px)', marginRight: 8, opacity: 0.5 }}>
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 13px)', marginRight: 8, opacity: 0.5 }}>
                       {String.fromCharCode(65 + i)}.
                     </span>
                     {choice}
@@ -257,7 +257,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                     border: `1px solid ${isCorrect ? 'rgba(74,222,128,0.3)' : 'rgba(251,191,36,0.3)'}`,
                   }}
                 >
-                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 10px)', color: isCorrect ? '#4ade80' : '#fbbf24', marginBottom: 6 }}>
+                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 13px)', color: isCorrect ? '#4ade80' : '#fbbf24', marginBottom: 6 }}>
                     {isCorrect ? "CORRECT" : "NOT QUITE"}
                   </p>
                   <p className="text-white/70 leading-relaxed" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 3vw, 16px)' }} data-testid="text-quiz-explanation">
@@ -268,7 +268,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                   data-testid="button-quiz-next"
                   onClick={handleNext}
                   className="w-full py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-                  style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2.5vw, 11px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.15)' }}
+                  style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.8vw, 14px)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.15)' }}
                 >
                   {currentQ < quizQuestions.length - 1 ? "NEXT QUESTION" : "SEE RESULTS"}
                 </button>

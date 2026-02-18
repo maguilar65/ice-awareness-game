@@ -201,7 +201,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, acti
                 <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
                   <div
                     className="px-2 py-0.5 bg-green-600 text-black font-bold"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
                   >
                     {currentNode.speaker}
                   </div>
@@ -210,7 +210,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, acti
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       className="px-2 py-0.5 bg-yellow-500 text-black font-bold"
-                      style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px' }}
+                      style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px' }}
                     >
                       NEW INFO
                     </motion.div>
@@ -219,7 +219,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, acti
 
             <p
               className="text-white/90 leading-relaxed min-h-[40px] sm:min-h-[50px] mb-2 sm:mb-3"
-              style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3.5vw, 20px)' }}
+              style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(18px, 4vw, 24px)' }}
               data-testid="dialog-text"
             >
               {displayedText}
@@ -242,9 +242,9 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, acti
                       handleChoiceClick(choice.nextNodeId);
                     }}
                     className="w-full text-left px-2 sm:px-3 py-2 bg-white/5 border border-white/20 text-white/90 hover-elevate active-elevate-2 flex items-center gap-2 transition-colors"
-                    style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(14px, 3vw, 18px)' }}
+                    style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(16px, 3.5vw, 22px)' }}
                   >
-                    <span className="text-green-400 flex-shrink-0" style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>
+                    <span className="text-green-400 flex-shrink-0" style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}>
                       {String.fromCharCode(65 + i)}.
                     </span>
                     <span>{choice.text}</span>
@@ -259,7 +259,7 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, acti
                   initial={{ opacity: 0 }}
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ repeat: Infinity, duration: 1.2 }}
-                  style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+                  style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}
                   className="text-white/60"
                 >
                   <span className="hidden sm:inline">PRESS SPACE TO CLOSE</span>

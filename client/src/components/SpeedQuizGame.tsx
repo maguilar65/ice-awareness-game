@@ -141,11 +141,11 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
         <div className="w-full max-w-2xl flex flex-col items-center gap-2 sm:gap-4">
           {gameState !== 'ready' && (
             <div className="flex items-center justify-between w-full">
-              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 11px)' }}>
+              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 14px)' }}>
                 {correct} correct
               </span>
               <span style={{
-                fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)',
+                fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)',
                 color: timeLeft <= 10 ? '#f87171' : timeLeft <= 20 ? '#fbbf24' : '#4ade80',
               }}>
                 {timeLeft}s
@@ -166,14 +166,14 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
 
           {gameState === 'ready' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-3 sm:space-y-5">
-              <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 18px)' }}>
+              <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 22px)' }}>
                 Answer as many rights questions as you can in 30 seconds! Press 1-4 or tap to answer. Faster answers = more points!
               </p>
               <button
                 data-testid="button-start-speed"
                 onClick={() => setGameState('playing')}
                 className="px-6 py-2 bg-yellow-700 text-white border-2 border-yellow-500 hover-elevate active-elevate-2"
-                style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)' }}
+                style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)' }}
               >
                 START
               </button>
@@ -188,7 +188,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
               className="w-full space-y-2 sm:space-y-3"
             >
               <div className="nes-border border-white/40 bg-white/5 p-2.5 sm:p-4">
-                <p className="text-white leading-relaxed text-center" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(12px, 2.3vw, 18px)' }}>
+                <p className="text-white leading-relaxed text-center" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(14px, 2.8vw, 22px)' }}>
                   {current.question}
                 </p>
               </div>
@@ -220,7 +220,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
                         border: `2px solid ${borderColor}`,
                         backgroundColor: bgColor,
                         fontFamily: 'var(--font-retro)',
-                        fontSize: 'clamp(11px, 2vw, 14px)',
+                        fontSize: 'clamp(13px, 2.5vw, 17px)',
                         opacity: gameState === 'feedback' ? 0.8 : 1,
                       }}
                     >
@@ -228,7 +228,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
                         backgroundColor: `${btnColors[i]}44`,
                         border: `1px solid ${btnColors[i]}88`,
                         fontFamily: 'var(--font-pixel)',
-                        fontSize: 'clamp(6px, 1.5vw, 8px)',
+                        fontSize: 'clamp(10px, 2vw, 12px)',
                         color: btnColors[i],
                       }}>
                         {['A', 'B', 'C', 'D'][i]}
@@ -248,7 +248,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
                     className="text-center"
                   >
                     <span style={{
-                      fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)',
+                      fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)',
                       color: isCorrect ? '#4ade80' : '#f87171',
                     }}>
                       {isCorrect ? '+' + Math.max(10, timeLeft) + ' pts!' : 'WRONG'}
@@ -266,13 +266,13 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
               className="text-center space-y-3 w-full"
             >
               <div className="nes-border border-white/60 bg-black p-4 sm:p-6 space-y-3">
-                <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 20px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
+                <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(15px, 4vw, 24px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
                   {getRating().text}
                 </h2>
-                <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 18px)' }}>
+                <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 22px)' }}>
                   {correct} correct out of {currentIdx} questions
                 </p>
-                <p className="text-yellow-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 12px)' }}>
+                <p className="text-yellow-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(11px, 2.5vw, 15px)' }}>
                   SCORE: {score}
                 </p>
                 <div className="flex gap-3 justify-center pt-2">
@@ -289,7 +289,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
                       setIsCorrect(null);
                     }}
                     className="px-3 py-1.5 bg-yellow-700 text-white border-2 border-yellow-500 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                   >
                     PLAY AGAIN
                   </button>
@@ -297,7 +297,7 @@ export function SpeedQuizGame({ onClose }: SpeedQuizGameProps) {
                     data-testid="button-exit-speed"
                     onClick={onClose}
                     className="px-3 py-1.5 bg-white/10 text-white border-2 border-white/30 hover-elevate active-elevate-2"
-                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                   >
                     WALK AWAY
                   </button>

@@ -145,7 +145,7 @@ export default function Game() {
             transition={{ delay: 0.8 }}
             className="nes-border border-white/30 bg-white/5 p-3 sm:p-4"
           >
-            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }} className="text-white/50 mb-3">CONTROLS</p>
+            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }} className="text-white/50 mb-3">CONTROLS</p>
             <div className="hidden sm:flex justify-center gap-8 flex-wrap" style={{ fontFamily: 'var(--font-retro)', fontSize: '18px' }}>
               <span className="text-white/70">WASD / Arrows - Move</span>
               <span className="text-white/70">SPACE - Talk / Enter</span>
@@ -314,7 +314,7 @@ export default function Game() {
         >
           <div
             className="bg-black/80 border border-white/20 px-3 py-1"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px' }}
           >
             <span className="text-white/50">NEIGHBORS: </span>
             <span className="text-green-400" data-testid="text-talked-count">{talkedTo.size}/{TOTAL_NPCS}</span>

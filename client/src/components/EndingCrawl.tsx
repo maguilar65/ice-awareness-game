@@ -420,7 +420,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
             className="px-3 py-2 border hover-elevate active-elevate-2"
             style={{
               fontFamily: 'var(--font-pixel)',
-              fontSize: '8px',
+              fontSize: '11px',
               color: speed === 2 ? '#facc15' : 'rgba(255,255,255,0.4)',
               borderColor: speed === 2 ? 'rgba(250,204,21,0.4)' : 'rgba(255,255,255,0.2)',
               backgroundColor: speed === 2 ? 'rgba(250,204,21,0.1)' : 'transparent',
@@ -432,7 +432,7 @@ export function EndingCrawl({ onFinish }: { onFinish: () => void }) {
             data-testid="button-skip-crawl"
             onClick={onFinish}
             className="px-4 py-2 text-white/40 border border-white/20 hover-elevate active-elevate-2"
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px' }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px' }}
           >
             SKIP
           </button>

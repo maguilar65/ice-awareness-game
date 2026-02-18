@@ -113,16 +113,16 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
         <div className="w-full max-w-3xl flex flex-col items-center gap-2 sm:gap-3">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
-              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 11px)' }}>
+              <span className="text-white/60" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 14px)' }}>
                 MOVES: <span className="text-white">{moves}</span>
               </span>
             </div>
-            <span className="text-red-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(8px, 2vw, 11px)' }}>
+            <span className="text-red-400" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 14px)' }}>
               {matchedPairs}/{PAIRS.length}
             </span>
           </div>
 
-          <p className="text-white/50 text-center" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(11px, 2vw, 14px)' }}>
+          <p className="text-white/50 text-center" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 17px)' }}>
             Match each right with its description
           </p>
 
@@ -145,7 +145,7 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-1 sm:p-1.5">
                     <span className="text-center leading-tight" style={{
                       fontFamily: card.type === 'right' ? 'var(--font-pixel)' : 'var(--font-retro)',
-                      fontSize: card.type === 'right' ? 'clamp(5px, 1.2vw, 8px)' : 'clamp(7px, 1.5vw, 11px)',
+                      fontSize: card.type === 'right' ? 'clamp(7px, 1.5vw, 10px)' : 'clamp(9px, 1.8vw, 13px)',
                       color: card.type === 'right' ? '#fbbf24' : '#e0e0ff',
                     }}>
                       {card.content}
@@ -153,7 +153,7 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 2.5vw, 18px)', color: 'rgba(255,255,255,0.3)' }}>?</span>
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(14px, 3vw, 22px)', color: 'rgba(255,255,255,0.3)' }}>?</span>
                   </div>
                 )}
               </motion.button>
@@ -168,10 +168,10 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
                 className="absolute inset-0 z-[10] bg-black/90 flex flex-col items-center justify-center p-4"
               >
                 <div className="nes-border border-white/60 bg-black p-4 sm:p-6 text-center space-y-3 max-w-md">
-                  <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 20px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
+                  <h2 style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(15px, 4vw, 24px)', color: getRating().color, textShadow: `0 0 15px ${getRating().color}44` }}>
                     {getRating().text}
                   </h2>
-                  <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(13px, 2.5vw, 18px)' }}>
+                  <p className="text-white/70" style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(15px, 3vw, 22px)' }}>
                     All rights matched in {moves} moves!
                   </p>
                   <div className="flex gap-3 justify-center pt-2">
@@ -190,7 +190,7 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
                         setGameOver(false);
                       }}
                       className="px-3 py-1.5 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
-                      style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                      style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                     >
                       PLAY AGAIN
                     </button>
@@ -198,7 +198,7 @@ export function RightsMatchGame({ onClose }: RightsMatchGameProps) {
                       data-testid="button-exit-match"
                       onClick={onClose}
                       className="px-3 py-1.5 bg-white/10 text-white border-2 border-white/30 hover-elevate active-elevate-2"
-                      style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(7px, 1.8vw, 10px)' }}
+                      style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2vw, 13px)' }}
                     >
                       WALK AWAY
                     </button>
