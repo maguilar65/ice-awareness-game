@@ -353,7 +353,7 @@ function ExitSparkles({ x, y }: { x: number; y: number }) {
             height: 4,
             backgroundColor: '#4ade80',
             animation: `sparkle 1.8s ${s.delay}s ease-in-out infinite`,
-            zIndex: 9,
+            zIndex: 8,
           }}
         />
       ))}
@@ -746,7 +746,7 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
           const arrowRotation = arrowDir === 'up' ? '-45deg' : arrowDir === 'down' ? '135deg' : arrowDir === 'left' ? '-135deg' : '45deg';
 
           return (
-            <div key={`exit-${i}`} className="absolute z-10 flex items-center justify-center" style={{
+            <div key={`exit-${i}`} className="absolute z-[8] flex items-center justify-center" style={{
               left: exit.x * TILE, top: exit.y * TILE, width: TILE, height: TILE,
             }}>
               <div className="w-full h-full flex items-center justify-center" style={{

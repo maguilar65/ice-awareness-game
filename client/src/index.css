@@ -142,7 +142,7 @@ html, body {
       rgba(0,0,0,0.15) 1px,
       rgba(0,0,0,0.15) 3px
     );
-    z-index: 999;
+    z-index: 5;
   }
   .scanlines::before {
     content: '';
@@ -150,7 +150,7 @@ html, body {
     inset: 0;
     pointer-events: none;
     background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.35) 100%);
-    z-index: 998;
+    z-index: 4;
   }
 
   .pixel-text {
