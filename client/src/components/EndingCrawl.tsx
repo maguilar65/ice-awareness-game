@@ -231,14 +231,6 @@ const CRAWL_SECTIONS = [
     text: "Marcos Aguilar",
   },
   {
-    type: "credit" as const,
-    text: "Jeremiah Feliciano",
-  },
-  {
-    type: "credit" as const,
-    text: "Robert Long-Smith",
-  },
-  {
     type: "spacer" as const,
     text: "",
   },

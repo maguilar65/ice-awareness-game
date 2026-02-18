@@ -230,8 +230,6 @@ export default function Game() {
           <div className="pt-4 sm:pt-6 space-y-3 sm:space-y-4">
             <p className="text-white/40" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(10px, 3vw, 14px)', letterSpacing: '0.2em' }}>MADE BY</p>
             <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Marcos Aguilar</p>
-            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Jeremiah Feliciano</p>
-            <p className="text-white" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(12px, 3.5vw, 18px)', textShadow: '0 0 10px rgba(255,255,255,0.2)' }}>Robert Long-Smith</p>
           </div>
           <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <button
