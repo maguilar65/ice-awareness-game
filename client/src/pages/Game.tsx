@@ -15,9 +15,10 @@ import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
 import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const ALL_NPC_IDS = new Set(
-  Object.values(rooms).flatMap(room => room.npcs.map(npc => npc.dialogueId))
+const ALL_NPCS_BY_DIALOGUE_ID = Object.fromEntries(
+  Object.values(rooms).flatMap(room => room.npcs.map(npc => [npc.dialogueId, npc]))
 );
+const ALL_NPC_IDS = new Set(Object.keys(ALL_NPCS_BY_DIALOGUE_ID));
 const TOTAL_NPCS = ALL_NPC_IDS.size;
 
 export default function Game() {
@@ -327,6 +328,7 @@ export default function Game() {
         dialogue={activeDialogue}
         onClose={handleCloseModal}
         onContentRevealed={handleContentRevealed}
+        activeNpc={activeDialogueId ? ALL_NPCS_BY_DIALOGUE_ID[activeDialogueId] || null : null}
       />
 
       <PauseMenu

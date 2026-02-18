@@ -1,16 +1,77 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type DialogueNode, type DialogueTree } from "@/lib/dialogueData";
+import { type NpcDef } from "@/lib/gameData";
 import { playTalkBleep, playChoiceSelect, playDialogOpen, playDialogClose } from "@/lib/audioEngine";
+
+function adjustColor(hex: string, amount: number): string {
+  const r = Math.max(0, Math.min(255, parseInt(hex.slice(1, 3), 16) + amount));
+  const g = Math.max(0, Math.min(255, parseInt(hex.slice(3, 5), 16) + amount));
+  const b = Math.max(0, Math.min(255, parseInt(hex.slice(5, 7), 16) + amount));
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+function NpcPortrait({ npc }: { npc: NpcDef }) {
+  const P = 3;
+  const darkerShirt = adjustColor(npc.shirtColor, -40);
+
+  return (
+    <div className="relative flex-shrink-0" style={{ width: P * 8, height: P * 8 }}>
+      {npc.female ? (
+        <>
+          <div className="absolute" style={{ left: P*1, top: 0, width: P*6, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: 0, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P*2, top: P, width: P*4, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*6, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P*7, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: 0, top: P*2, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P, top: P*2, width: P, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*2, top: P*2, width: P, height: P, backgroundColor: '#1a1a1a' }} />
+          <div className="absolute" style={{ left: P*3, top: P*2, width: P*2, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*5, top: P*2, width: P, height: P, backgroundColor: '#1a1a1a' }} />
+          <div className="absolute" style={{ left: P*6, top: P*2, width: P, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*7, top: P*2, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: 0, top: P*3, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P*2, top: P*3, width: P*4, height: P, backgroundColor: adjustColor(npc.skinColor, -20) }} />
+          <div className="absolute" style={{ left: P*7, top: P*3, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: 0, top: P*4, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P, top: P*4, width: P*6, height: P, backgroundColor: npc.shirtColor }} />
+          <div className="absolute" style={{ left: P*7, top: P*4, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+        </>
+      ) : (
+        <>
+          <div className="absolute" style={{ left: P*2, top: 0, width: P*4, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P*2, top: P, width: P*4, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*6, top: P, width: P, height: P, backgroundColor: '#2c2c2c' }} />
+          <div className="absolute" style={{ left: P, top: P*2, width: P, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*2, top: P*2, width: P, height: P, backgroundColor: '#1a1a1a' }} />
+          <div className="absolute" style={{ left: P*3, top: P*2, width: P*2, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*5, top: P*2, width: P, height: P, backgroundColor: '#1a1a1a' }} />
+          <div className="absolute" style={{ left: P*6, top: P*2, width: P, height: P, backgroundColor: npc.skinColor }} />
+          <div className="absolute" style={{ left: P*2, top: P*3, width: P*4, height: P, backgroundColor: adjustColor(npc.skinColor, -20) }} />
+          <div className="absolute" style={{ left: P, top: P*4, width: P*6, height: P, backgroundColor: npc.shirtColor }} />
+        </>
+      )}
+      <div className="absolute" style={{ left: 0, top: P*5, width: P, height: P*2, backgroundColor: npc.skinColor }} />
+      <div className="absolute" style={{ left: P, top: P*5, width: P*6, height: P*2, backgroundColor: darkerShirt }} />
+      <div className="absolute" style={{ left: P*7, top: P*5, width: P, height: P*2, backgroundColor: npc.skinColor }} />
+      <div className="absolute" style={{ left: P*2, top: P*7, width: P*2, height: P, backgroundColor: '#34495e' }} />
+      <div className="absolute" style={{ left: P*4, top: P*7, width: P*2, height: P, backgroundColor: '#34495e' }} />
+    </div>
+  );
+}
 
 interface DialogModalProps {
   isOpen: boolean;
   dialogue: DialogueTree | null;
   onClose: () => void;
   onContentRevealed: (contentId: number) => void;
+  activeNpc?: NpcDef | null;
 }
 
-export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: DialogModalProps) {
+export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed, activeNpc }: DialogModalProps) {
   const [currentNodeId, setCurrentNodeId] = useState<string>("");
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -130,24 +191,31 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
           }}
         >
           <div className="nes-border border-white/80 bg-black/95 p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <div
-                className="px-2 py-0.5 bg-green-600 text-black font-bold"
-                style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
-              >
-                {currentNode.speaker}
-              </div>
-              {isFactNode && (
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="px-2 py-0.5 bg-yellow-500 text-black font-bold"
-                  style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px' }}
-                >
-                  NEW INFO
-                </motion.div>
+            <div className="flex items-start gap-3 sm:gap-4">
+              {activeNpc && (
+                <div className="flex-shrink-0 nes-border-light border-white/40 bg-white/5 p-1.5 sm:p-2" data-testid="npc-portrait">
+                  <NpcPortrait npc={activeNpc} />
+                </div>
               )}
-            </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                  <div
+                    className="px-2 py-0.5 bg-green-600 text-black font-bold"
+                    style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px' }}
+                  >
+                    {currentNode.speaker}
+                  </div>
+                  {isFactNode && (
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="px-2 py-0.5 bg-yellow-500 text-black font-bold"
+                      style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px' }}
+                    >
+                      NEW INFO
+                    </motion.div>
+                  )}
+                </div>
 
             <p
               className="text-white/90 leading-relaxed min-h-[40px] sm:min-h-[50px] mb-2 sm:mb-3"
@@ -199,6 +267,8 @@ export function DialogModal({ isOpen, dialogue, onClose, onContentRevealed }: Di
                 </motion.span>
               </div>
             )}
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>

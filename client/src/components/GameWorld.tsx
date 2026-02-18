@@ -195,17 +195,43 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
       onClick={() => onNpcClick(npc)}
     >
       <div className="relative" style={{ width: P * 8, height: P * 10, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
-        <PixelBlock x={P*2} y={0} w={P*4} h={P} color="#2c2c2c" />
-        <PixelBlock x={P*1} y={P} w={P} h={P} color="#2c2c2c" />
-        <PixelBlock x={P*2} y={P} w={P*4} h={P} color={npc.skinColor} />
-        <PixelBlock x={P*6} y={P} w={P} h={P} color="#2c2c2c" />
-        <PixelBlock x={P*1} y={P*2} w={P} h={P} color={npc.skinColor} />
-        <PixelBlock x={P*2} y={P*2} w={P} h={P} color="#1a1a1a" />
-        <PixelBlock x={P*3} y={P*2} w={P*2} h={P} color={npc.skinColor} />
-        <PixelBlock x={P*5} y={P*2} w={P} h={P} color="#1a1a1a" />
-        <PixelBlock x={P*6} y={P*2} w={P} h={P} color={npc.skinColor} />
-        <PixelBlock x={P*2} y={P*3} w={P*4} h={P} color={adjustColor(npc.skinColor, -20)} />
-        <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color={npc.shirtColor} />
+        {npc.female ? (
+          <>
+            <PixelBlock x={P*1} y={0} w={P*6} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*0} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*1} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*2} y={P} w={P*4} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*6} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*7} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*0} y={P*2} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*1} y={P*2} w={P} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*2} y={P*2} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*3} y={P*2} w={P*2} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*5} y={P*2} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*6} y={P*2} w={P} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*7} y={P*2} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*0} y={P*3} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*2} y={P*3} w={P*4} h={P} color={adjustColor(npc.skinColor, -20)} />
+            <PixelBlock x={P*7} y={P*3} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*0} y={P*4} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color={npc.shirtColor} />
+            <PixelBlock x={P*7} y={P*4} w={P} h={P} color="#2c2c2c" />
+          </>
+        ) : (
+          <>
+            <PixelBlock x={P*2} y={0} w={P*4} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*1} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*2} y={P} w={P*4} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*6} y={P} w={P} h={P} color="#2c2c2c" />
+            <PixelBlock x={P*1} y={P*2} w={P} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*2} y={P*2} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*3} y={P*2} w={P*2} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*5} y={P*2} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*6} y={P*2} w={P} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*2} y={P*3} w={P*4} h={P} color={adjustColor(npc.skinColor, -20)} />
+            <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color={npc.shirtColor} />
+          </>
+        )}
         <PixelBlock x={P*0} y={P*5} w={P} h={P*2} color={npc.skinColor} />
         <PixelBlock x={P*1} y={P*5} w={P*6} h={P*2} color={darkerShirt} />
         <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color={npc.skinColor} />
