@@ -59,7 +59,6 @@ export default function Game() {
     if (!storiesFound.has(contentId)) {
       const newStories = new Set(storiesFound).add(contentId);
       setStoriesFound(newStories);
-      setAwareness(prev => Math.min(prev + 10, 100));
     }
   };
 
@@ -68,6 +67,8 @@ export default function Game() {
       setTalkedTo(prev => {
         const next = new Set(prev);
         next.add(activeDialogueId);
+        const newAwareness = Math.round((next.size / TOTAL_NPCS) * 100);
+        setAwareness(Math.min(newAwareness, 100));
         return next;
       });
     }
