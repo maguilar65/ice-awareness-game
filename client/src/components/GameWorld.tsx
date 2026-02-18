@@ -59,76 +59,77 @@ function DecorationTile({ type, color, tileX, tileY, decX, decY, decW, decH }: {
   const isRight = relX === decW - 1;
   const isTop = relY === 0;
   const isBottom = relY === decH - 1;
+  const hiColor = adjustColor(color, 30);
+  const loColor = adjustColor(color, -30);
 
   switch (type) {
     case 'table':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: color }}>
-          <div className="absolute inset-0" style={{ borderTop: isTop ? '3px solid rgba(255,255,255,0.15)' : 'none', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.1)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.3)' : 'none', borderBottom: isBottom ? '3px solid rgba(0,0,0,0.3)' : 'none' }} />
-          <div className="absolute inset-1" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)' }} />
+          <div className="absolute inset-0" style={{ borderTop: isTop ? `4px solid ${hiColor}` : 'none', borderLeft: isLeft ? `4px solid ${hiColor}` : 'none', borderRight: isRight ? `4px solid ${loColor}` : 'none', borderBottom: isBottom ? `4px solid ${loColor}` : 'none' }} />
         </div>
       );
     case 'desk':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: color }}>
-          <div className="absolute inset-0" style={{ borderTop: '3px solid rgba(255,255,255,0.12)', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.08)' : 'none', borderBottom: '2px solid rgba(0,0,0,0.3)' }} />
-          {isTop && <div className="absolute top-1 left-1/2 -translate-x-1/2 w-3 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />}
+          <div className="absolute inset-0" style={{ borderTop: `4px solid ${hiColor}`, borderBottom: `4px solid ${loColor}` }} />
+          {isTop && <div className="absolute top-2 left-1/2 -translate-x-1/2 w-4 h-2" style={{ backgroundColor: hiColor }} />}
         </div>
       );
     case 'bookshelf':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: color }}>
-          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.1)', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.06)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.2)' : 'none' }} />
-          <div className="absolute top-1 left-1 right-1 h-2" style={{ backgroundColor: '#c0392b', opacity: 0.6 }} />
-          <div className="absolute top-4 left-1 right-1 h-2" style={{ backgroundColor: '#2980b9', opacity: 0.5 }} />
-          <div className="absolute bottom-2 left-1 right-1 h-2" style={{ backgroundColor: '#27ae60', opacity: 0.4 }} />
-          {relX % 2 === 0 && <div className="absolute top-2 left-2 w-1.5 h-3" style={{ backgroundColor: '#f1c40f', opacity: 0.4 }} />}
+          <div className="absolute inset-0" style={{ borderTop: `3px solid ${hiColor}`, borderLeft: isLeft ? `3px solid ${hiColor}` : 'none', borderRight: isRight ? `3px solid ${loColor}` : 'none' }} />
+          <div className="absolute top-2 left-2 right-2 h-3" style={{ backgroundColor: '#c03030' }} />
+          <div className="absolute top-6 left-2 right-2 h-3" style={{ backgroundColor: '#3060b0' }} />
+          <div className="absolute bottom-2 left-2 right-2 h-3" style={{ backgroundColor: '#30a060' }} />
+          {relX % 2 === 0 && <div className="absolute top-3 left-3 w-2 h-4" style={{ backgroundColor: '#e0c030' }} />}
         </div>
       );
     case 'bench':
       return (
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 right-0 h-3" style={{ backgroundColor: color, borderTop: '2px solid rgba(255,255,255,0.12)' }} />
-          {isLeft && <div className="absolute top-3 left-1 w-2 h-full" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }} />}
-          {isRight && <div className="absolute top-3 right-1 w-2 h-full" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }} />}
+          <div className="absolute top-0 left-0 right-0 h-4" style={{ backgroundColor: color, borderTop: `3px solid ${hiColor}` }} />
+          {isLeft && <div className="absolute top-4 left-2 w-3" style={{ height: TILE - 16, backgroundColor: loColor }} />}
+          {isRight && <div className="absolute top-4 right-2 w-3" style={{ height: TILE - 16, backgroundColor: loColor }} />}
         </div>
       );
     case 'plant':
       return (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-6 h-7">
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-3" style={{ backgroundColor: '#5c3a1e', borderTop: '1px solid rgba(255,255,255,0.1)' }} />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full" style={{ backgroundColor: color, boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(100,255,100,0.15)' }} />
-            {relX === 0 && <div className="absolute top-1 left-0 w-2 h-2 rounded-full" style={{ backgroundColor: color, opacity: 0.7 }} />}
+          <div className="relative" style={{ width: 20, height: 24 }}>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ width: 12, height: 8, backgroundColor: '#5c3a1e' }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 16, height: 16, backgroundColor: color }} />
+            <div className="absolute" style={{ top: 2, left: 2, width: 4, height: 4, backgroundColor: adjustColor(color, 40) }} />
           </div>
         </div>
       );
     case 'fountain':
       return (
         <div className="absolute inset-0">
-          <div className="absolute inset-1 rounded-sm" style={{ backgroundColor: '#4a6a8a', border: '2px solid #5a7a9a', boxShadow: 'inset 0 0 8px rgba(100,180,255,0.3)' }} />
+          <div className="absolute inset-2" style={{ backgroundColor: '#4a6a8a', border: '3px solid #5a7a9a' }} />
           {isTop && relX === Math.floor(decW / 2) && (
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-3" style={{ backgroundColor: '#7ab8e0', opacity: 0.7, boxShadow: '0 0 6px rgba(100,200,255,0.5)' }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 6, height: 8, backgroundColor: '#7ab8e0' }} />
           )}
         </div>
       );
     case 'bed':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: '#4a4a5a' }}>
-          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.08)' }} />
-          {isLeft && <div className="absolute top-1 left-1 w-3 h-3 rounded-sm" style={{ backgroundColor: '#ddd', opacity: 0.3 }} />}
-          <div className="absolute top-2 left-0 right-0 bottom-1" style={{ backgroundColor: '#3a5a7a', opacity: 0.5, borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+          <div className="absolute inset-0" style={{ borderTop: '3px solid #5a5a6a' }} />
+          {isLeft && <div className="absolute top-2 left-2" style={{ width: 8, height: 8, backgroundColor: '#ddd' }} />}
+          <div className="absolute top-4 left-0 right-0 bottom-2" style={{ backgroundColor: '#3a5a7a' }} />
         </div>
       );
     case 'counter':
     case 'shelves':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: color }}>
-          <div className="absolute inset-0" style={{ borderTop: '2px solid rgba(255,255,255,0.12)', borderLeft: isLeft ? '1px solid rgba(255,255,255,0.06)' : 'none', borderBottom: '2px solid rgba(0,0,0,0.25)' }} />
+          <div className="absolute inset-0" style={{ borderTop: `3px solid ${hiColor}`, borderLeft: isLeft ? `3px solid ${hiColor}` : 'none', borderBottom: `3px solid ${loColor}` }} />
           {type === 'shelves' && (
             <>
-              <div className="absolute top-2 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-              <div className="absolute bottom-3 left-1 right-1 h-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+              <div className="absolute top-3 left-2 right-2 h-2" style={{ backgroundColor: hiColor }} />
+              <div className="absolute bottom-4 left-2 right-2 h-2" style={{ backgroundColor: hiColor }} />
             </>
           )}
         </div>
@@ -136,36 +137,35 @@ function DecorationTile({ type, color, tileX, tileY, decX, decY, decW, decH }: {
     case 'arcade_cabinet':
       return (
         <div className="absolute inset-0" style={{ backgroundColor: '#1a1a2e' }}>
-          <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: isTop ? '3px solid rgba(255,255,255,0.2)' : 'none', borderLeft: isLeft ? '2px solid rgba(255,255,255,0.1)' : 'none', borderRight: isRight ? '2px solid rgba(0,0,0,0.4)' : 'none', borderBottom: isBottom ? '3px solid rgba(0,0,0,0.4)' : 'none' }} />
+          <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: isTop ? `4px solid ${adjustColor(color, 30)}` : 'none', borderLeft: isLeft ? `3px solid ${adjustColor(color, 20)}` : 'none', borderRight: isRight ? `3px solid ${adjustColor(color, -40)}` : 'none', borderBottom: isBottom ? `4px solid ${adjustColor(color, -40)}` : 'none' }} />
           {isTop && (
-            <>
-              <div className="absolute top-1 left-1 right-1 bottom-2" style={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.15)' }}>
-                <div className="absolute inset-1" style={{ background: `linear-gradient(135deg, ${color}44 0%, #00ff4444 50%, ${color}44 100%)`, animation: 'pulse 2s infinite' }} />
+            <div className="absolute top-2 left-2 right-2 bottom-4" style={{ backgroundColor: '#000', border: '2px solid #333' }}>
+              <div className="absolute inset-1" style={{ backgroundColor: adjustColor(color, -60) }}>
+                <div className="absolute" style={{ top: 2, left: 2, width: 4, height: 4, backgroundColor: '#0f0' }} />
+                <div className="absolute" style={{ top: 2, right: 2, width: 4, height: 4, backgroundColor: color }} />
               </div>
-            </>
+            </div>
           )}
           {isBottom && (
             <>
-              <div className="absolute top-1 left-2 right-2 h-3" style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '1px' }} />
-              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style={{ backgroundColor: '#ff0', boxShadow: `0 0 4px ${color}`, opacity: 0.7 }} />
+              <div className="absolute top-2 left-4 right-4 h-4" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ width: 8, height: 8, backgroundColor: '#ff0' }} />
             </>
           )}
         </div>
       );
     case 'fence':
       return (
-        <div className="absolute inset-0 flex items-end justify-center">
-          <div className="w-full h-3/4 flex justify-around">
-            <div className="w-1.5 h-full" style={{ backgroundColor: color }} />
-            <div className="w-1.5 h-full" style={{ backgroundColor: color }} />
-          </div>
-          <div className="absolute top-1/4 left-0 right-0 h-1" style={{ backgroundColor: color, opacity: 0.8 }} />
-          <div className="absolute top-1/2 left-0 right-0 h-1" style={{ backgroundColor: color, opacity: 0.8 }} />
+        <div className="absolute inset-0">
+          <div className="absolute" style={{ left: 4, top: 8, width: 4, height: TILE - 8, backgroundColor: color }} />
+          <div className="absolute" style={{ right: 4, top: 8, width: 4, height: TILE - 8, backgroundColor: color }} />
+          <div className="absolute" style={{ left: 0, top: Math.floor(TILE * 0.3), width: TILE, height: 3, backgroundColor: color }} />
+          <div className="absolute" style={{ left: 0, top: Math.floor(TILE * 0.6), width: TILE, height: 3, backgroundColor: color }} />
         </div>
       );
     default:
       return (
-        <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: '2px solid rgba(255,255,255,0.1)', borderLeft: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset -2px -2px 0 rgba(0,0,0,0.3)' }} />
+        <div className="absolute inset-0" style={{ backgroundColor: color, borderTop: `3px solid ${hiColor}`, borderLeft: `2px solid ${hiColor}`, borderRight: `2px solid ${loColor}`, borderBottom: `3px solid ${loColor}` }} />
       );
   }
 }
@@ -175,13 +175,13 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
   const posY = wanderState ? wanderState.y : npc.y * TILE;
   const face = wanderState?.facing || 'right';
   const isWalking = wanderState ? (Math.abs(wanderState.targetX - wanderState.x) > 2 || Math.abs(wanderState.targetY - wanderState.y) > 2) : false;
-  const walkBob = isWalking ? Math.sin(animFrame * 0.15) * 1.5 : 0;
-  const idleBob = !isWalking ? Math.sin(animFrame * 0.04) * 1.2 : 0;
+  const walkBob = isWalking ? Math.floor(Math.sin(animFrame * 0.15) * 2) : 0;
+  const idleBob = !isWalking ? Math.floor(Math.sin(animFrame * 0.04) * 1) : 0;
   const bobY = walkBob + idleBob;
-  const legAnim = isWalking ? Math.sin(animFrame * 0.2) * 2 : 0;
+  const frame = isWalking ? Math.floor(animFrame * 0.08) % 2 : 0;
+  const P = 4;
 
-  const darkerSkin = adjustColor(npc.skinColor, -20);
-  const darkerShirt = adjustColor(npc.shirtColor, -30);
+  const darkerShirt = adjustColor(npc.shirtColor, -40);
 
   return (
     <div
@@ -194,39 +194,52 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
       }}
       onClick={() => onNpcClick(npc)}
     >
-      <div className="relative" style={{ width: 32, height: 38, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 14, height: 14, backgroundColor: npc.skinColor, border: `2px solid ${darkerSkin}`, borderRadius: '2px' }}>
-          <div className="absolute top-2 left-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 1px rgba(255,255,255,0.5)' }} />
-          <div className="absolute top-2 right-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 1px rgba(255,255,255,0.5)' }} />
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-2 h-0.5" style={{ backgroundColor: darkerSkin }} />
-        </div>
-        <div className="absolute" style={{ top: -2, left: '50%', transform: 'translateX(-50%)', width: 16, height: 6, backgroundColor: '#2c2c2c', borderRadius: '2px 2px 0 0' }} />
-        <div className="absolute" style={{ top: 14, left: '50%', transform: 'translateX(-50%)', width: 18, height: 12, backgroundColor: npc.shirtColor, border: `2px solid ${darkerShirt}`, borderRadius: '1px' }}>
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)` }} />
-        </div>
-        <div className="absolute" style={{ top: 18, left: 4, width: 5, height: 7, backgroundColor: npc.skinColor, border: `1px solid ${darkerSkin}`, borderRadius: '1px' }} />
-        <div className="absolute" style={{ top: 18, right: 4, width: 5, height: 7, backgroundColor: npc.skinColor, border: `1px solid ${darkerSkin}`, borderRadius: '1px' }} />
-        <div className="absolute" style={{ bottom: 0, left: 7, width: 7, height: 6, backgroundColor: '#34495e', border: '1px solid #2c3e50', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: 0, right: 7, width: 7, height: 6, backgroundColor: '#34495e', border: '1px solid #2c3e50', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: -1, left: 6, width: 8, height: 3, backgroundColor: '#1a1a1a', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: -1, right: 6, width: 8, height: 3, backgroundColor: '#1a1a1a', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
+      <div className="relative" style={{ width: P * 8, height: P * 10, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
+        <PixelBlock x={P*2} y={0} w={P*4} h={P} color="#2c2c2c" />
+        <PixelBlock x={P*1} y={P} w={P} h={P} color="#2c2c2c" />
+        <PixelBlock x={P*2} y={P} w={P*4} h={P} color={npc.skinColor} />
+        <PixelBlock x={P*6} y={P} w={P} h={P} color="#2c2c2c" />
+        <PixelBlock x={P*1} y={P*2} w={P} h={P} color={npc.skinColor} />
+        <PixelBlock x={P*2} y={P*2} w={P} h={P} color="#1a1a1a" />
+        <PixelBlock x={P*3} y={P*2} w={P*2} h={P} color={npc.skinColor} />
+        <PixelBlock x={P*5} y={P*2} w={P} h={P} color="#1a1a1a" />
+        <PixelBlock x={P*6} y={P*2} w={P} h={P} color={npc.skinColor} />
+        <PixelBlock x={P*2} y={P*3} w={P*4} h={P} color={adjustColor(npc.skinColor, -20)} />
+        <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color={npc.shirtColor} />
+        <PixelBlock x={P*0} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+        <PixelBlock x={P*1} y={P*5} w={P*6} h={P*2} color={darkerShirt} />
+        <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+        {frame === 0 ? (
+          <>
+            <PixelBlock x={P*2} y={P*7} w={P*2} h={P*2} color="#34495e" />
+            <PixelBlock x={P*4} y={P*7} w={P*2} h={P*2} color="#34495e" />
+            <PixelBlock x={P*2} y={P*9} w={P*2} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*4} y={P*9} w={P*2} h={P} color="#1a1a1a" />
+          </>
+        ) : (
+          <>
+            <PixelBlock x={P*1} y={P*7} w={P*2} h={P*2} color="#34495e" />
+            <PixelBlock x={P*5} y={P*7} w={P*2} h={P*2} color="#34495e" />
+            <PixelBlock x={P*1} y={P*9} w={P*2} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*5} y={P*9} w={P*2} h={P} color="#1a1a1a" />
+          </>
+        )}
       </div>
 
       <div
         className="absolute -top-8 left-1/2 whitespace-nowrap z-30"
         style={{ transform: 'translateX(-50%)' }}
       >
-        <div className="bg-black/90 border px-2 py-0.5 text-center" style={{
+        <div className="bg-black border-2 px-2 py-0.5 text-center" style={{
           fontFamily: 'var(--font-pixel)', fontSize: '7px',
-          borderColor: isNearby ? 'rgba(74,222,128,0.7)' : 'rgba(255,255,255,0.3)',
+          borderColor: isNearby ? '#4ade80' : '#555',
           opacity: isNearby ? 1 : 0.75,
-          boxShadow: isNearby ? '0 0 8px rgba(74,222,128,0.3)' : 'none',
         }}>
           <span style={{ color: isNearby ? '#4ade80' : '#a0d0a0' }}>{npc.name}</span>
           {isNearby && (
             <>
               <br />
-              <span className="text-white/60">SPACE to talk</span>
+              <span style={{ color: '#888' }}>SPACE to talk</span>
             </>
           )}
         </div>
@@ -264,10 +277,10 @@ function OutdoorEffects() {
           animate={{ x: [0, 40, 0] }}
           transition={{ duration: 25 + cloud.delay * 4, repeat: Infinity, ease: "linear" }}
         >
-          <div className="flex gap-0" style={{ opacity: 0.12 }}>
-            <div className="rounded-full bg-white" style={{ width: cloud.w * 0.4, height: cloud.w * 0.2 }} />
-            <div className="rounded-full bg-white -ml-3" style={{ width: cloud.w * 0.55, height: cloud.w * 0.3, marginTop: -cloud.w * 0.06 }} />
-            <div className="rounded-full bg-white -ml-3" style={{ width: cloud.w * 0.38, height: cloud.w * 0.22 }} />
+          <div className="flex" style={{ opacity: 0.15 }}>
+            <div className="bg-white" style={{ width: cloud.w * 0.4, height: cloud.w * 0.2 }} />
+            <div className="bg-white -ml-1" style={{ width: cloud.w * 0.5, height: cloud.w * 0.3, marginTop: -cloud.w * 0.08 }} />
+            <div className="bg-white -ml-1" style={{ width: cloud.w * 0.35, height: cloud.w * 0.2 }} />
           </div>
         </motion.div>
       ))}
@@ -299,7 +312,7 @@ function AmbientParticles() {
       {particles.map(p => (
         <div
           key={p.id}
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             left: p.left,
             top: p.top,
@@ -321,10 +334,9 @@ function ExitSparkles({ x, y }: { x: number; y: number }) {
   const sparkles = useRef(
     Array.from({ length: 4 }, (_, i) => ({
       id: i,
-      offX: 4 + Math.random() * (TILE - 8),
-      offY: 4 + Math.random() * (TILE - 8),
-      delay: i * 0.4,
-      size: 2 + Math.random() * 2,
+      offX: 8 + Math.floor(Math.random() * (TILE - 16) / 4) * 4,
+      offY: 8 + Math.floor(Math.random() * (TILE - 16) / 4) * 4,
+      delay: i * 0.5,
     }))
   ).current;
 
@@ -333,13 +345,13 @@ function ExitSparkles({ x, y }: { x: number; y: number }) {
       {sparkles.map(s => (
         <div
           key={s.id}
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             left: x * TILE + s.offX,
             top: y * TILE + s.offY,
-            width: s.size,
-            height: s.size,
-            backgroundColor: 'rgba(74,222,128,0.7)',
+            width: 4,
+            height: 4,
+            backgroundColor: '#4ade80',
             animation: `sparkle 1.8s ${s.delay}s ease-in-out infinite`,
             zIndex: 9,
           }}
@@ -379,28 +391,47 @@ function PixelTransition({ active }: { active: boolean }) {
   );
 }
 
+function PixelBlock({ x, y, w, h, color, style }: { x: number; y: number; w: number; h: number; color: string; style?: React.CSSProperties }) {
+  return <div className="absolute" style={{ left: x, top: y, width: w, height: h, backgroundColor: color, ...style }} />;
+}
+
 function PlayerSprite({ facing, isMoving, stepCount }: { facing: 'left' | 'right'; isMoving: boolean; stepCount: number }) {
-  const bobY = isMoving ? Math.sin(stepCount * 0.3) * 1.5 : 0;
-  const legAnim = isMoving ? Math.sin(stepCount * 0.25) * 2.5 : 0;
+  const bobY = isMoving ? Math.floor(Math.sin(stepCount * 0.3) * 2) : 0;
+  const frame = isMoving ? Math.floor(stepCount * 0.15) % 2 : 0;
+  const P = 4;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center" style={{ transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
-      <div className="relative" style={{ width: 30, height: 38, transform: `translateY(${bobY}px)` }}>
-        <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)', width: 14, height: 14, backgroundColor: '#f5d0a9', border: '2px solid #c9a57a', borderRadius: '2px' }}>
-          <div className="absolute top-2 left-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 2px rgba(255,255,255,0.4)' }} />
-          <div className="absolute top-2 right-1 w-1.5 h-1.5 bg-black rounded-full" style={{ boxShadow: '0 0 2px rgba(255,255,255,0.4)' }} />
-          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-0.5 bg-red-400/50 rounded-full" />
-        </div>
-        <div className="absolute" style={{ top: -3, left: '50%', transform: 'translateX(-50%)', width: 16, height: 7, backgroundColor: '#4a2800', borderRadius: '3px 3px 0 0', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.1)' }} />
-        <div className="absolute" style={{ top: 14, left: '50%', transform: 'translateX(-50%)', width: 18, height: 12, backgroundColor: '#2563eb', border: '2px solid #1d4ed8', borderRadius: '1px' }}>
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%)' }} />
-        </div>
-        <div className="absolute" style={{ top: 18, left: 3, width: 5, height: 7, backgroundColor: '#f5d0a9', border: '1px solid #c9a57a', borderRadius: '1px' }} />
-        <div className="absolute" style={{ top: 18, right: 3, width: 5, height: 7, backgroundColor: '#f5d0a9', border: '1px solid #c9a57a', borderRadius: '1px' }} />
-        <div className="absolute" style={{ bottom: 0, left: 7, width: 7, height: 7, backgroundColor: '#374151', border: '1px solid #1f2937', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: 0, right: 7, width: 7, height: 7, backgroundColor: '#374151', border: '1px solid #1f2937', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: -1, left: 6, width: 8, height: 3, backgroundColor: '#b91c1c', borderRadius: '1px', transform: `translateY(${legAnim}px)` }} />
-        <div className="absolute" style={{ bottom: -1, right: 6, width: 8, height: 3, backgroundColor: '#b91c1c', borderRadius: '1px', transform: `translateY(${-legAnim}px)` }} />
+      <div className="relative" style={{ width: P * 8, height: P * 10, transform: `translateY(${bobY}px)` }}>
+        <PixelBlock x={P*2} y={0} w={P*4} h={P} color="#4a2800" />
+        <PixelBlock x={P*1} y={P} w={P} h={P} color="#4a2800" />
+        <PixelBlock x={P*2} y={P} w={P*4} h={P} color="#f5c090" />
+        <PixelBlock x={P*6} y={P} w={P} h={P} color="#4a2800" />
+        <PixelBlock x={P*1} y={P*2} w={P} h={P} color="#f5c090" />
+        <PixelBlock x={P*2} y={P*2} w={P} h={P} color="#1a1a1a" />
+        <PixelBlock x={P*3} y={P*2} w={P*2} h={P} color="#f5c090" />
+        <PixelBlock x={P*5} y={P*2} w={P} h={P} color="#1a1a1a" />
+        <PixelBlock x={P*6} y={P*2} w={P} h={P} color="#f5c090" />
+        <PixelBlock x={P*2} y={P*3} w={P*4} h={P} color="#c9a070" />
+        <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color="#2563eb" />
+        <PixelBlock x={P*0} y={P*5} w={P} h={P*2} color="#f5c090" />
+        <PixelBlock x={P*1} y={P*5} w={P*6} h={P*2} color="#1d4ed8" />
+        <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color="#f5c090" />
+        {frame === 0 ? (
+          <>
+            <PixelBlock x={P*2} y={P*7} w={P*2} h={P*2} color="#374151" />
+            <PixelBlock x={P*4} y={P*7} w={P*2} h={P*2} color="#374151" />
+            <PixelBlock x={P*2} y={P*9} w={P*2} h={P} color="#8b1a1a" />
+            <PixelBlock x={P*4} y={P*9} w={P*2} h={P} color="#8b1a1a" />
+          </>
+        ) : (
+          <>
+            <PixelBlock x={P*1} y={P*7} w={P*2} h={P*2} color="#374151" />
+            <PixelBlock x={P*5} y={P*7} w={P*2} h={P*2} color="#374151" />
+            <PixelBlock x={P*1} y={P*9} w={P*2} h={P} color="#8b1a1a" />
+            <PixelBlock x={P*5} y={P*9} w={P*2} h={P} color="#8b1a1a" />
+          </>
+        )}
       </div>
     </div>
   );
@@ -650,12 +681,15 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
               <div key={`w-${x}-${y}`} className="absolute" style={{
                 left: x * TILE, top: y * TILE, width: TILE, height: TILE,
                 backgroundColor: room.wallColor,
-                borderTop: isTopWall ? 'none' : `3px solid ${room.wallHighlight}`,
-                borderLeft: isEdge ? 'none' : `1px solid ${room.wallHighlight}`,
-                boxShadow: room.outdoor ? 'none' : 'inset 0 -2px 4px rgba(0,0,0,0.2)',
+                borderTop: isTopWall ? 'none' : `4px solid ${room.wallHighlight}`,
+                borderBottom: '4px solid rgba(0,0,0,0.4)',
+                borderLeft: isEdge ? 'none' : `2px solid ${room.wallHighlight}`,
               }}>
                 {!room.outdoor && y > 0 && y < 3 && x % 4 === 2 && (
-                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-3 h-2" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
+                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-4 h-3" style={{ backgroundColor: room.wallHighlight }} />
+                )}
+                {(x + y) % 3 === 0 && (
+                  <div className="absolute" style={{ right: 0, bottom: 0, width: 4, height: 4, backgroundColor: 'rgba(0,0,0,0.15)' }} />
                 )}
               </div>
             );
@@ -675,13 +709,12 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
                   <div className="px-2 py-0.5 text-center" style={{
                     fontFamily: 'var(--font-pixel)', fontSize: '6px',
                     color: nearbyArcade === dec ? '#fbbf24' : dec.color,
-                    backgroundColor: 'rgba(0,0,0,0.9)',
-                    border: `1px solid ${nearbyArcade === dec ? 'rgba(251,191,36,0.6)' : 'rgba(255,255,255,0.2)'}`,
-                    boxShadow: nearbyArcade === dec ? `0 0 8px ${dec.color}44` : 'none',
+                    backgroundColor: '#000',
+                    border: `2px solid ${nearbyArcade === dec ? '#fbbf24' : '#555'}`,
                   }}>
                     {dec.label}
                     {nearbyArcade === dec && (
-                      <><br /><span className="text-white/60">SPACE to play</span></>
+                      <><br /><span style={{ color: '#888' }}>SPACE to play</span></>
                     )}
                   </div>
                 </div>
@@ -695,10 +728,13 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
               backgroundColor: room.floorColor,
             }}>
               {((x + y) % 2 === 0) && (
-                <div className="absolute inset-0" style={{ backgroundColor: 'rgba(255,255,255,0.015)' }} />
+                <div className="absolute inset-0" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
               )}
-              {room.outdoor && (x + y * 3) % 7 === 0 && (
-                <div className="absolute" style={{ left: '30%', top: '40%', width: 3, height: 3, backgroundColor: 'rgba(100,180,100,0.15)', borderRadius: '50%' }} />
+              {room.outdoor && (x + y * 3) % 5 === 0 && (
+                <div className="absolute" style={{ left: 4, top: 4, width: 4, height: 4, backgroundColor: 'rgba(100,180,100,0.2)' }} />
+              )}
+              {room.outdoor && (x * 7 + y * 3) % 11 === 0 && (
+                <div className="absolute" style={{ right: 4, bottom: 4, width: 4, height: 4, backgroundColor: 'rgba(140,200,100,0.15)' }} />
               )}
             </div>
           );
@@ -713,16 +749,15 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
             <div key={`exit-${i}`} className="absolute z-10 flex items-center justify-center" style={{
               left: exit.x * TILE, top: exit.y * TILE, width: TILE, height: TILE,
             }}>
-              <div className={`w-full h-full flex items-center justify-center transition-all duration-200`} style={{
+              <div className="w-full h-full flex items-center justify-center" style={{
                 backgroundColor: nearbyExit === exit ? 'rgba(74,222,128,0.25)' : 'rgba(34,197,94,0.08)',
-                border: nearbyExit === exit ? '2px solid rgba(74,222,128,0.6)' : '1px solid rgba(74,222,128,0.25)',
-                boxShadow: nearbyExit === exit ? '0 0 12px rgba(74,222,128,0.3)' : 'none',
+                border: nearbyExit === exit ? '3px solid #4ade80' : '2px solid rgba(74,222,128,0.3)',
               }}>
                 <motion.div
-                  animate={{ [isVertical ? 'y' : 'x']: [0, arrowDir === 'up' || arrowDir === 'left' ? -3 : 3, 0] }}
+                  animate={{ [isVertical ? 'y' : 'x']: [0, arrowDir === 'up' || arrowDir === 'left' ? -4 : 4, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
-                  className="w-3 h-3 border-t-2 border-r-2 border-green-400"
-                  style={{ transform: `rotate(${arrowRotation})` }}
+                  className="border-t-2 border-r-2 border-green-400"
+                  style={{ width: 8, height: 8, transform: `rotate(${arrowRotation})` }}
                 />
               </div>
               {nearbyExit === exit && (
@@ -741,9 +776,9 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
                           : { right: -(TILE + 4), left: 'auto', top: '50%', transform: 'translateY(-50%)' }),
                   }}
                 >
-                  <div className="bg-black/95 border border-green-500/60 px-2 py-1 whitespace-nowrap" style={{
+                  <div className="bg-black border-2 px-2 py-1 whitespace-nowrap" style={{
                     fontFamily: 'var(--font-pixel)', fontSize: '7px', color: '#4ade80',
-                    boxShadow: '0 0 10px rgba(74,222,128,0.2)',
+                    borderColor: '#4ade80',
                   }}>
                     {exit.label}
                   </div>
