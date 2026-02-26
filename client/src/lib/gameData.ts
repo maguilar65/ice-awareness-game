@@ -33,6 +33,7 @@ export interface NpcDef {
   baby?: boolean;
   short?: boolean;
   holdingFootball?: boolean;
+  prFlag?: boolean;
 }
 
 export interface Decoration {
@@ -82,7 +83,7 @@ export const rooms: Record<string, RoomDef> = {
     ],
     npcs: [
       { id: "elena", name: "Robert", x: 4, y: 4, skinColor: "#d4a574", shirtColor: "#e74c3c", dialogueId: "elena" },
-      { id: "carlos", name: "Julian Pedro", x: 11, y: 3, skinColor: "#c68642", shirtColor: "#3498db", dialogueId: "carlos", short: true, holdingFootball: true },
+      { id: "carlos", name: "Julian Pedro", x: 11, y: 3, skinColor: "#c68642", shirtColor: "#cc0000", dialogueId: "carlos", short: true, holdingFootball: true, prFlag: true },
       { id: "mrs_chen", name: "Mrs. Chen", x: 9, y: 8, skinColor: "#f5d0a9", shirtColor: "#27ae60", dialogueId: "mrs_chen", female: true },
     ],
     decorations: [
