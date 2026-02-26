@@ -195,7 +195,18 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
       onClick={() => onNpcClick(npc)}
     >
       <div className="relative" style={{ width: P * 8, height: P * 10, transform: face === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }}>
-        {npc.female ? (
+        {npc.baby ? (
+          <>
+            <PixelBlock x={P*2} y={P*4} w={P*4} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*2} y={P*5} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*3} y={P*5} w={P*2} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*5} y={P*5} w={P} h={P} color="#1a1a1a" />
+            <PixelBlock x={P*2} y={P*6} w={P*4} h={P} color={adjustColor(npc.skinColor, -20)} />
+            <PixelBlock x={P*1} y={P*7} w={P*6} h={P*2} color={npc.shirtColor} />
+            <PixelBlock x={P*2} y={P*9} w={P*2} h={P} color="#34495e" />
+            <PixelBlock x={P*4} y={P*9} w={P*2} h={P} color="#34495e" />
+          </>
+        ) : npc.female ? (
           <>
             <PixelBlock x={P*1} y={0} w={P*6} h={P} color="#2c2c2c" />
             <PixelBlock x={P*0} y={P} w={P} h={P} color="#2c2c2c" />

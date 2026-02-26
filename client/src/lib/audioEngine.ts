@@ -33,6 +33,7 @@ const SPEAKER_VOICE_MAP: Record<string, string> = {
   'Sofia': 'child',
   'Abuela': 'elder',
   'Mama': 'soft',
+  'Benjamin': 'child',
   'Officer Reyes': 'low',
   'Lucia': 'high',
   'Mr. Park': 'elder',

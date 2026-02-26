@@ -1363,6 +1363,17 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
     },
   },
+  benjamin: {
+    startNodeId: "benjamin_start",
+    nodes: {
+      benjamin_start: {
+        id: "benjamin_start",
+        speaker: "Benjamin",
+        text: "...",
+        isEnd: true,
+      },
+    },
+  },
   arcade_kid: {
     startNodeId: "danny_start",
     nodes: {

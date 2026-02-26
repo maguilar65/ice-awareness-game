@@ -30,6 +30,7 @@ export interface NpcDef {
   shirtColor: string;
   dialogueId: string;
   female?: boolean;
+  baby?: boolean;
 }
 
 export interface Decoration {
@@ -170,6 +171,7 @@ export const rooms: Record<string, RoomDef> = {
     npcs: [
       { id: "abuela", name: "Abuela", x: 5, y: 5, skinColor: "#d4a574", shirtColor: "#c0392b", dialogueId: "abuela", female: true },
       { id: "mama", name: "Mama", x: 10, y: 4, skinColor: "#d4a574", shirtColor: "#16a085", dialogueId: "mama", female: true },
+      { id: "benjamin", name: "Benjamin", x: 8, y: 7, skinColor: "#d4a574", shirtColor: "#f9e79f", dialogueId: "benjamin", baby: true },
     ],
     decorations: [
       { x: 3, y: 2, w: 4, h: 2, color: "#3d2b1f", type: 'table' },
