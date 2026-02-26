@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration, type WallPoster } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
-const SPEED = 3;
+const SPEED = 5;
 const CANVAS_W = COLS * TILE;
 const CANVAS_H = ROWS * TILE;
 
