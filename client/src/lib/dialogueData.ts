@@ -23,7 +23,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
     nodes: {
       elena_start: {
         id: "elena_start",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Hey... you live around here too, right? Things have been really scary lately. Did you hear what happened to the Ramirez family?",
         choices: [
           { text: "What happened to them?", nextNodeId: "elena_raid" },
@@ -33,7 +33,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_raid: {
         id: "elena_raid",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "ICE showed up at their workplace last Tuesday. No warning. They just stormed in and grabbed people. Mr. Ramirez was taken right off the factory floor in front of everyone. His kids were waiting at school for a pickup that never came.",
         contentId: 9,
         choices: [
@@ -43,7 +43,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_fear: {
         id: "elena_fear",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "ICE has been doing workplace raids around here. They don't care if you have a family, if your kids are at school waiting. They just grab people. The whole neighborhood is afraid to go to work now.",
         contentId: 9,
         choices: [
@@ -53,7 +53,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_personal: {
         id: "elena_personal",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Honestly? I'm scared. My cousin works at the same factory they raided. Every morning I wonder if today is the day they come for someone else I know. Nobody feels safe anymore.",
         choices: [
           { text: "Tell me about the raids.", nextNodeId: "elena_raid" },
@@ -62,7 +62,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_legal: {
         id: "elena_legal",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "That's what everyone asks. Apparently they're supposed to have warrants, but people are too scared to question it when armed agents show up. Attorney Kim at the courthouse might know more about the legal side.",
         choices: [
           { text: "I'll go talk to Attorney Kim.", nextNodeId: "elena_challenge" },
@@ -71,7 +71,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_kids: {
         id: "elena_kids",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "The neighbors took them in for now. But can you imagine? Those kids went from a normal Tuesday to wondering if they'll ever see their dad again. Ms. Martinez at the school has been trying to help the kids cope.",
         choices: [
           { text: "I should talk to Ms. Martinez.", nextNodeId: "elena_challenge" },
@@ -80,7 +80,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_others: {
         id: "elena_others",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "The whole community is living in fear. People are afraid to go to the grocery store, to church, to pick their kids up from school. Rosa at the community center says attendance has dropped because families are hiding at home.",
         contentId: 12,
         choices: [
@@ -89,15 +89,15 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_help: {
         id: "elena_help",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Pastor Davis at the community center is organizing know-your-rights workshops. And Tommy at the school has been telling kids about checkpoint rights. It's not much, but knowledge is power, right?",
         choices: [
-          { text: "Thanks, Elena. I'll look into that.", nextNodeId: "elena_challenge" },
+          { text: "Thanks, Robert. I'll look into that.", nextNodeId: "elena_challenge" },
         ],
       },
       elena_challenge: {
         id: "elena_challenge",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Wait — before you go. Let me ask you something. Say you're walking home and you see ICE agents pulling someone out of their car on the street. What would you do?",
         choices: [
           { text: "Run over and try to physically stop them.", nextNodeId: "elena_challenge_wrong1" },
@@ -107,23 +107,23 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_challenge_wrong1: {
         id: "elena_challenge_wrong1",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "I get the instinct, but that could get you arrested or hurt too. The best thing you can do is be a witness — record from a safe distance, write down badge numbers, and contact a lawyer or community organization afterward. Your safety matters too.",
         choices: [
-          { text: "That makes sense. Thanks, Elena.", nextNodeId: "elena_end" },
+          { text: "That makes sense. Thanks, Robert.", nextNodeId: "elena_end" },
         ],
       },
       elena_challenge_right: {
         id: "elena_challenge_right",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Exactly right. You have the legal right to observe and record from a safe distance. Get badge numbers, vehicle plates, and the time. That evidence can help lawyers fight wrongful detentions later. You're already thinking like a community defender.",
         choices: [
-          { text: "I'll remember that. Thanks, Elena.", nextNodeId: "elena_end" },
+          { text: "I'll remember that. Thanks, Robert.", nextNodeId: "elena_end" },
         ],
       },
       elena_challenge_wrong2: {
         id: "elena_challenge_wrong2",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "I used to think that too. But what happens to one of us affects all of us. Today it's a stranger, tomorrow it could be your neighbor, your friend, your family. Being a witness — even just recording — can make a real difference.",
         choices: [
           { text: "You're right. I'll pay attention.", nextNodeId: "elena_end" },
@@ -131,7 +131,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       elena_end: {
         id: "elena_end",
-        speaker: "Elena",
+        speaker: "Robert",
         text: "Be careful out there. You should talk to Carlos — he's right here on the street. His uncle just went through something terrible at a checkpoint.",
         isEnd: true,
       },

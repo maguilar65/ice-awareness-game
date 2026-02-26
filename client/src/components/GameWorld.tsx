@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useEventListener } from "usehooks-ts";
 import { motion } from "framer-motion";
-import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration } from "@/lib/gameData";
+import { rooms, buildWallMap, findSafeSpawn, TILE, COLS, ROWS, type NpcDef, type Exit, type Decoration, type WallPoster } from "@/lib/gameData";
 import { playFootstep, playDoorTransition } from "@/lib/audioEngine";
 
 const SPEED = 3;
@@ -711,9 +711,27 @@ export function GameWorld({ onInteract, onMiniGame, currentRoom, onRoomChange, p
                 borderBottom: '4px solid rgba(0,0,0,0.4)',
                 borderLeft: isEdge ? 'none' : `2px solid ${room.wallHighlight}`,
               }}>
-                {!room.outdoor && y > 0 && y < 3 && x % 4 === 2 && (
+                {!room.outdoor && y > 0 && y < 3 && x % 4 === 2 && !room.wallPosters?.some(p => p.x === x && p.y === y) && (
                   <div className="absolute top-1 left-1/2 -translate-x-1/2 w-4 h-3" style={{ backgroundColor: room.wallHighlight }} />
                 )}
+                {room.wallPosters?.filter(p => p.x === x && p.y === y).map((poster, pi) => (
+                  <div key={`poster-${pi}`} className="absolute inset-1 flex items-center justify-center overflow-hidden z-10" style={{
+                    backgroundColor: poster.bgColor,
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    boxShadow: 'inset -1px -1px 0 rgba(0,0,0,0.4), inset 1px 1px 0 rgba(255,255,255,0.2)',
+                  }}>
+                    <span style={{
+                      fontFamily: 'var(--font-pixel)',
+                      fontSize: '5px',
+                      color: poster.textColor,
+                      textAlign: 'center',
+                      lineHeight: '1.2',
+                      letterSpacing: '-0.3px',
+                    }}>
+                      {poster.text}
+                    </span>
+                  </div>
+                ))}
                 {(x + y) % 3 === 0 && (
                   <div className="absolute" style={{ right: 0, bottom: 0, width: 4, height: 4, backgroundColor: 'rgba(0,0,0,0.15)' }} />
                 )}

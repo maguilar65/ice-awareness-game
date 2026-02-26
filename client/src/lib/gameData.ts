@@ -9,6 +9,7 @@ export interface RoomDef {
   exits: Exit[];
   npcs: NpcDef[];
   decorations: Decoration[];
+  wallPosters?: WallPoster[];
 }
 
 export interface Exit {
@@ -42,6 +43,14 @@ export interface Decoration {
   miniGame?: string;
 }
 
+export interface WallPoster {
+  x: number;
+  y: number;
+  text: string;
+  bgColor: string;
+  textColor: string;
+}
+
 export const TILE = 40;
 export const COLS = 16;
 export const ROWS = 12;
@@ -69,7 +78,7 @@ export const rooms: Record<string, RoomDef> = {
       { x: 0, y: 9, toRoom: "main_street", spawnX: 13, spawnY: 5, label: "Main Street" },
     ],
     npcs: [
-      { id: "elena", name: "Elena", x: 4, y: 4, skinColor: "#d4a574", shirtColor: "#e74c3c", dialogueId: "elena", female: true },
+      { id: "elena", name: "Robert", x: 4, y: 4, skinColor: "#d4a574", shirtColor: "#e74c3c", dialogueId: "elena" },
       { id: "carlos", name: "Carlos", x: 11, y: 3, skinColor: "#c68642", shirtColor: "#3498db", dialogueId: "carlos" },
       { id: "mrs_chen", name: "Mrs. Chen", x: 9, y: 8, skinColor: "#f5d0a9", shirtColor: "#27ae60", dialogueId: "mrs_chen", female: true },
     ],
@@ -286,6 +295,16 @@ export const rooms: Record<string, RoomDef> = {
       { x: 12, y: 2, w: 2, h: 2, color: "#f39c12", type: 'arcade_cabinet', label: "SPEED QUIZ", miniGame: "speed_quiz" },
       { x: 5, y: 8, w: 3, h: 1, color: "#3d2b1f", type: 'bench' },
       { x: 10, y: 8, w: 3, h: 1, color: "#3d2b1f", type: 'bench' },
+    ],
+    wallPosters: [
+      { x: 1, y: 0, text: "KNOW YOUR RIGHTS", bgColor: "#dc2626", textColor: "#fff" },
+      { x: 5, y: 0, text: "NO WARRANT NO ENTRY", bgColor: "#f59e0b", textColor: "#000" },
+      { x: 10, y: 0, text: "COMMUNITIES NOT CAGES", bgColor: "#16a34a", textColor: "#fff" },
+      { x: 14, y: 0, text: "DEFEND YOUR NEIGHBORS", bgColor: "#7c3aed", textColor: "#fff" },
+      { x: 0, y: 3, text: "ICE OUT", bgColor: "#dc2626", textColor: "#fff" },
+      { x: 0, y: 6, text: "RESIST", bgColor: "#f59e0b", textColor: "#000" },
+      { x: 15, y: 4, text: "UNITE", bgColor: "#16a34a", textColor: "#fff" },
+      { x: 15, y: 7, text: "ABOLISH ICE", bgColor: "#dc2626", textColor: "#fff" },
     ],
   },
 };
