@@ -21,7 +21,7 @@ const VOICE_PROFILES: Record<string, { baseFreq: number; freqRange: number; wave
 
 const SPEAKER_VOICE_MAP: Record<string, string> = {
   'Robert': 'mid',
-  'Carlos': 'low',
+  'Julian Pedro': 'low',
   'Mrs. Chen': 'elder',
   'Rosa': 'soft',
   'James': 'low',
