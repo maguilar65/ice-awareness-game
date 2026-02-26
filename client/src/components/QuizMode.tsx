@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface QuizQuestion {
@@ -81,9 +81,19 @@ export function QuizMode({ onFinish }: QuizModeProps) {
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const question = quizQuestions[currentQ];
   const isCorrect = selected === question.correctIndex;
+
+  useEffect(() => {
+    if (showResult) {
+      setTimeout(() => {
+        nextBtnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }, [showResult]);
 
   const handleSelect = useCallback((index: number) => {
     if (showResult) return;
@@ -180,7 +190,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
         />
       </div>
 
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 flex flex-col overflow-y-auto min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQ}
@@ -188,17 +198,17 @@ export function QuizMode({ onFinish }: QuizModeProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25 }}
-            className="flex-1 flex flex-col"
+            className="flex flex-col gap-4"
           >
             <p
-              className="text-white leading-relaxed mb-6 sm:mb-8"
+              className="text-white leading-relaxed"
               style={{ fontFamily: 'var(--font-retro)', fontSize: 'clamp(20px, 4.5vw, 32px)' }}
               data-testid="text-quiz-question"
             >
               {question.question}
             </p>
 
-            <div className="flex-1 flex flex-col gap-3 sm:gap-4 justify-center">
+            <div className="flex flex-col gap-3">
               {question.choices.map((choice, i) => {
                 let borderColor = 'rgba(255,255,255,0.15)';
                 let bgColor = 'rgba(255,255,255,0.03)';
@@ -224,7 +234,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                     data-testid={`button-quiz-choice-${i}`}
                     onClick={() => handleSelect(i)}
                     disabled={showResult}
-                    className="w-full flex-1 text-left p-5 sm:p-6 transition-all duration-200 flex items-center"
+                    className="w-full text-left p-3 sm:p-4 transition-all duration-200 flex items-center"
                     style={{
                       fontFamily: 'var(--font-retro)',
                       fontSize: 'clamp(16px, 3.5vw, 22px)',
@@ -265,6 +275,7 @@ export function QuizMode({ onFinish }: QuizModeProps) {
                   </p>
                 </div>
                 <button
+                  ref={nextBtnRef}
                   data-testid="button-quiz-next"
                   onClick={handleNext}
                   className="w-full py-2 bg-green-700 text-white border-2 border-green-500 hover-elevate active-elevate-2"
