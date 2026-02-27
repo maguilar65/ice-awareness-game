@@ -286,9 +286,33 @@ function NpcSprite({ npc, wanderState, isNearby, onNpcClick, animFrame, talked }
             <PixelBlock x={P*1} y={P*4} w={P*6} h={P} color={npc.shirtColor} />
           </>
         )}
-        <PixelBlock x={P*0} y={P*5} w={P} h={P*2} color={npc.skinColor} />
-        <PixelBlock x={P*1} y={P*5} w={P*6} h={P*2} color={darkerShirt} />
-        <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+        {npc.prFlag ? (
+          <>
+            <PixelBlock x={P*1} y={P*5} w={P*6} h={2} color="#cc0000" />
+            <PixelBlock x={P*1} y={P*5+2} w={P*6} h={2} color="#fff" />
+            <PixelBlock x={P*1} y={P*6} w={P*6} h={2} color="#cc0000" />
+            <PixelBlock x={P*1} y={P*6+2} w={P*6} h={2} color="#fff" />
+            <PixelBlock x={P*1} y={P*5} w={P*3} h={P} color="#3c3b6e" />
+            <PixelBlock x={P*1} y={P*6} w={P*2} h={P} color="#3c3b6e" />
+            <PixelBlock x={P*2} y={P*5+1} w={P} h={2} color="#fff" />
+          </>
+        ) : (
+          <PixelBlock x={P*1} y={P*5} w={P*6} h={P*2} color={darkerShirt} />
+        )}
+        {npc.holdingFootball ? (
+          <>
+            <PixelBlock x={P*0} y={P*5} w={P} h={P} color={npc.skinColor} />
+            <PixelBlock x={P*-1} y={P*4} w={P*2} h={P} color="#8B4513" />
+            <PixelBlock x={P*-1} y={P*3+2} w={P*2} h={P} color="#6B3410" />
+            <PixelBlock x={P*-1} y={P*3+4} w={P*2} h={2} color="#fff" />
+            <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+          </>
+        ) : (
+          <>
+            <PixelBlock x={P*0} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+            <PixelBlock x={P*7} y={P*5} w={P} h={P*2} color={npc.skinColor} />
+          </>
+        )}
         {frame === 0 ? (
           <>
             <PixelBlock x={P*2} y={P*7} w={P*2} h={P*2} color="#34495e" />
