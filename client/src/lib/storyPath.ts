@@ -7,7 +7,7 @@ export interface StoryStep {
 
 export const STORY_PATH: StoryStep[] = [
   { dialogueId: "elena", npcName: "Robert", room: "neighborhood", roomLabel: "Esperanza St." },
-  { dialogueId: "carlos", npcName: "Julian Pedro", room: "neighborhood", roomLabel: "Esperanza St." },
+  { dialogueId: "carlos", npcName: "Alejandro Cruz", room: "neighborhood", roomLabel: "Esperanza St." },
   { dialogueId: "mrs_chen", npcName: "Mrs. Chen", room: "neighborhood", roomLabel: "Esperanza St." },
   { dialogueId: "pastor_davis", npcName: "Pastor Davis", room: "community_center", roomLabel: "Community Center" },
   { dialogueId: "rosa", npcName: "Rosa", room: "community_center", roomLabel: "Community Center" },
@@ -38,7 +38,7 @@ export function getStoryHint(talkedTo: Set<string>): string | null {
   if (!next) return null;
   const hints: Record<string, string> = {
     elena: "Talk to Robert on Esperanza St.",
-    carlos: "Julian Pedro is nearby — he has a story about checkpoints.",
+    carlos: "Alejandro Cruz is nearby — he has a story about checkpoints.",
     mrs_chen: "Mrs. Chen has been watching from her bench.",
     pastor_davis: "Head to the Community Center to find Pastor Davis.",
     rosa: "Rosa is organizing help at the Community Center.",

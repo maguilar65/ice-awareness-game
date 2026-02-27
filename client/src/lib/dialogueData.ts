@@ -132,7 +132,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       elena_end: {
         id: "elena_end",
         speaker: "Robert",
-        text: "Be careful out there. You should talk to Julian Pedro — he's right here on the street. His uncle just went through something terrible at a checkpoint.",
+        text: "Be careful out there. You should talk to Alejandro Cruz — he's right here on the street. His uncle just went through something terrible at a checkpoint.",
         isEnd: true,
       },
     },
@@ -143,7 +143,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
     nodes: {
       carlos_start: {
         id: "carlos_start",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "Yo, you heard about what's going on? My uncle got stopped at that checkpoint on Route 9 last week. He's a citizen. Born right here. They still held him for three hours.",
         choices: [
           { text: "They held a citizen? How?", nextNodeId: "carlos_citizen" },
@@ -153,7 +153,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_citizen: {
         id: "carlos_citizen",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "Happens more than you'd think. ICE has wrongfully detained and even deported U.S. citizens. There was a man named Davino Watson — he's American, born here — and they deported him anyway. It took years to sort out. Years of his life, gone.",
         contentId: 5,
         choices: [
@@ -163,7 +163,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_uncle: {
         id: "carlos_uncle",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "He's shaken up. They kept asking him questions, going through his car. He had his license, everything. But they said he 'matched a description.' He's lived here his whole life. This is America, man.",
         choices: [
           { text: "Has this happened to other citizens?", nextNodeId: "carlos_citizen" },
@@ -172,7 +172,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_checkpoint: {
         id: "carlos_checkpoint",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "They set them up on the roads leading in and out of town. Stopping everybody, asking for papers. It feels like we're living in a different country. Tommy at the school knows a lot about what your rights are at those stops.",
         contentId: 12,
         choices: [
@@ -182,7 +182,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_system: {
         id: "carlos_system",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "The system is broken. They make mistakes and real people pay for it. Davino got deported even though he kept telling them he was American. Nobody listened. Attorney Kim at the courthouse is trying to help people who've been wrongfully targeted.",
         choices: [
           { text: "I'll go talk to Attorney Kim.", nextNodeId: "carlos_end" },
@@ -191,7 +191,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_davino: {
         id: "carlos_davino",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "You can actually find him at the courthouse. He's been speaking out about what happened to him so it doesn't happen to other people. Takes real courage after what he went through.",
         choices: [
           { text: "I'll go find him.", nextNodeId: "carlos_end" },
@@ -199,16 +199,16 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_rights: {
         id: "carlos_rights",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "You have the right to remain silent. You don't have to answer questions about where you were born or your immigration status. You have the right to say 'I don't consent to a search.' Know your rights — it could save you or someone you love.",
         contentId: 10,
         choices: [
-          { text: "Thanks for telling me, Julian Pedro.", nextNodeId: "carlos_challenge" },
+          { text: "Thanks for telling me, Alejandro.", nextNodeId: "carlos_challenge" },
         ],
       },
       carlos_challenge: {
         id: "carlos_challenge",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "Hold up — quick scenario. You're driving and you get stopped at a checkpoint. An agent asks where you were born and wants to search your car. What do you say?",
         choices: [
           { text: "Tell them everything and let them search.", nextNodeId: "carlos_challenge_wrong1" },
@@ -218,7 +218,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_challenge_wrong1: {
         id: "carlos_challenge_wrong1",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "You don't have to do that. The Fifth Amendment gives you the right to remain silent, and the Fourth Amendment protects you from unreasonable searches. You can politely say 'I don't consent to a search' and 'I exercise my right to remain silent.' It's your constitutional right.",
         choices: [
           { text: "Got it. I'll remember my rights.", nextNodeId: "carlos_end" },
@@ -226,15 +226,15 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_challenge_right: {
         id: "carlos_challenge_right",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "My man! That's exactly right. Stay calm, be polite, but firm. You don't have to answer questions about your birthplace or immigration status. And they can't search your car without your consent or a warrant. You know your stuff!",
         choices: [
-          { text: "Thanks, Julian Pedro!", nextNodeId: "carlos_end" },
+          { text: "Thanks, Alejandro!", nextNodeId: "carlos_end" },
         ],
       },
       carlos_challenge_wrong2: {
         id: "carlos_challenge_wrong2",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "Whoa, no! That could get you arrested for real. Never flee. Stay calm, pull over, and exercise your rights verbally. Say 'I remain silent' and 'I don't consent to a search.' Running makes everything worse. Knowledge is your best defense, not speed.",
         choices: [
           { text: "Right, stay calm and know my rights.", nextNodeId: "carlos_end" },
@@ -242,7 +242,7 @@ export const npcDialogues: Record<string, DialogueTree> = {
       },
       carlos_end: {
         id: "carlos_end",
-        speaker: "Julian Pedro",
+        speaker: "Alejandro Cruz",
         text: "Stay aware out there. And talk to Mrs. Chen — she's been watching everything from her bench. She sees more than people think.",
         isEnd: true,
       },
