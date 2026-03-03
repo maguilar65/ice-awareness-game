@@ -193,6 +193,133 @@ export function playDoorTransition() {
   } catch {}
 }
 
+let arcadeMusicNodes: { oscs: OscillatorNode[]; gains: GainNode[]; interval: ReturnType<typeof setInterval> | null } | null = null;
+
+export function startArcadeMusic() {
+  if (arcadeMusicNodes) return;
+  try {
+    const ctx = getAudioContext();
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.07, ctx.currentTime);
+    masterGain.connect(ctx.destination);
+
+    const oscs: OscillatorNode[] = [];
+    const gains: GainNode[] = [];
+
+    const bassOsc = ctx.createOscillator();
+    const bassGain = ctx.createGain();
+    bassOsc.type = 'square';
+    bassOsc.frequency.setValueAtTime(110, ctx.currentTime);
+    bassGain.gain.setValueAtTime(0, ctx.currentTime);
+    bassOsc.connect(bassGain);
+    bassGain.connect(masterGain);
+    bassOsc.start();
+    oscs.push(bassOsc);
+    gains.push(bassGain);
+
+    const melodyOsc = ctx.createOscillator();
+    const melodyGain = ctx.createGain();
+    melodyOsc.type = 'square';
+    melodyOsc.frequency.setValueAtTime(220, ctx.currentTime);
+    melodyGain.gain.setValueAtTime(0, ctx.currentTime);
+    melodyOsc.connect(melodyGain);
+    melodyGain.connect(masterGain);
+    melodyOsc.start();
+    oscs.push(melodyOsc);
+    gains.push(melodyGain);
+
+    const hihatOsc = ctx.createOscillator();
+    const hihatGain = ctx.createGain();
+    hihatOsc.type = 'sawtooth';
+    hihatOsc.frequency.setValueAtTime(800, ctx.currentTime);
+    hihatGain.gain.setValueAtTime(0, ctx.currentTime);
+    hihatOsc.connect(hihatGain);
+    hihatGain.connect(masterGain);
+    hihatOsc.start();
+    oscs.push(hihatOsc);
+    gains.push(hihatGain);
+
+    const kickOsc = ctx.createOscillator();
+    const kickGain = ctx.createGain();
+    kickOsc.type = 'triangle';
+    kickOsc.frequency.setValueAtTime(60, ctx.currentTime);
+    kickGain.gain.setValueAtTime(0, ctx.currentTime);
+    kickOsc.connect(kickGain);
+    kickGain.connect(masterGain);
+    kickOsc.start();
+    oscs.push(kickOsc);
+    gains.push(kickGain);
+
+    const bassNotes = [110, 110, 146.83, 130.81, 110, 110, 146.83, 164.81,
+                       110, 110, 146.83, 130.81, 164.81, 146.83, 130.81, 110];
+    const melodyNotes = [440, 0, 523.25, 0, 392, 0, 440, 523.25,
+                         0, 587.33, 0, 523.25, 440, 0, 392, 440,
+                         349.23, 0, 440, 0, 523.25, 0, 587.33, 0,
+                         523.25, 440, 0, 392, 349.23, 0, 392, 440];
+    const dembow = [1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0];
+    const hihat =  [1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1];
+
+    let step = 0;
+    const bpm = 190;
+    const stepTime = (60 / bpm) / 2 * 1000;
+
+    const interval = setInterval(() => {
+      try {
+        const now = ctx.currentTime;
+
+        const bassIdx = step % bassNotes.length;
+        bassOsc.frequency.setValueAtTime(bassNotes[bassIdx], now);
+        bassGain.gain.cancelScheduledValues(now);
+        bassGain.gain.setValueAtTime(0.9, now);
+        bassGain.gain.linearRampToValueAtTime(0.4, now + 0.1);
+
+        const melIdx = step % melodyNotes.length;
+        if (melodyNotes[melIdx] > 0) {
+          melodyOsc.frequency.setValueAtTime(melodyNotes[melIdx], now);
+          melodyGain.gain.cancelScheduledValues(now);
+          melodyGain.gain.setValueAtTime(0.5, now);
+          melodyGain.gain.linearRampToValueAtTime(0, now + 0.12);
+        } else {
+          melodyGain.gain.cancelScheduledValues(now);
+          melodyGain.gain.setValueAtTime(0, now);
+        }
+
+        const dembowIdx = step % dembow.length;
+        if (dembow[dembowIdx]) {
+          kickOsc.frequency.setValueAtTime(80, now);
+          kickOsc.frequency.linearRampToValueAtTime(40, now + 0.08);
+          kickGain.gain.cancelScheduledValues(now);
+          kickGain.gain.setValueAtTime(1.0, now);
+          kickGain.gain.linearRampToValueAtTime(0, now + 0.1);
+        }
+
+        const hihatIdx = step % hihat.length;
+        if (hihat[hihatIdx]) {
+          hihatOsc.frequency.setValueAtTime(600 + Math.random() * 400, now);
+          hihatGain.gain.cancelScheduledValues(now);
+          hihatGain.gain.setValueAtTime(0.25, now);
+          hihatGain.gain.linearRampToValueAtTime(0, now + 0.04);
+        }
+
+        step++;
+      } catch {}
+    }, stepTime);
+
+    arcadeMusicNodes = { oscs, gains, interval };
+  } catch {}
+}
+
+export function stopArcadeMusic() {
+  if (!arcadeMusicNodes) return;
+  try {
+    if (arcadeMusicNodes.interval) clearInterval(arcadeMusicNodes.interval);
+    arcadeMusicNodes.oscs.forEach(o => { try { o.stop(); } catch {} });
+    arcadeMusicNodes = null;
+  } catch {
+    arcadeMusicNodes = null;
+  }
+}
+
 export function playDialogClose() {
   try {
     const ctx = getAudioContext();
