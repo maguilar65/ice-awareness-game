@@ -12,7 +12,7 @@ import { SpeedQuizGame } from "@/components/SpeedQuizGame";
 import { useGameContent } from "@/hooks/use-game-content";
 import { rooms, CHAPTER_INTRO } from "@/lib/gameData";
 import { npcDialogues, type DialogueTree } from "@/lib/dialogueData";
-import { startArcadeMusic, stopArcadeMusic } from "@/lib/audioEngine";
+
 import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -83,15 +83,6 @@ export default function Game() {
       return () => clearTimeout(timer);
     }
   }, [talkedTo.size, gameState]);
-
-  useEffect(() => {
-    if (currentRoom === 'arcade' && gameState === 'playing') {
-      startArcadeMusic();
-    } else {
-      stopArcadeMusic();
-    }
-    return () => stopArcadeMusic();
-  }, [currentRoom, gameState]);
 
   const handleRoomChange = (roomId: string, spawnX: number, spawnY: number) => {
     setCurrentRoom(roomId);
