@@ -6,6 +6,7 @@ import { EndingCrawl } from "@/components/EndingCrawl";
 import { ProtestCutscene } from "@/components/ProtestCutscene";
 import { PauseMenu } from "@/components/PauseMenu";
 import { QuizMode } from "@/components/QuizMode";
+import { SourcesPage } from "@/components/SourcesPage";
 import { RightsMatchGame } from "@/components/RightsMatchGame";
 import { MythOrFactGame } from "@/components/MythOrFactGame";
 import { SpeedQuizGame } from "@/components/SpeedQuizGame";
@@ -30,7 +31,7 @@ export default function Game() {
   const [awareness, setAwareness] = useState(0);
   const [storiesFound, setStoriesFound] = useState<Set<number>>(new Set());
   const [talkedTo, setTalkedTo] = useState<Set<string>>(new Set());
-  const [gameState, setGameState] = useState<'title' | 'cutscene' | 'intro' | 'playing' | 'ending' | 'credits' | 'quiz'>('title');
+  const [gameState, setGameState] = useState<'title' | 'cutscene' | 'intro' | 'playing' | 'ending' | 'credits' | 'quiz' | 'sources'>('title');
   const [currentRoom, setCurrentRoom] = useState("neighborhood");
   const [playerSpawn, setPlayerSpawn] = useState({ x: 7, y: 6 });
   const [paused, setPaused] = useState(false);
@@ -243,6 +244,14 @@ export default function Game() {
               TAKE THE QUIZ
             </button>
             <button
+              data-testid="button-view-sources"
+              onClick={() => setGameState('sources')}
+              className="px-8 py-3 bg-cyan-700 text-white border-2 border-cyan-500 hover-elevate active-elevate-2"
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(9px, 2.5vw, 12px)', boxShadow: 'inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.15)' }}
+            >
+              VIEW SOURCES
+            </button>
+            <button
               data-testid="button-play-again"
               onClick={() => {
                 setGameState('title');
@@ -267,15 +276,15 @@ export default function Game() {
   if (gameState === 'quiz') {
     return (
       <QuizMode
-        onFinish={() => {
-          setGameState('title');
-          setTalkedTo(new Set());
-          setStoriesFound(new Set());
-          setAwareness(0);
-          setCurrentRoom("neighborhood");
-          setPlayerSpawn({ x: 7, y: 6 });
-          setPaused(false);
-        }}
+        onFinish={() => setGameState('sources')}
+      />
+    );
+  }
+
+  if (gameState === 'sources') {
+    return (
+      <SourcesPage
+        onBack={() => setGameState('credits')}
       />
     );
   }
