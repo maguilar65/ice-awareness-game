@@ -81,9 +81,10 @@ export function SourcesPage({ onBack }: SourcesPageProps) {
   return (
     <div
       data-testid="sources-page"
-      className="fixed inset-0 bg-black z-50 overflow-y-auto scanlines"
+      className="fixed inset-0 bg-black z-50"
+      style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}
     >
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8 sm:py-12" style={{ position: 'relative', zIndex: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
